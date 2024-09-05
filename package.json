@@ -1,0 +1,31 @@
+{
+  "name": "ecci",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@tsconfig/svelte": "^5.0.0",
+    "@types/d3": "^7.4.0",
+    "@types/topojson": "^3.2.6",
+    "svelte": "^4.2.15",
+    "svelte-check": "^3.4.6",
+    "typescript": "^5.4.5",
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "@observablehq/plot": "^0.6.15",
+    "@turf/turf": "^6.5.0",
+    "d3": "^7.9.0",
+    "topojson": "^3.0.2",
+    "mip": "https://observablehq.com/@tomlarkworthy/mip"
+  }
+}
