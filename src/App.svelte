@@ -14,8 +14,6 @@
 
     let medianIncomeData = globalMeasures.map(d => d['Median.Income']);
 
-
-//     TODO: host on github Pages
 </script>
 
 

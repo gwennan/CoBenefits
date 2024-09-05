@@ -5,20 +5,20 @@ import {joinArrays} from "./utils.ts";
 
 
 // const dataPath = '/predicted_data_final.csv';
-const dataPath = '/predicted_data_per.csv';
+const dataPath = './predicted_data_per.csv';
 
 // Taken from https://www.data.gov.uk/dataset/3f6c84f1-9da1-4ee0-82a7-50086a775e22/lower-layer-super-output-areas-december-2021-boundaries-ew-bgc-v3
-const zonesPath = '/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson';
+const zonesPath = './maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson';
 
 
-const globalMeasuresPath = '/UK_Archetypes_global_measures.csv';
-const archetypesInfosPath = '/UK_Archetypes_info.csv';
+const globalMeasuresPath = './UK_Archetypes_global_measures.csv';
+const archetypesInfosPath = './UK_Archetypes_info.csv';
 
-const S1Path = "/coBenefits/S1_BNZ.csv"
-const S2Path = "/coBenefits/S2_WI.csv"
-const S3Path = "/coBenefits/S3_WE.csv"
-const S4Path = "/coBenefits/S4_TW.csv"
-const S5Path = "/coBenefits/S5_HW.csv"
+const S1Path = "./coBenefits/S1_BNZ.csv"
+const S2Path = "./coBenefits/S2_WI.csv"
+const S3Path = "./coBenefits/S3_WE.csv"
+const S4Path = "./coBenefits/S4_TW.csv"
+const S5Path = "./coBenefits/S5_HW.csv"
 
 export const COBENEFS = ["Air quality","Noise","Excess cold","Excess heat","Dampness","Congestion","Hassle costs","Road repairs","Road safety","Physical activity","Diet change"]
 

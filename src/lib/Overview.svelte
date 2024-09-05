@@ -25,6 +25,7 @@
     let chartTypeCB: "barchart" | "violin" = "barchart"
 
 
+    console.log(1111);
     let height = 400;
 
     // TODO: compute extent of variables
