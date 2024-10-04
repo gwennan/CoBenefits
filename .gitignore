@@ -23,3 +23,17 @@ dist-ssr
 *.sln
 *.sw?
 *.xlsx
+
+# Data files
+static/coBenefits
+static/maps
+static/simulations_new/
+static/database.duckdb
+static/UK_Archetypes.xlsx
+static/UK_Archetypes_global_measures.csv
+static/UK_Archetypes_info.csv
+static/predicted_data_final.csv
+static/predicted_data_per.csv
+
+
+.ipynb_checkpoints

@@ -1,0 +1,14 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/overview": [
+		"src/routes/+layout.ts"
+	],
+	"/scenarios/[scenarioName]": [
+		"src/routes/scenarios/[scenarioName]/+page.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	]
+}

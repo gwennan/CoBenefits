@@ -1,14 +1,11 @@
 import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import {viteCommonjs} from "@originjs/vite-plugin-commonjs";
+import {sveltekit} from "@sveltejs/kit/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [sveltekit()],
   build: {
     target: "esnext",
     outDir: "dist"
   },
-  base: "./",
-  publicDir: "public"
 })
