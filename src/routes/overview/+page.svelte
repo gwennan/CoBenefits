@@ -1,181 +1,194 @@
 <script lang="ts">
-    import {globalMeasures, archetypesInfo, COBENEFS} from "$lib/data.page.ts"
+    import * as d3 from 'd3';
+    import * as Plot from "@observablehq/plot";
 
-    // import HeatMap from "./lib/HeatMap.svelte";
-    // import Map from "./lib/Map.svelte";
+    import MapCanvas from "$lib/components/MapCanvas.svelte";
 
-    // import Distribution from "./lib/Distribution.svelte";
-    // import SmallPlot from "./lib/SmallPlot.svelte";
-    // import BoxPlot from "./lib/BoxPlot.svelte";
-    // import SmallPlotTwoCat from "./lib/SmallPlotTwoCat.svelte";
-    // import GridMap from "./lib/GridMap.svelte";
-    import Overview from "./lib/Overview.svelte";
+    let element: HTMLElement
+    let plot: HTMLElement
+    let plotCB: HTMLElement
+
+    let chartType: "barchart" | "violin" = "barchart"
+    let chartTypeCB: "barchart" | "violin" = "barchart"
 
 
-    let medianIncomeData = globalMeasures.map(d => d['Median.Income']);
+    let height = 400;
+
+    // Data from load function
+    export let data;
+
+    // const fullData = data.fullData;
+    const fullData = data.data;
+    const dataPerCb = data.dataPerCb;
+
+
+    const zones = data.UKZones;
+
+    // TODO: compute extent of variables
+    $: {
+        plot?.firstChild?.remove(); // remove old chart, if any
+
+        if (chartType == "barchart") {
+            plot?.append(
+                Plot.plot({
+                    height: height,
+                    marginLeft: 170,
+                    y: {type: "band"},
+                    marks: [
+                        Plot.barX(fullData, Plot.groupY({x: "mean"}, {
+                            x: "total",
+                            y: "scenario"
+                        })),
+                        Plot.link(
+                            fullData,
+                            Plot.groupY(
+                                {
+                                    x1: (data) => d3.mean(data) - d3.deviation(data),
+                                    x2: (data) => d3.mean(data) + d3.deviation(data)
+                                },
+                                {
+                                    x: "total",
+                                    y: "scenario",
+                                    stroke: "gray",
+                                    strokeWidth: 3
+                                }
+                            )
+                        )
+                    ]
+                })
+            );
+        } else if (chartType == "distribution") {
+            // Violin
+            plot?.append(
+                Plot.plot({
+                    height: height,
+                    marginLeft: 170,
+                    facet: {data: fullData, y: "scenario"},
+                    marks: [
+
+                        Plot.areaY(fullData, Plot.binX({y: "count"}, {
+                            x: "total",
+                            tip: true
+                        }))
+                    ]
+                })
+            );
+        }
+    }
+
+    $: {
+        plotCB?.firstChild?.remove(); // remove old chart, if any
+
+        if (chartTypeCB == "barchart") {
+            plotCB?.append(
+                Plot.plot({
+                    height: height,
+                    marginLeft: 170,
+                    y: {type: "band"},
+                    // style: {fontSize: "22px"},
+                    // color: {legend: true},
+
+                    marks: [Plot.barX(dataPerCb, Plot.groupY({x: "mean"}, {
+                            x: "total",
+                            y: "co_benefit_type",
+                            tip: true
+                        })),
+                    Plot.link(
+                            dataPerCb,
+                            Plot.groupY(
+                                {
+                                    x1: (data) => d3.mean(data) - d3.deviation(data),
+                                    x2: (data) => d3.mean(data) + d3.deviation(data)
+                                },
+                                {
+                                    x: "total",
+                                    y: "co_benefit_type",
+                                    stroke: "gray",
+                                    strokeWidth: 3
+                                }
+                            )
+                        )]
+        }))
+        } else if (chartTypeCB == "distribution") {
+            console.log(2232)
+            // Violin
+            plotCB?.append(
+                Plot.plot({
+                    facet: {data: dataPerCb, y: "co_benefit_type"},
+                    marks: [
+
+                        Plot.areaY(dataPerCb, Plot.binX({y: "count"}, {
+                            x: "total",
+                            tip: true
+                        }))
+                    ]
+                })
+            );
+        }
+    }
+
+
+    function onChange(event) {
+        chartType = event.currentTarget.value;
+    }
+
+    function onChangeCB(event) {
+        chartTypeCB = event.currentTarget.value;
+    }
 </script>
 
 
-<!--    <HeatMap></HeatMap>-->
-<!--    <Map></Map>-->
+    <h1> Overview </h1>
 
-<!--    <div id="header" class="comp">-->
+<div id="main" bind:this={element}>
+
+    <div>
+        <h3>Benefits per pathway</h3>
+
+        <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
+        <label for="html">Barchart</label><br>
+        <input type="radio" on:change={onChange} name="visType" value="violin">
+        <label for="css">Violin</label><br>
+        <input type="radio" on:change={onChange} name="visType" value="distribution">
+        <label for="javascript">Distribution</label>
+
+        <div class="plot" bind:this={plot}>
+        </div>
+    </div>
+
+<!--    <div>map</div>-->
+<!--    <div id="map">-->
+<!--        <MapCanvas mapData={zones}></MapCanvas>-->
 <!--    </div>-->
 
-<!--    <h2>-->
-<!--        Distribution of properties of each datazones.-->
-<!--    </h2>-->
+    <div>
+        <h3>Benefits per Co-Benefit</h3>
 
-<!--    <div id="descriptivePlots" class="comp">-->
-<!--        <Distribution variable="Median.Income"></Distribution>-->
-<!--        <Distribution variable="Unemployment"></Distribution>-->
-<!--        <Distribution variable="House.value"></Distribution>-->
-<!--    </div>-->
+        <input type="radio" on:change={onChangeCB} name="visTypeCB" value="barchart" checked>
+        <label for="html">Barchart</label><br>
+        <input type="radio" on:change={onChangeCB} name="visTypeCB" value="violin">
+        <label for="css">Violin</label><br>
+        <input type="radio" on:change={onChangeCB} name="visTypeCB" value="distribution">
+        <label for="javascript">Distribution</label>
 
-<!--    <h2>-->
-<!--        Co-Benefits Modeling.-->
-<!--    </h2>-->
-
-<!--    <div id="grid" class="comp">-->
-<!--        <div class="question">Does the benefits affect the poor or the rich?</div>-->
-<!--        <div>Total Co-Benefits</div>-->
-<!--        <div>{COBENEFS[0]}</div>-->
-<!--        <div>{COBENEFS[1]}</div>-->
-<!--        <div>{COBENEFS[2]}</div>-->
-<!--        <div>{COBENEFS[3]}</div>-->
-
-<!--        <div>Scenario 1</div>-->
-<!--        <SmallPlot scenario={1} variableX="Median.Income" variableY="Total" showAxes={true}></SmallPlot>-->
-<!--        <SmallPlot scenario={1} variableX="Median.Income" variableY={COBENEFS[0]} showAxes={true}></SmallPlot>-->
-<!--        <SmallPlot scenario={1} variableX="Median.Income" variableY={COBENEFS[1]} showAxes={true}></SmallPlot>-->
-<!--        <SmallPlot scenario={1} variableX="Median.Income" variableY={COBENEFS[2]} showAxes={true}></SmallPlot>-->
-<!--        <SmallPlot scenario={1} variableX="Median.Income" variableY={COBENEFS[3]} showAxes={true}></SmallPlot>-->
-
-<!--        <div>Scenario 2</div>-->
-<!--        <SmallPlot scenario={2} variableX="Median.Income" variableY="Total"></SmallPlot>-->
-<!--        <SmallPlot scenario={2} variableX="Median.Income" variableY="{COBENEFS[0]}"></SmallPlot>-->
-<!--        <SmallPlot scenario={2} variableX="Median.Income" variableY={COBENEFS[1]}></SmallPlot>-->
-<!--        <SmallPlot scenario={2} variableX="Median.Income" variableY={COBENEFS[2]}></SmallPlot>-->
-<!--        <SmallPlot scenario={2} variableX="Median.Income" variableY={COBENEFS[3]}></SmallPlot>-->
-
-<!--        <div>Scenario 3</div>-->
-<!--        <SmallPlot scenario={3} variableX="Median.Income" variableY="Total"></SmallPlot>-->
-<!--        <SmallPlot scenario={3} variableX="Median.Income" variableY="{COBENEFS[0]}"></SmallPlot>-->
-<!--        <SmallPlot scenario={3} variableX="Median.Income" variableY={COBENEFS[1]}></SmallPlot>-->
-<!--        <SmallPlot scenario={3} variableX="Median.Income" variableY={COBENEFS[2]}></SmallPlot>-->
-<!--        <SmallPlot scenario={3} variableX="Median.Income" variableY={COBENEFS[3]}></SmallPlot>-->
-
-<!--        <div>Scenario 4</div>-->
-<!--        <SmallPlot scenario={4} variableX="Median.Income" variableY="Total"></SmallPlot>-->
-<!--        <SmallPlot scenario={4} variableX="Median.Income" variableY="{COBENEFS[0]}"></SmallPlot>-->
-<!--        <SmallPlot scenario={4} variableX="Median.Income" variableY={COBENEFS[1]}></SmallPlot>-->
-<!--        <SmallPlot scenario={4} variableX="Median.Income" variableY={COBENEFS[2]}></SmallPlot>-->
-<!--        <SmallPlot scenario={4} variableX="Median.Income" variableY={COBENEFS[3]}></SmallPlot>-->
-
-<!--        <div>Scenario 5</div>-->
-<!--        <SmallPlot scenario={5} variableX="Median.Income" variableY="Total"></SmallPlot>-->
-<!--        <SmallPlot scenario={5} variableX="Median.Income" variableY="{COBENEFS[0]}"></SmallPlot>-->
-<!--        <SmallPlot scenario={5} variableX="Median.Income" variableY={COBENEFS[1]}></SmallPlot>-->
-<!--        <SmallPlot scenario={5} variableX="Median.Income" variableY={COBENEFS[2]}></SmallPlot>-->
-<!--        <SmallPlot scenario={5} variableX="Median.Income" variableY={COBENEFS[3]}></SmallPlot>-->
-
-<!--        <div>Variance </div>-->
-<!--        <BoxPlot></BoxPlot>-->
-
-<!--&lt;!&ndash;        <GridMap></GridMap>&ndash;&gt;-->
-<!--    </div>-->
-
-
-<!--     <div class="comp grid">-->
-<!--        <div class="question">Cities or Rurality?</div>-->
-<!--        <div>Total Co-Benefits</div>-->
-<!--        <div>{COBENEFS[0]}</div>-->
-<!--        <div>{COBENEFS[1]}</div>-->
-<!--        <div>{COBENEFS[2]}</div>-->
-<!--        <div>{COBENEFS[3]}</div>-->
-
-<!--        <div>Scenario 1</div>-->
-<!--        <SmallPlotTwoCat scenario={1} variableX="Rurality" variableY="Total" showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={1} variableX="Rurality" variableY={COBENEFS[0]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={1} variableX="Rurality" variableY={COBENEFS[1]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={1} variableX="Rurality" variableY={COBENEFS[2]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={1} variableX="Rurality" variableY={COBENEFS[3]} showAxes={true}></SmallPlotTwoCat>-->
-
-<!--        <div>Scenario 2</div>-->
-<!--        <SmallPlotTwoCat scenario={2} variableX="Rurality" variableY="Total" showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={2} variableX="Rurality" variableY={COBENEFS[0]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={2} variableX="Rurality" variableY={COBENEFS[1]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={2} variableX="Rurality" variableY={COBENEFS[2]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={2} variableX="Rurality" variableY={COBENEFS[3]} showAxes={true}></SmallPlotTwoCat>-->
-
-<!--        <div>Scenario 3</div>-->
-<!--        <SmallPlotTwoCat scenario={3} variableX="Rurality" variableY="Total" showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={3} variableX="Rurality" variableY={COBENEFS[0]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={3} variableX="Rurality" variableY={COBENEFS[1]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={3} variableX="Rurality" variableY={COBENEFS[2]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={3} variableX="Rurality" variableY={COBENEFS[3]} showAxes={true}></SmallPlotTwoCat>-->
-
-<!--        <div>Scenario 4</div>-->
-<!--        <SmallPlotTwoCat scenario={4} variableX="Rurality" variableY="Total" showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={4} variableX="Rurality" variableY={COBENEFS[0]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={4} variableX="Rurality" variableY={COBENEFS[1]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={4} variableX="Rurality" variableY={COBENEFS[2]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={4} variableX="Rurality" variableY={COBENEFS[3]} showAxes={true}></SmallPlotTwoCat>-->
-
-<!--        <div>Scenario 5</div>-->
-<!--        <SmallPlotTwoCat scenario={5} variableX="Rurality" variableY="Total" showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={5} variableX="Rurality" variableY={COBENEFS[0]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={5} variableX="Rurality" variableY={COBENEFS[1]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={5} variableX="Rurality" variableY={COBENEFS[2]} showAxes={true}></SmallPlotTwoCat>-->
-<!--        <SmallPlotTwoCat scenario={5} variableX="Rurality" variableY={COBENEFS[3]} showAxes={true}></SmallPlotTwoCat>-->
-
-<!--        <div>Summary</div>-->
-<!--        <BoxPlot></BoxPlot>-->
-<!--    </div>-->
-
-
-
-<Overview></Overview>
-
+        <div class="plot" bind:this={plotCB}>
+        </div>
+    </div>
+</div>
 
 <style>
-    #descriptivePlots {
-        display: flex;
-        flex-direction: row;
-    }
-
-    #grid {
+    #main {
         display: grid;
-        grid-auto-flow: column;
-        /*grid-template-columns: 1fr 1fr;*/
-        grid-template-columns: 1fr repeat(5, 1fr) 1fr;
-        grid-template-rows: 1fr repeat(5, 3fr);
-        grid-column-gap: 1%;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        grid-column-gap: 2%;
         grid-row-gap: 1%;
 
-        /*width: 97vw;*/
-        height: 50vh;
+        width: 97vw;
+        /*height: 50vh;*/
     }
 
-    .grid {
-        display: grid;
-        grid-auto-flow: column;
-        /*grid-template-columns: 1fr 1fr;*/
-        grid-template-columns: 1fr repeat(5, 1fr) 1fr;
-        grid-template-rows: 1fr repeat(5, 3fr);
-        grid-column-gap: 1%;
-        grid-row-gap: 1%;
-
-        /*width: 97vw;*/
-        height: 50vh;
-    }
-
-    .question {
-        font-weight: bold;
-    }
-
-    .comp {
-        /*border: 1px solid black;*/
-        /*background: beige;*/
+    #map {
+        grid-row: span 2;
     }
 </style>

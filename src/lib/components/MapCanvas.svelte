@@ -1,17 +1,23 @@
 <script lang="ts">
 
     import * as d3 from 'd3';
-    import {feature} from 'topojson';
+    // import {feature} from 'topojson-client';
     import {onMount} from "svelte";
-    import {rewind} from "@turf/turf";
+    // import {rewind} from "@turf/turf";
 
-    import {areaIDtoData, dataPage, UKZones, zones} from '../data.page.ts';
+    // import {areaIDtoData, dataPage, UKZones, zones} from '../data.page.ts';
 
-    const columns = Object.keys(dataPage[0]);
+    // const columns = Object.keys(dataPage[0]);
+
+
+    export let mapData;
 
     let canvas: HTMLCanvasElement;
     let ctx: CanvasRenderingContext2D;
     let transform = d3.zoomIdentity
+
+    console.log(23, mapData);
+
 
 
     const width = 800;
@@ -24,25 +30,22 @@
         .center([-0.118092, 51.509865])
 
 
-    let [min, max] = d3.extent(dataPage.map(d => d.Total));
-    const costColorScale = d3.scaleDiverging()
-        // .domain([-5000, 0, 5000])
-        .domain([-max, 0, max])
-        // .interpolator(d3.interpolatePuOr)
-        .interpolator(d3.interpolateBrBG)
+    // let [min, max] = d3.extent(dataPage.map(d => d.Total));
+    // const costColorScale = d3.scaleDiverging()
+    //     .domain([-max, 0, max])
+    //     // .interpolator(d3.interpolatePuOr)
+    //     .interpolator(d3.interpolateBrBG)
 
     onMount(() => {
          d3.select(canvas).call(d3.zoom()
           .scaleExtent([1, 8])
           .on("zoom", ({transform}) => render(canvas, transform)));
-
-
     })
 
     // console.log(23, turf);
-    function render(canvas: HTMLElement, transform: d3.ZoomTransform) {
+    function render(canvas: HTMLCanvasElement, transform: d3.ZoomTransform) {
         if (!canvas) return;
-        ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
 
         const path = d3.geoPath(projection, ctx);
 
@@ -65,12 +68,12 @@
             // let areaID = feature.properties.OA21CD;
             let areaID = feature.properties.LSOA21CD;
 
-            let data = areaIDtoData[areaID];
-            let totalCost = data.Total;
+            // let data = areaIDtoData[areaID];
+            // let totalCost = data.Total;
 
             ctx.beginPath();
             path(feature);
-            ctx.fillStyle = costColorScale(totalCost);
+            // ctx.fillStyle = costColorScale(totalCost);
             // ctx.strokeStyle = costColorScale(totalCost);
             // ctx.stroke();
             ctx.fill();

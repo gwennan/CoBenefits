@@ -1,50 +1,39 @@
-import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
+import { csv, json, max, extent, autoType } from 'd3';
+// import {topology} from 'topojson';
 
-import type { AsyncDuckDB } from '@duckdb/duckdb-wasm';
-import { browser } from '$app/environment';
+import * as topojson from "topojson-client";
 
-// TODO: the load seems to be done server side still, and create an error
+// import {areaIDtoData, dataPage, UKZones, zones} from '../data.page.ts';
 
-let db: AsyncDuckDB | null = null;
+import {rewind} from "@turf/turf";
+import {joinArrays} from "$lib/utils.ts";
+import {initDB} from "$lib/duckdb";
 
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-    mvp: {
-        mainModule: duckdb_wasm,
-        mainWorker: mvp_worker,
-    },
-    eh: {
-        mainModule: duckdb_wasm_eh,
-        mainWorker: eh_worker,
-    },
-};
 
-// const initDB = async () => {
-//     console.log(2323, browser)
-// 	if (db) {
-// 		return db; // Return existing database, if any
-// 	}
-//
-// 	// Select a bundle based on browser checks
-//     const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
-//     // Instantiate the asynchronus version of DuckDB-wasm
-//     const worker = new Worker(bundle.mainWorker!);
-//     const logger = new duckdb.ConsoleLogger();
-//     db = new duckdb.AsyncDuckDB(logger, worker);
-//     await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-//     return db;
-// };
+// const zonesPath = '/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson';
+// topojson
+const zonesPath = '/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
 
 
 export async function load() {
+    const zones = await json(zonesPath, (d) => {
+        return d;
+    })
+    // for (let feature of zones.features) {
+    //     feature.geometry = rewind(feature.geometry, {reverse: true});
+    // }
 
-    // let db = initDB();
-    console.log(22, browser)
+
+    // const UKZones = topojson.mesh(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+    const UKZones = topojson.feature(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+
+
+    await initDB();
+
 
     return {
-        test: "a"
-    };
+        datazones: UKZones
+    }
 }
+
+export const ssr = false;

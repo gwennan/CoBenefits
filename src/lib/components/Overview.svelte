@@ -14,7 +14,7 @@
         COBENEFS,
         fullDataPerCB
     } from '../data.page.ts';
-    import Map from "./Map.svelte";
+    import MapCanvas from "./Map.svelte";
 
 
     let element: HTMLElement
