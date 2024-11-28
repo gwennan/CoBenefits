@@ -7,6 +7,7 @@
     import "maplibre-gl/dist/maplibre-gl.css";
     import {getCustomData, getTableData, getTotalPerPathway} from "$lib/duckdb";
     import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
+    import {Legend} from "$lib/utils";
 
 
     export let data;
@@ -16,6 +17,8 @@
 
     let element: HTMLElement
     let map: maplibregl.Map
+    let legendSvg: SVGSVGElement | null;
+    let legendDiv: HTMLElement;
 
     // Main data
     let cobenefData: Array<Record<any, any>>;
@@ -27,9 +30,14 @@
     let mapInit = false;
 
     // TOTAL COBENEFIT in millions of £
-    const colorScale = d3.scaleQuantize()
-        .domain([-10, 40])  // Replace this with the actual min and max of your property
-        .range(d3.schemeBlues[9]);  // A predefined D3 color scheme
+    // const colorScale = d3.scaleQuantize()
+    //     .domain([-10, 40])  // Replace this with the actual min and max of your property
+    //     .range(d3.schemeBlues[9]);  // A predefined D3 color scheme
+
+    const colorScale = d3.scaleDiverging()
+        .domain([-10, 0, 40])
+        // .interpolator(d3.interpolatePuOr)
+        .interpolator(d3.interpolateBrBG)
 
 
     async function loadData() {
@@ -90,17 +98,6 @@
             data: datazones
         });
 
-        // Optional: Add border
-        map.addLayer({
-            id: 'state-borders',
-            type: 'line',
-            source: 'datazones',
-            paint: {
-                'line-color': '#000000',
-                'line-width': 0.2
-            }
-        });
-
         map.addLayer({
             id: 'fill',
             type: 'fill',
@@ -112,9 +109,21 @@
                     ['get', 'value'], // Replace with your data property
                     ...colorScale.domain().flatMap((d) => [d, colorScale(d)])
                 ],
-                'fill-opacity': 0.75
+                'fill-opacity': 0.9
             }
         });
+
+        // Optional: Add border
+        map.addLayer({
+            id: 'state-borders',
+            type: 'line',
+            source: 'datazones',
+            paint: {
+                'line-color': '#000000',
+                'line-width': 0.1
+            }
+        });
+
         mapInit = true;
     }
 
@@ -133,7 +142,7 @@
             preserveDrawingBuffer: true,
         });
 
-        // console.log("MAP ", datazones)
+        console.log("MAP ", datazones)
 
         map.on('style.load', () => {
             mapStyleLoaded = true;
@@ -142,6 +151,13 @@
                 initMap();
             });
         })
+
+        legendSvg = Legend(colorScale, {
+          title: "Temperature (°F)"
+        })
+        legendDiv.append(legendSvg)
+        console.log("ll ", legendSvg);
+        // document.querySelector("#legend").append(leg)
     })
 
 
@@ -168,9 +184,13 @@
 
         <div id="map">
         </div>
-<!--        <div id="map-legend">-->
-<!--            TEEEEEEEST-->
-<!--        </div>-->
+        <div id="map-legend" bind:this={legendDiv}>
+<!--            fef-->
+<!--            <div id="legend"></div>-->
+<!--            <svg bind:this={legendSvg} width="400" height="300">-->
+              <!-- SVG content -->
+<!--            </svg>-->
+        </div>
 
     </div>
 
@@ -224,13 +244,13 @@
         flex: 1; /* take the remaining height */
     }
 
-    /*#map-legend {*/
-    /*    position: absolute;*/
-    /*    width: 25%;*/
-    /*    top: 10%;*/
-    /*    left: 0;*/
-    /*    padding: 10px;*/
-    /*}*/
+    #map-legend {
+        position: absolute;
+        width: 25%;
+        top: 10%;
+        right: 25%;
+        padding: 10px;
+    }
 
     #control-panel {
         flex: 0 0 25%; /* Don't grow or shrink, fixed at 75% width */

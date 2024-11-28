@@ -1,3 +1,5 @@
+import * as d3 from "d3"
+
 // This function performs an "inner join" on the 'id' field
 export function joinArraysOld(arr1: Array<any>, arr2: Array<any>, key: string) {
   return arr1.map(item1 => ({
