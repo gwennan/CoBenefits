@@ -1,6 +1,6 @@
 import {getTableData, getTotalPerBenefit, getTotalPerPathway, initDB} from "$lib/duckdb";
 import {json} from "d3";
-import {rewind} from "@turf/turf";
+// import {rewind} from "@turf/turf";
 // import {getTableData, initDB} from "$lib/duckdb";
 
 
@@ -12,3 +12,4 @@ export async function load() {
 }
 
 export const ssr = false;
+export const prerender = false;

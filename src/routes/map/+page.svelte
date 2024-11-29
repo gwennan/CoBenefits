@@ -153,7 +153,7 @@
         })
 
         legendSvg = Legend(colorScale, {
-          title: "Temperature (°F)"
+          title: "Cobenefits (Millions of £)"
         })
         legendDiv.append(legendSvg)
         console.log("ll ", legendSvg);
@@ -223,14 +223,20 @@
 
         gap: 1%;
 
-        width: 100vw;
+        /*width: 100vw;*/
+        width: 100%;
         height: 100vh;
+
+        /* width includes padding */
+        box-sizing: border-box;
     }
 
     .component {
         background: white;
         border: 1px solid black;
         border-radius: 15px;
+        padding-left: 1%;
+        padding-right: 1%;
     }
 
     #mapComp {

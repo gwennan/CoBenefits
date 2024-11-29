@@ -6,6 +6,5 @@ export default defineConfig({
   plugins: [sveltekit()],
   build: {
     target: "esnext",
-    outDir: "dist"
   },
 })

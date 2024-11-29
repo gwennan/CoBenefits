@@ -1,17 +1,23 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
 import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
 import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
-
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
-import type {CoBenefit, Scenario} from "../globals";
 
-export let db: AsyncDuckDB;
-// export let isDbInit = false;
+import type {CoBenefit, Scenario} from "../globals";
+import { browser } from '$app/environment';
+
+let db: AsyncDuckDB;
 
 // Name of the database table name
 const DB_TABLE_NAME = "cobenefits";
 
+
+
 const initDB = async () => {
+    if (!browser) {
+        return
+    }
+
     if (db) {
         return db; // Return existing database, if any
     }
@@ -27,6 +33,7 @@ const initDB = async () => {
     await db.instantiate(duckdb_wasm);
 
     await loadData();
+    return db;
 };
 
 
@@ -90,7 +97,6 @@ export function getInfo() {
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_NAME = N'${DB_TABLE_NAME}'
     `
-
 }
 
 export function getTotalPerPathway() {

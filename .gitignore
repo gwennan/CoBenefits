@@ -43,3 +43,6 @@ static/database.parquet
 
 
 .ipynb_checkpoints
+
+
+.svelte-kit

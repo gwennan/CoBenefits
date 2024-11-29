@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import {initDB} from "$lib/duckdb";
+    // import {initDB} from "$lib/duckdb";
     import {onMount} from "svelte";
 
     export let data;
@@ -9,9 +9,7 @@
 
 
     onMount(() => {
-        let db = initDB();
-        console.log(1, db)
-
+        // let db = initDB();
     })
 
 
