@@ -10,6 +10,3 @@ export async function load() {
         // dataPerCb: await getTableData(getTotalPerBenefit)
     };
 }
-
-export const ssr = false;
-export const prerender = false;

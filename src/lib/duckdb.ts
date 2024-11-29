@@ -14,6 +14,8 @@ const DB_TABLE_NAME = "cobenefits";
 
 
 const initDB = async () => {
+
+    // when building, Sveltekit prerenders pages using Node. In this step, we don't want to call duckdb.
     if (!browser) {
         return
     }
