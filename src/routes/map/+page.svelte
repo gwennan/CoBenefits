@@ -277,30 +277,13 @@
     }
 
     .time-radio {
-
-    }
-
-
-    #time {
-        /*margin: 4px;*/
-        /*float: left;*/
-    }
-
-    #time label {
-        /*float: left;*/
-        /*width: 170px;*/
-        /*margin: 4px;*/
-        /*background-color: #EFEFEF;*/
-        /*border-radius: 4px;*/
-        /*border: 1px solid #D0D0D0;*/
-        /*overflow: auto;*/
+        margin: 6px;
+        break-inside: avoid;
     }
 
     #time label span {
-        /*text-align: center;*/
-        /*font-size: 32px;*/
-        /*padding: 6px 6px;*/
-        /*display: block;*/
+        padding: 3px;
+        white-space: nowrap;
     }
 
     /* This hides the html circle radio button */
@@ -310,12 +293,12 @@
     }
 
     #time input:checked + span {
-        background-color: #404040;
+        background-color: #0031c3;
         color: #F7F7F7;
     }
 
     #time .time-radio {
-        background-color: #FFCC00;
+        /*background-color: #FFCC00;*/
         color: #333;
     }
 </style>
