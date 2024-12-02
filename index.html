@@ -1,31 +1,39 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <!--    <link rel="icon" type="image/svg+xml" href="" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>ECCI</title>
 
-    <style>
-    #app {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      row-gap: 1em;
+    
+		<link rel="modulepreload" href="./_app/immutable/entry/start.xksPicpF.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/entry.D92SZmPi.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.CtbWrGNo.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.Cq1ymopo.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.Blgs3lv_.js">
 
-      width: 94vw;
+</head>
+<body data-sveltekit-preload-data="hover">
+<div style="display: contents">
+			<script>
+				{
+					__sveltekit_1alf6k9 = {
+						base: new URL(".", location).pathname.slice(0, -1)
+					};
 
-      /*width: 400px;*/
-      margin: 0 auto;
-      /*background-color: #66ffff;*/
-    }
-    </style>
+					const element = document.currentScript.parentElement;
 
-    <script type="module" crossorigin src="./assets/index-sRHS-Kbp.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DvjPjnbi.css">
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+					Promise.all([
+						import("./_app/immutable/entry/start.xksPicpF.js"),
+						import("./_app/immutable/entry/app.Cq1ymopo.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+</body>
+
+<link rel="stylesheet" type="text/css" href="./app.css">
 </html>
