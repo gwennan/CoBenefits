@@ -236,12 +236,13 @@
 
         gap: 1%;
 
+        /*TODO: Make alignement layour better*/
         /*width: 100vw;*/
-        width: 100%;
+        width: 95%;
         height: 100vh;
 
         /* width includes padding */
-        box-sizing: border-box;
+        box-sizing: content-box;
     }
 
     .component {
