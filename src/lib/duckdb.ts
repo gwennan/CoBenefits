@@ -59,7 +59,7 @@ async function loadData() {
     // Close the connection to release memory
     await conn.close();
 
-    // console.log("INFO ", await getTableData(getInfo));
+    console.log("INFO ", await getTableData(getInfo()));
 }
 
 
@@ -107,16 +107,19 @@ export function getTotalPerPathway() {
             WHERE co_benefit_type='Total'`
 }
 
-export function getCustomData(cobenefits: CoBenefit[], scenario: Scenario) {
+export function getCustomData(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+    let query;
+
     if (cobenefits.length == 0) {
-        return `SELECT total, scenario, Lookup_Value
+        query = `SELECT "${time}", scenario, Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='Total'`
     } else {
-        return `SELECT total, scenario, Lookup_Value
+        query = `SELECT "${time}", scenario, Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
     }
+    return query
 }
 
 export function getTotalPerBenefit() {

@@ -26,8 +26,8 @@
     let dataZoneToValue: Record<string, number> = {}
     let scenario: Scenario = "BNZ";
     let coBenefits: Set<CoBenefit> = new Set();
+    let timeSelected: string = "total";
     let mapStyleLoaded = false;
-    let mapInit = false;
 
     // TOTAL COBENEFIT in millions of £
     // const colorScale = d3.scaleQuantize()
@@ -41,7 +41,8 @@
 
 
     async function loadData() {
-        cobenefData = await getTableData(getCustomData(Array.from(coBenefits), scenario))
+        cobenefData = await getTableData(getCustomData(Array.from(coBenefits), scenario, timeSelected))
+        // console.log(cobenefData);
     }
 
     function render() {
@@ -49,7 +50,8 @@
 
         cobenefData.forEach((d) => {
             // Might change total
-            dataZoneToValue[d.Lookup_Value] = d.total
+            // dataZoneToValue[d.Lookup_Value] = d.total
+            dataZoneToValue[d.Lookup_Value] = d[timeSelected]
         })
 
         // Put cobenef values inside the geojson for maplibre rendering
@@ -65,13 +67,12 @@
     }
 
     $: {
-        if (scenario != null && coBenefits != null) {
+        // Explicitly setting reactivity
+        if (scenario != null && coBenefits != null && timeSelected != null) {
 
             if (mapStyleLoaded) {
-                console.log('load')
                 loadData().then(
                     () => {
-                        console.log('loadEnd')
                         render()
                     }
                 )
@@ -123,8 +124,6 @@
                 'line-width': 0.1
             }
         });
-
-        mapInit = true;
     }
 
 
@@ -142,7 +141,7 @@
             preserveDrawingBuffer: true,
         });
 
-        console.log("MAP ", datazones)
+        // console.log("MAP ", datazones)
 
         map.on('style.load', () => {
             mapStyleLoaded = true;
@@ -153,7 +152,7 @@
         })
 
         legendSvg = Legend(colorScale, {
-          title: "Cobenefits (Millions of £)"
+            title: "Cobenefits (Millions of £)"
         })
         legendDiv.append(legendSvg)
         console.log("ll ", legendSvg);
@@ -162,7 +161,6 @@
 
 
     const onChangeScenario = (e) => {
-        console.log("SCC")
         scenario = e.currentTarget.value;
     }
     const onChangeCobenef = (e) => {
@@ -173,6 +171,11 @@
             coBenefits.add(cobenef)
         }
     }
+    const onChangeTime = (e) => {
+        const time = e.currentTarget.value;
+        timeSelected = time;
+    }
+
 
 </script>
 
@@ -185,11 +188,11 @@
         <div id="map">
         </div>
         <div id="map-legend" bind:this={legendDiv}>
-<!--            fef-->
-<!--            <div id="legend"></div>-->
-<!--            <svg bind:this={legendSvg} width="400" height="300">-->
-              <!-- SVG content -->
-<!--            </svg>-->
+            <!--            fef-->
+            <!--            <div id="legend"></div>-->
+            <!--            <svg bind:this={legendSvg} width="400" height="300">-->
+            <!-- SVG content -->
+            <!--            </svg>-->
         </div>
 
     </div>
@@ -209,6 +212,16 @@
                 <!--                <input type="checkbox" id="scales" name="scales" checked />-->
                 <label for="css">{coBenef}</label><br>
             {/each}
+
+            <h2> Time </h2>
+            <div id="time">
+                <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime} checked><span>total</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2025_2029" on:change={onChangeTime}><span>2025-2029</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2030_2034" on:change={onChangeTime}><span>2030-2034</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2035_2039" on:change={onChangeTime}><span>2035-2039</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2040_2044" on:change={onChangeTime}><span>2040-2044</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2045_2049" on:change={onChangeTime}><span>2045-2049</span></label>
+            </div>
 
         </div>
     </div>
@@ -261,5 +274,48 @@
     #control-panel {
         flex: 0 0 25%; /* Don't grow or shrink, fixed at 75% width */
         display: flex;
+    }
+
+    .time-radio {
+
+    }
+
+
+    #time {
+        /*margin: 4px;*/
+        /*float: left;*/
+    }
+
+    #time label {
+        /*float: left;*/
+        /*width: 170px;*/
+        /*margin: 4px;*/
+        /*background-color: #EFEFEF;*/
+        /*border-radius: 4px;*/
+        /*border: 1px solid #D0D0D0;*/
+        /*overflow: auto;*/
+    }
+
+    #time label span {
+        /*text-align: center;*/
+        /*font-size: 32px;*/
+        /*padding: 6px 6px;*/
+        /*display: block;*/
+    }
+
+    /* This hides the html circle radio button */
+    #time label input {
+        position: absolute;
+        top: -20px;
+    }
+
+    #time input:checked + span {
+        background-color: #404040;
+        color: #F7F7F7;
+    }
+
+    #time .time-radio {
+        background-color: #FFCC00;
+        color: #333;
     }
 </style>
