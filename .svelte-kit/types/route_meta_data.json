@@ -8,5 +8,18 @@
 		"src/routes/+layout.ts",
 		"src/routes/map/+layout.ts",
 		"src/routes/+layout.ts"
+	],
+	"/overview": [
+		"src/routes/overview/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/overview/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/scenarios/[scenarioName]": [
+		"src/routes/scenarios/[scenarioName]/+page.ts",
+		"src/routes/scenarios/[scenarioName]/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/scenarios/[scenarioName]/+layout.ts",
+		"src/routes/+layout.ts"
 	]
 }

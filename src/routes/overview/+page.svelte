@@ -110,7 +110,6 @@
                         )]
         }))
         } else if (chartTypeCB == "distribution") {
-            console.log(2232)
             // Violin
             plotCB?.append(
                 Plot.plot({

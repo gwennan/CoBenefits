@@ -20,6 +20,8 @@
 
     export const browser = true;
 
+    export const prerender = false;
+
 </script>
 
 <slot />
