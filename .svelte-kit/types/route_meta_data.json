@@ -3,6 +3,18 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/cobenefit": [
+		"src/routes/cobenefit/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/cobenefit/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/manyCharts": [
+		"src/routes/manyCharts/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/manyCharts/+layout.ts",
+		"src/routes/+layout.ts"
+	],
 	"/map": [
 		"src/routes/map/+layout.ts",
 		"src/routes/+layout.ts",

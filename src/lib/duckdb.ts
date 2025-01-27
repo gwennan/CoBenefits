@@ -10,6 +10,7 @@ let db: AsyncDuckDB;
 
 // Name of the database table name
 const DB_TABLE_NAME = "cobenefits";
+const DB_TABLE_SE_NAME = "socioEconmicFactors";
 
 
 
@@ -55,6 +56,16 @@ async function loadData() {
     await conn.query(`CREATE TABLE ${DB_TABLE_NAME} AS SELECT * FROM read_parquet('filename');`);
     console.log("Table created from parquet");
 
+
+    // Load socio economic table
+    const response2 = await fetch('/tableSocio.parquet');
+    const arrayBuffer2 = await response2.arrayBuffer();
+    const uint8Array2 = new Uint8Array(arrayBuffer2);
+
+    // Load the parquet file into the DuckDB instance
+    await db.registerFileBuffer("filename2", uint8Array2);
+
+    await conn.query(`CREATE TABLE ${DB_TABLE_SE_NAME} AS SELECT * FROM read_parquet('filename2');`);
 
     // Close the connection to release memory
     await conn.close();
@@ -122,16 +133,11 @@ export function getCustomData(cobenefits: CoBenefit[], scenario: Scenario, time=
     return query
 }
 
-export function getTotalPerBenefit() {
-    // return `SELECT sum(total), co_benefit_type
-    //         FROM ${DB_TABLE_NAME}
-    //         WHERE co_benefit_type!='Total'
-    //         GROUP BY co_benefit_type
-    //         `
 
-    return `SELECT total, co_benefit_type
+export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
+    return `SELECT total, Lookup_Value, scenario, 2025_2029, 2030_2034, 2035_2039, 2040_2044, 2045_2040
             FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type!='Total'`
+            WHERE co_benefit_type='${cobenefit}'`
 }
 
 

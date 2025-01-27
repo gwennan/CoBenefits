@@ -9,16 +9,22 @@ export const nodes = [
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
 	() => import('./nodes/7'),
-	() => import('./nodes/8')
+	() => import('./nodes/8'),
+	() => import('./nodes/9'),
+	() => import('./nodes/10'),
+	() => import('./nodes/11'),
+	() => import('./nodes/12')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
-		"/": [5],
-		"/map": [6,[2]],
-		"/overview": [7,[3]],
-		"/scenarios/[scenarioName]": [8,[4]]
+		"/": [7],
+		"/cobenefit": [8,[2]],
+		"/manyCharts": [9,[3]],
+		"/map": [10,[4]],
+		"/overview": [11,[5]],
+		"/scenarios/[scenarioName]": [12,[6]]
 	};
 
 export const hooks = {

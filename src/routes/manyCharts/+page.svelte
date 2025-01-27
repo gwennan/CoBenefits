@@ -21,7 +21,6 @@
     const fullData = data.data;
     const dataPerCb = data.dataPerCb;
 
-    const zones = data.UKZones;
 
     // TODO: compute extent of variables
     $: {
@@ -112,23 +111,13 @@
             // Violin
             plotCB?.append(
                 Plot.plot({
-                    marginLeft: 60,
-                    marginRight: 100,
-
-                    height: 600,
-
                     facet: {data: dataPerCb, y: "co_benefit_type"},
                     marks: [
 
-                        // Plot.areaY(dataPerCb, Plot.binX({y: "count"}, {
-                        //     x: "total",
-                        //     tip: true
-                        // })),
-                        Plot.rectY(dataPerCb, Plot.binX({y: "count"}, {
+                        Plot.areaY(dataPerCb, Plot.binX({y: "count"}, {
                             x: "total",
                             tip: true
-                        })),
-                        Plot.ruleY([0])
+                        }))
                     ]
                 })
             );
@@ -194,5 +183,9 @@
 
         width: 97vw;
         /*height: 50vh;*/
+    }
+
+    #map {
+        grid-row: span 2;
     }
 </style>

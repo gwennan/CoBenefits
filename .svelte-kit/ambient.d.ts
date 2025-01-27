@@ -27,7 +27,9 @@
  */
 declare module '$env/static/private' {
 	export const NVM_INC: string;
+	export const GDAL_DRIVER_PATH: string;
 	export const NODE: string;
+	export const PROJ_DATA: string;
 	export const INIT_CWD: string;
 	export const GEM_HOME: string;
 	export const NVM_CD_FLAGS: string;
@@ -38,7 +40,7 @@ declare module '$env/static/private' {
 	export const npm_config_global_prefix: string;
 	export const CONDA_SHLVL: string;
 	export const CONDA_PROMPT_MODIFIER: string;
-	export const MallocSpaceEfficient: string;
+	export const GSETTINGS_SCHEMA_DIR_CONDA_BACKUP: string;
 	export const COLOR: string;
 	export const TERM_SESSION_ID: string;
 	export const npm_config_noproxy: string;
@@ -52,12 +54,14 @@ declare module '$env/static/private' {
 	export const __CF_USER_TEXT_ENCODING: string;
 	export const npm_execpath: string;
 	export const _CE_CONDA: string;
+	export const CPL_ZIP_ENCODING: string;
 	export const PATH: string;
+	export const PROJ_NETWORK: string;
+	export const GSETTINGS_SCHEMA_DIR: string;
 	export const TERMINAL_EMULATOR: string;
 	export const npm_package_json: string;
 	export const npm_config_engine_strict: string;
 	export const _: string;
-	export const IJ_RESTARTER_LOG: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_init_module: string;
 	export const CONDA_PREFIX: string;
@@ -70,6 +74,7 @@ declare module '$env/static/private' {
 	export const npm_config_npm_version: string;
 	export const XPC_FLAGS: string;
 	export const RUBY_ENGINE: string;
+	export const GDAL_DATA: string;
 	export const npm_config_node_gyp: string;
 	export const npm_package_version: string;
 	export const _CE_M: string;
@@ -127,7 +132,9 @@ declare module '$env/static/public' {
 declare module '$env/dynamic/private' {
 	export const env: {
 		NVM_INC: string;
+		GDAL_DRIVER_PATH: string;
 		NODE: string;
+		PROJ_DATA: string;
 		INIT_CWD: string;
 		GEM_HOME: string;
 		NVM_CD_FLAGS: string;
@@ -138,7 +145,7 @@ declare module '$env/dynamic/private' {
 		npm_config_global_prefix: string;
 		CONDA_SHLVL: string;
 		CONDA_PROMPT_MODIFIER: string;
-		MallocSpaceEfficient: string;
+		GSETTINGS_SCHEMA_DIR_CONDA_BACKUP: string;
 		COLOR: string;
 		TERM_SESSION_ID: string;
 		npm_config_noproxy: string;
@@ -152,12 +159,14 @@ declare module '$env/dynamic/private' {
 		__CF_USER_TEXT_ENCODING: string;
 		npm_execpath: string;
 		_CE_CONDA: string;
+		CPL_ZIP_ENCODING: string;
 		PATH: string;
+		PROJ_NETWORK: string;
+		GSETTINGS_SCHEMA_DIR: string;
 		TERMINAL_EMULATOR: string;
 		npm_package_json: string;
 		npm_config_engine_strict: string;
 		_: string;
-		IJ_RESTARTER_LOG: string;
 		npm_config_userconfig: string;
 		npm_config_init_module: string;
 		CONDA_PREFIX: string;
@@ -170,6 +179,7 @@ declare module '$env/dynamic/private' {
 		npm_config_npm_version: string;
 		XPC_FLAGS: string;
 		RUBY_ENGINE: string;
+		GDAL_DATA: string;
 		npm_config_node_gyp: string;
 		npm_package_version: string;
 		_CE_M: string;

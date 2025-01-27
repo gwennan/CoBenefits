@@ -46,8 +46,6 @@
     }
 
     function render() {
-        console.log("render");
-
         cobenefData.forEach((d) => {
             // Might change total
             // dataZoneToValue[d.Lookup_Value] = d.total
@@ -115,15 +113,15 @@
         });
 
         // Optional: Add border
-        map.addLayer({
-            id: 'state-borders',
-            type: 'line',
-            source: 'datazones',
-            paint: {
-                'line-color': '#000000',
-                'line-width': 0.1
-            }
-        });
+        // map.addLayer({
+        //     id: 'state-borders',
+        //     type: 'line',
+        //     source: 'datazones',
+        //     paint: {
+        //         'line-color': '#000000',
+        //         'line-width': 0.1
+        //     }
+        // });
     }
 
 
@@ -155,7 +153,6 @@
             title: "Cobenefits (Millions of £)"
         })
         legendDiv.append(legendSvg)
-        console.log("ll ", legendSvg);
         // document.querySelector("#legend").append(leg)
     })
 
