@@ -14,7 +14,7 @@ import {load} from "../routes/+layout";
 
 
 let datazones = await load().then(data => data.datazones);
-console.log("WDJJIDOE", datazones);
+// console.log("WDJJIDOE", datazones);
 
 
 export class Map {

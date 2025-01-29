@@ -34,7 +34,7 @@
     //     .domain([-10, 40])  // Replace this with the actual min and max of your property
     //     .range(d3.schemeBlues[9]);  // A predefined D3 color scheme
 
-    const colorScale = d3.scaleDiverging()
+    let colorScale = d3.scaleDiverging()
         .domain([-10, 0, 40])
         // .interpolator(d3.interpolatePuOr)
         .interpolator(d3.interpolateBrBG)
@@ -42,7 +42,6 @@
 
     async function loadData() {
         cobenefData = await getTableData(getCustomData(Array.from(coBenefits), scenario, timeSelected))
-        // console.log(cobenefData);
     }
 
     function render() {
@@ -122,6 +121,32 @@
         //         'line-width': 0.1
         //     }
         // });
+
+        // map.addLayer({
+        //     id: 'choropleth-layer',
+        //     type: 'fill',
+        //     source: 'datazones',
+        //     paint: {
+        //         'fill-color': ['get', 'color'], // Assume color is a data property
+        //         'fill-opacity': 0.7
+        //     }
+        // });
+
+
+        const tooltip = document.getElementById('tooltip');
+
+        map.on('mousemove', 'choropleth-layer', (e) => {
+            const feature = e.features[0];
+            const value = feature.properties.value; // Replace with your value property
+            tooltip.innerHTML = `Value: ${value}`;
+            tooltip.style.left = e.point.x + 10 + 'px';
+            tooltip.style.top = e.point.y + 10 + 'px';
+            tooltip.style.display = 'block';
+        });
+
+        map.on('mouseleave', 'choropleth-layer', () => {
+            tooltip.style.display = 'none';
+        });
     }
 
 
@@ -177,7 +202,8 @@
 </script>
 
 
-<div id="main" bind:this={element}>
+<div class="page-container" bind:this={element}>
+
 
     <div class="component" id="mapComp">
         <h2> Map </h2>
@@ -191,6 +217,8 @@
             <!-- SVG content -->
             <!--            </svg>-->
         </div>
+        <div id="tooltip" class="tooltip"></div>
+
 
     </div>
 
@@ -212,12 +240,18 @@
 
             <h2> Time </h2>
             <div id="time">
-                <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime} checked><span>total</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2025_2029" on:change={onChangeTime}><span>2025-2029</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2030_2034" on:change={onChangeTime}><span>2030-2034</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2035_2039" on:change={onChangeTime}><span>2035-2039</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2040_2044" on:change={onChangeTime}><span>2040-2044</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2045_2049" on:change={onChangeTime}><span>2045-2049</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime}
+                                                 checked><span>total</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2025_2029"
+                                                 on:change={onChangeTime}><span>2025-2029</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2030_2034"
+                                                 on:change={onChangeTime}><span>2030-2034</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2035_2039"
+                                                 on:change={onChangeTime}><span>2035-2039</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2040_2044"
+                                                 on:change={onChangeTime}><span>2040-2044</span></label>
+                <label class="time-radio"><input type="radio" name="toggle" value="2045_2049"
+                                                 on:change={onChangeTime}><span>2045-2049</span></label>
             </div>
 
         </div>
@@ -227,28 +261,21 @@
 </div>
 
 <style>
-    #main {
-        display: flex;
-        flex-direction: row;
 
-        gap: 1%;
+    /*#main {*/
+    /*    display: flex;*/
+    /*    flex-direction: row;*/
 
-        /*TODO: Make alignement layour better*/
-        /*width: 100vw;*/
-        width: 95%;
-        height: 100vh;
+    /*    gap: 1%;*/
 
-        /* width includes padding */
-        box-sizing: content-box;
-    }
+    /*    !*TODO: Make alignement layour better*!*/
+    /*    !*width: 100vw;*!*/
+    /*    width: 95%;*/
+    /*    height: 100vh;*/
 
-    .component {
-        background: white;
-        border: 1px solid black;
-        border-radius: 15px;
-        padding-left: 1%;
-        padding-right: 1%;
-    }
+    /*    !* width includes padding *!*/
+    /*    box-sizing: content-box;*/
+    /*}*/
 
     #mapComp {
         flex: 0 0 75%; /* Don't grow or shrink, fixed at 75% width */
@@ -298,5 +325,15 @@
     #time .time-radio {
         /*background-color: #FFCC00;*/
         color: #333;
+    }
+
+    .tooltip {
+        position: absolute;
+        background-color: white;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        pointer-events: none;
+        display: none;
     }
 </style>

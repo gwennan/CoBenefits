@@ -3,7 +3,7 @@ import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?
 import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
 
-import type {CoBenefit, Scenario} from "../globals";
+import {type CoBenefit, type Scenario, SEF, type SEFactor} from "../globals";
 import { browser } from '$app/environment';
 
 let db: AsyncDuckDB;
@@ -134,10 +134,35 @@ export function getCustomData(cobenefits: CoBenefit[], scenario: Scenario, time=
 }
 
 
+export function getTotalPerBenefit() {
+    return `SELECT total, co_benefit_type
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type!='Total'`
+}
+
+
+
 export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
     return `SELECT total, Lookup_Value, scenario, 2025_2029, 2030_2034, 2035_2039, 2040_2044, 2045_2040
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='${cobenefit}'`
+}
+
+
+
+export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
+
+    const oneQuery = (SE: SEFactor) => {
+        return `SELECT total, Lookup_value, ${SE} AS SE, '${SE}' AS SEFMAME
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type='${cobenefit}'`
+    }
+
+    // let SEF = ['Under_35', 'Over_65'];
+    let query = SEF.map(sef => oneQuery(sef)).join(" UNION ALL ");
+
+    // console.log(query);
+    return query;
 }
 
 
