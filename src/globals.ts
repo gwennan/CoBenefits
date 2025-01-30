@@ -10,12 +10,6 @@ export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Rurality", "Fuel_T
 
 SEF.sort((a,b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
 
-console.log(23, SEF)
-
-
-
-
-
 export type CoBenefit = typeof COBENEFS[number]
 export type Scenario = typeof SCENARIOS[number]
 export type SEFactor = typeof COBENEFS[number]

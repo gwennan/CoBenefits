@@ -244,7 +244,8 @@
 
     #map {
         width: 100%;
-        /*height: 100%;*/
+
+        /*TODO: height is given by this currently but better to change at some point*/
         height: 400px;
         /*flex: 1; !* take the remaining height *!*/
     }

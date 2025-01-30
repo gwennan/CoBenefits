@@ -14,6 +14,7 @@ import {load} from "../routes/+layout";
 
 
 let datazones = await load().then(data => data.datazones);
+
 // console.log("WDJJIDOE", datazones);
 
 
@@ -24,6 +25,7 @@ export class Map {
     data: Array<any>;
     component: HTMLElement;
     dataZoneToValue: Record<string, number>;
+    tooltip: HTMLElement;
 
 
     constructor(data, component: HTMLElement) {
@@ -41,19 +43,20 @@ export class Map {
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
 
-
         let domain = d3.extent(data.map(d => d.total));
         domain.splice(1, 0, 0);
 
         this.colorScale = d3.scaleDiverging()
-        // .domain([-10, 0, 40])
-        .domain(domain)
-        // .interpolator(d3.interpolatePuOr)
-        .interpolator(d3.interpolateBrBG)
+            .domain(domain)
+            // .interpolator(d3.interpolatePuOr)
+            .interpolator(d3.interpolateBrBG)
 
 
-         // UK centering
-        this.center = [-4.5481, 54.2361]
+        // UK centering
+        // this.center = [-4.5481, 54.2361]
+        // this.center = [-3.19648, 55.95206] // Edn
+        // this.center = [-0.12574, 51.50853] // London
+        this.center = [-1.54785, 53.79648] // Leeds
 
         this.map = new maplibregl.Map({
             container: 'map', // container id
@@ -78,11 +81,20 @@ export class Map {
         // })
         // legendDiv.append(legendSvg)
         // document.querySelector("#legend").append(leg)
+
+        this.tooltip = document.createElement('div');
+        this.tooltip.style.position = "absolute";
+        this.tooltip.style.backgroundColor = "white";
+        this.tooltip.style.padding = "5px";
+        this.tooltip.style.border = "1px solid black";
+        this.tooltip.style.pointerEvents = "none";
+        this.tooltip.style.display = "none";
+
+        this.component.append(this.tooltip);
+
     }
 
     initMap() {
-
-
         this.map.on('style.load', () => {
             // Add data source
             this.map.addSource('datazones', {
@@ -106,6 +118,26 @@ export class Map {
             });
         })
 
+        this.map.on('mousemove', (event) => {
+
+
+            const zones = this.map.queryRenderedFeatures(event.point, {
+                layers: ['fill']
+            });
+
+            let zone = zones[0];
+
+            if (zone) {
+                let cobenefValue = zone.properties.value;
+                this.tooltip.innerHTML = `Value: ${cobenefValue}`;
+                this.tooltip.style.left = event.point.x + 10 + 'px';
+                this.tooltip.style.top = event.point.y + 10 + 'px';
+                this.tooltip.style.display = 'block';
+            } else {
+                this.tooltip.style.display = 'none';
+            }
+        });
+
 
         // Optional: Add border
         // map.addLayer({
@@ -117,7 +149,6 @@ export class Map {
         //         'line-width': 0.1
         //     }
         // });
-
     }
 
     update() {

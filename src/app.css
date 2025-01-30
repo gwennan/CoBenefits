@@ -46,7 +46,7 @@ button:hover {
 }
 
 button:focus {
-/*button:focus-visible {*/
+    /*button:focus-visible {*/
     outline: 4px auto;
     /*outline: 4px auto -webkit-focus-ring-color;*/
 }
@@ -65,6 +65,16 @@ button:focus {
 
     /* width includes padding */
     box-sizing: content-box;
+}
+
+
+/* For block containing several components */
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1%;
+    width: 100%;
 }
 
 .component {

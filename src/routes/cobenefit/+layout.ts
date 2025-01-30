@@ -19,6 +19,3 @@ export async function load({ url }) {
         coBenefit
     };
 }
-
-export const ssr = false;
-export const prerender = false;

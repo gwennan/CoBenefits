@@ -12,6 +12,9 @@ let db: AsyncDuckDB;
 const DB_TABLE_NAME = "cobenefits";
 const DB_TABLE_SE_NAME = "socioEconmicFactors";
 
+console.log(22);
+
+
 
 
 const initDB = async () => {
@@ -43,7 +46,7 @@ const initDB = async () => {
 async function loadData() {
     console.log("loading parqet file in db");
 
-    const response = await fetch('/database.parquet');
+    const response = await fetch('database.parquet');
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -58,7 +61,7 @@ async function loadData() {
 
 
     // Load socio economic table
-    const response2 = await fetch('/tableSocio.parquet');
+    const response2 = await fetch('tableSocio.parquet');
     const arrayBuffer2 = await response2.arrayBuffer();
     const uint8Array2 = new Uint8Array(arrayBuffer2);
 

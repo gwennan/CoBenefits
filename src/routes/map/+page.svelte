@@ -204,57 +204,59 @@
 
 <div class="page-container" bind:this={element}>
 
-
-    <div class="component" id="mapComp">
+    <div class="component" id="heaser">
         <h2> Map </h2>
 
-        <div id="map">
-        </div>
-        <div id="map-legend" bind:this={legendDiv}>
-            <!--            fef-->
-            <!--            <div id="legend"></div>-->
-            <!--            <svg bind:this={legendSvg} width="400" height="300">-->
-            <!-- SVG content -->
-            <!--            </svg>-->
-        </div>
-        <div id="tooltip" class="tooltip"></div>
-
-
+        <p>
+            This interactive map shows the co-benefit of each datazone. The pathway and time window can be selected,
+            along a given set of co-benefits.
+        </p>
     </div>
 
-    <div class="component" id="control-panel">
-
-        <div>
-            <h2> Scenario </h2>
-            <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>
-            <label for="html">BNZ</label><br>
-            <input type="radio" on:change={onChangeScenario} name="visType" value="Test">
-            <label for="css">Test</label><br>
-
-            <h2> Co Benefits </h2>
-            {#each COBENEFS as coBenef}
-                <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
-                <!--                <input type="checkbox" id="scales" name="scales" checked />-->
-                <label for="css">{coBenef}</label><br>
-            {/each}
-
-            <h2> Time </h2>
-            <div id="time">
-                <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime}
-                                                 checked><span>total</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2025_2029"
-                                                 on:change={onChangeTime}><span>2025-2029</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2030_2034"
-                                                 on:change={onChangeTime}><span>2030-2034</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2035_2039"
-                                                 on:change={onChangeTime}><span>2035-2039</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2040_2044"
-                                                 on:change={onChangeTime}><span>2040-2044</span></label>
-                <label class="time-radio"><input type="radio" name="toggle" value="2045_2049"
-                                                 on:change={onChangeTime}><span>2045-2049</span></label>
+    <div id="map-row" class="row">
+        <div class="component column" id="mapComp">
+            <div id="map">
             </div>
-
+            <div id="map-legend" bind:this={legendDiv}>
+            </div>
+            <div id="tooltip" class="tooltip"></div>
         </div>
+
+        <div class="component column" id="control-panel">
+
+            <div>
+                <h2> Scenario </h2>
+                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>
+                <label for="html">BNZ</label><br>
+                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">
+                <label for="css">Test</label><br>
+
+                <h2> Co Benefits </h2>
+                {#each COBENEFS as coBenef}
+                    <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
+                    <!--                <input type="checkbox" id="scales" name="scales" checked />-->
+                    <label for="css">{coBenef}</label><br>
+                {/each}
+
+                <h2> Time </h2>
+                <div id="time">
+                    <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime}
+                                                     checked><span>total</span></label>
+                    <label class="time-radio"><input type="radio" name="toggle" value="2025_2029"
+                                                     on:change={onChangeTime}><span>2025-2029</span></label>
+                    <label class="time-radio"><input type="radio" name="toggle" value="2030_2034"
+                                                     on:change={onChangeTime}><span>2030-2034</span></label>
+                    <label class="time-radio"><input type="radio" name="toggle" value="2035_2039"
+                                                     on:change={onChangeTime}><span>2035-2039</span></label>
+                    <label class="time-radio"><input type="radio" name="toggle" value="2040_2044"
+                                                     on:change={onChangeTime}><span>2040-2044</span></label>
+                    <label class="time-radio"><input type="radio" name="toggle" value="2045_2049"
+                                                     on:change={onChangeTime}><span>2045-2049</span></label>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
 
@@ -277,15 +279,25 @@
     /*    box-sizing: content-box;*/
     /*}*/
 
-    #mapComp {
-        flex: 0 0 75%; /* Don't grow or shrink, fixed at 75% width */
-        display: flex;
-        flex-direction: column;
+    /*#mapComp {*/
+    /*    flex: 0 0 75%; !* Don't grow or shrink, fixed at 75% width *!*/
+    /*    display: flex;*/
+    /*    flex-direction: column;*/
+    /*}*/
+
+    .page-container {
+        height: 100vh;
+    }
+
+    #map-row {
+        /*height: 1400px;*/
+        flex: 1;
     }
 
     #map {
         width: 100%;
-        flex: 1; /* take the remaining height */
+        height: 100%;
+        /*flex: 1; !* take the remaining height *!*/
     }
 
     #map-legend {
