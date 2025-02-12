@@ -9,6 +9,12 @@
 		"src/routes/cobenefit/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/datazone": [
+		"src/routes/datazone/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/datazone/+layout.ts",
+		"src/routes/+layout.ts"
+	],
 	"/map": [
 		"src/routes/map/+layout.ts",
 		"src/routes/+layout.ts",

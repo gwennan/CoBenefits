@@ -16,9 +16,9 @@
     // Data from load function
     export let data;
 
-    const fullData = data.data;
+    // const fullData = data.data;
     const SEFData = data.SEFData;
-    const coBenefit = data.coBenefit;
+    const datazone = data.datazone;
     let map: Map;
 
     // console.log(11, fullData.slice(0, 10))
@@ -26,8 +26,9 @@
     let mapDiv: HTMLElement;
 
     onMount(() => {
-        map = new Map(fullData, mapDiv);
-        map.initMap();
+
+        // map = new Map(fullData, mapDiv);
+        // map.initMap();
     })
 
     function renderPlot() {
@@ -158,15 +159,14 @@
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
         // SEFPlot?.firstChild?.remove(); // remove old chart, if any
-        Object.values(SEFPlot).forEach(sefPlot => {
-          sefPlot.firstChild?.remove();
-        })
+        // Object.values(SEFPlot).forEach(sefPlot => {
+        //   sefPlot.firstChild?.remove();
+        // })
 
         //ugly hack for reactivity
-        if (chartType) {
-        }
+        if (chartType) {}
 
-        renderPlot();
+        // renderPlot();
         renderSEFPlot();
     }
 
