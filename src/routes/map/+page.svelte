@@ -197,8 +197,6 @@
         const time = e.currentTarget.value;
         timeSelected = time;
     }
-
-
 </script>
 
 

@@ -155,15 +155,14 @@ export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
 export function getTotalForOneZone(datazone: string) {
     return `SELECT total, Lookup_Value, scenario, 2025_2029, 2030_2034, 2035_2039, 2040_2044, 2045_2040
             FROM ${DB_TABLE_NAME}
-            WHERE Lookup_Value = '${datazone}'`
+            WHERE Lookup_Value='${datazone}'`
 }
 
 
 export function getSefForOneZone(datazone: string) {
-    // return `SELECT total, Lookup_value, ${SE} AS SE, '${SE}' AS SEFMAME
-    //     FROM ${DB_TABLE_NAME}
-    //     WHERE co_benefit_type='${cobenefit}'`
-    //             WHERE Lookup_Value = '${datazone}'`
+    return `SELECT total, Lookup_value, ${SEF.join(", ")  }
+        FROM ${DB_TABLE_NAME}
+        WHERE Lookup_Value = '${datazone}'`
 }
 
 

@@ -16,7 +16,7 @@
     // Data from load function
     export let data;
 
-    // const fullData = data.data;
+    // const oneZoneData = data.oneZoneData;
     const SEFData = data.SEFData;
     const datazone = data.datazone;
     let map: Map;
@@ -26,7 +26,6 @@
     let mapDiv: HTMLElement;
 
     onMount(() => {
-
         // map = new Map(fullData, mapDiv);
         // map.initMap();
     })
@@ -42,7 +41,7 @@
                     y: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
-                        Plot.barX(fullData, Plot.groupY({x: "mean"}, {
+                        Plot.barX(data, Plot.groupY({x: "mean"}, {
                             x: "total",
                             y: "scenario"
                         })),
@@ -166,8 +165,8 @@
         //ugly hack for reactivity
         if (chartType) {}
 
-        // renderPlot();
-        renderSEFPlot();
+        renderPlot();
+        // renderSEFPlot();
     }
 
 
