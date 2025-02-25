@@ -21,7 +21,7 @@ export async function load() {
     })
 
     const UKZones = topojson.feature(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
-    await initDB();
+    // await initDB();
 
     return {
         datazones: UKZones

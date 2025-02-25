@@ -88,7 +88,7 @@
     }
 
     function renderSEFPlot() {
-        // SEFPlot?.append(
+        // SEFPlotLAD?.append(
         //     Plot.plot({
         //         height: height,
         //         width: 2000,
@@ -157,7 +157,7 @@
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
-        // SEFPlot?.firstChild?.remove(); // remove old chart, if any
+        // SEFPlotLAD?.firstChild?.remove(); // remove old chart, if any
         Object.values(SEFPlot).forEach(sefPlot => {
           sefPlot.firstChild?.remove();
         })

@@ -1,11 +1,34 @@
 <script>
 import {COBENEFS} from "../globals";
+
+export let data;
+
+let isLoading = true;
+
+$: {
+    console.log(12121, data)
+    isLoading = !data;
+}
+
+
 </script>
 
 <h1>Welcome to the Cobenefit Atlas!</h1>
 
 
 <main>
+
+    <!-- Spinner -->
+    {#if isLoading}
+        <div class="spinner">
+            GGGGGGGGG
+            GGGGGGGGG
+            GGGGGGGGG
+            GGGGGGGGG
+            GGGGGGGGG
+            GGGGGGGGG
+        </div>
+    {/if}
 
     <div>
         <a href="/overview">Overview</a>

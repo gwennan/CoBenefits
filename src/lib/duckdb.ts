@@ -159,18 +159,30 @@ export function getTotalForOneZone(datazone: string) {
 }
 
 
-export function getSefForOneZone(datazone: string) {
-    return `SELECT total, Lookup_value, ${SEF.join(", ")  }
+
+// Co-benefit=total to get only one row per datazone
+export function getTotalCBAllDatazones() {
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, ${SEF.join(", ")  }
         FROM ${DB_TABLE_NAME}
-        WHERE Lookup_Value = '${datazone}'`
+        WHERE co_benefit_type='Total'`
+}
+
+
+// Co-benefit=total to get only one row per datazone
+export function getSEFForOneLAD(LAD: string) {
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, ${SEF.join(", ")  }
+        FROM ${DB_TABLE_NAME}
+        WHERE LAD = '${LAD}'
+        AND co_benefit_type='Total'`
 }
 
 
 
+// Useful for facetted charts, but not for individual charts.
 export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
 
     const oneQuery = (SE: SEFactor) => {
-        return `SELECT total, Lookup_value, ${SE} AS SE, '${SE}' AS SEFMAME
+        return `SELECT total, Lookup_value, LAD, ${SE} AS SE, '${SE}' AS SEFMAME
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='${cobenefit}'`
     }
@@ -179,6 +191,16 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
     let query = SEF.map(sef => oneQuery(sef)).join(" UNION ALL ");
     return query;
 }
+
+
+
+
+export function getAllLAD() {
+    return `SELECT DISTINCT LAD
+    FROM your_table_name`;
+}
+
+
 
 
 export {initDB, getTableData}; // so we can import this elsewhere

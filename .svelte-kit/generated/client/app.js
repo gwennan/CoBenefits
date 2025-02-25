@@ -19,7 +19,7 @@ export const server_loads = [];
 export const dictionary = {
 		"/": [6],
 		"/cobenefit": [7,[2]],
-		"/datazone": [8,[3]],
+		"/location": [8,[3]],
 		"/map": [9,[4]],
 		"/overview": [10,[5]]
 	};
