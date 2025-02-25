@@ -51,8 +51,10 @@
                     color: {legend: true},
                     marks: [
                         Plot.barY(totalCBAllZones, Plot.binX({y: "count"}, {
-                            x: d => Math.floor(Number(d[sef])).toString(),
-                            y: "total"
+                            // x: d => Math.floor(Number(d[sef])).toString(),
+                            // x: sef
+                            x: d => Math.floor(d[sef])
+                            // y: "total"
                         })),
                     ]
                 })
@@ -71,15 +73,16 @@
                     marginTop: 60,
                     y: {grid: true, label: "mean value (£)"},
                     // Very weird it's needed!
-                    // x: {grid: true, label: sef, type: "band"},
-                    // x: {grid: true, label: sef, domain: plotFullDistrib.scale('x').domain, type: "band", tickFormat: d => Math.floor(d)},
-                    x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
+                    // x: {grid: true, label: sef},
+                    x: {grid: true, label: sef, domain: plotFullDistrib.scale('x').domain, type: "band", tickFormat: d => Math.floor(d)},
+                    // x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
                     style: {fontSize: "18px"},
                     color: {legend: true},
                     marks: [
                         Plot.barY(oneLADData, Plot.binX({y: "count"}, {
-                            x: d => Math.floor(Number(d[sef])).toString(),
-                            y: "total"
+                            x: d => Math.floor(d[sef]),
+                            // x: sef
+                            // y: "total"
                         })),
                     ]
                 })
