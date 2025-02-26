@@ -121,17 +121,36 @@ export function getTotalPerPathway() {
             WHERE co_benefit_type='Total'`
 }
 
-export function getCustomData(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
     let query;
 
     if (cobenefits.length == 0) {
-        query = `SELECT "${time}", scenario, Lookup_Value
+        query = `SELECT "${time}" as val, scenario, Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='Total'`
     } else {
-        query = `SELECT "${time}", scenario, Lookup_Value
+        query = `SELECT "${time}" as val, scenario, Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
+    }
+    return query
+}
+
+export function getCustomCBDataLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+    let query;
+
+    if (cobenefits.length == 0) {
+        query = `SELECT scenario , AVG("${time}") as val, LAD as Lookup_Value
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type='Total'
+            GROUP BY LAD, scenario`
+
+    } else {
+        query = `SELECT scenario, AVG("${time}") as val, LAD as Lookup_Value
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
+            GROUP BY LAD, scenario`
+
     }
     return query
 }

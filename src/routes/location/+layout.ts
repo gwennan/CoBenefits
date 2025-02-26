@@ -17,7 +17,6 @@ export async function load({ url }) {
 
     let totalCBAllZones = await getTableData(getTotalCBAllDatazones());
     let oneLADData = await getTableData(getSEFForOneLAD(LAD));
-    console.log(22, LAD, oneLADData);
 
     console.log("SEND DATA")
 

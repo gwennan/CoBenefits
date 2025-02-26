@@ -5,81 +5,179 @@
 
     import * as maplibregl from "maplibre-gl"
     import "maplibre-gl/dist/maplibre-gl.css";
-    import {getCustomCBData, getCustomCBDataLAD, getTableData, getTotalPerPathway} from "$lib/duckdb";
+    import {getCustomCBData, getTableData, getTotalPerPathway} from "$lib/duckdb";
     import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
     import {Legend} from "$lib/utils";
-    import {Map} from "$lib/components/map";
 
 
     export let data;
 
+    const datazones = data.datazones;
+
 
     let element: HTMLElement
-    let mapDiv: HTMLElement;
+    let map: maplibregl.Map
     let legendSvg: SVGSVGElement | null;
     let legendDiv: HTMLElement;
-    let map: Map;
-    // let fullData;
-
 
     // Main data
     let cobenefData: Array<Record<any, any>>;
 
+    let dataZoneToValue: Record<string, number> = {}
     let scenario: Scenario = "BNZ";
     let coBenefits: Set<CoBenefit> = new Set();
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
-    let granularity: "LSOA" | "LAD" = "LAD";
 
-    let fullData;
+    // TOTAL COBENEFIT in millions of £
+    // const colorScale = d3.scaleQuantize()
+    //     .domain([-10, 40])  // Replace this with the actual min and max of your property
+    //     .range(d3.schemeBlues[9]);  // A predefined D3 color scheme
+
+    let colorScale = d3.scaleDiverging()
+        .domain([-10, 0, 40])
+        // .interpolator(d3.interpolatePuOr)
+        .interpolator(d3.interpolateBrBG)
 
 
-    // $: (async () => {
-    //     if (granularity == "LAD") {
-    //         fullData = await getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
-    //         console.log(2323, fullData)
-    //     } else if (granularity == "LSOA") {
-    //         fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
-    //     }
-    // })()
+    async function loadData() {
+        cobenefData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+    }
+
+    function render() {
+        cobenefData.forEach((d) => {
+            // Might change total
+            // dataZoneToValue[d.Lookup_Value] = d.total
+            dataZoneToValue[d.Lookup_Value] = d[timeSelected]
+        })
+
+        // Put cobenef values inside the geojson for maplibre rendering
+        for (let zone of datazones.features) {
+            let zoneId = zone.properties.LSOA21CD;
+            zone.properties.value = dataZoneToValue[zoneId]
+        }
+
+        // Add data source
+        map.getSource('datazones').setData(
+            datazones
+        );
+    }
 
     $: {
-        if (granularity == "LAD") {
-            fullData = getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
-        } else if (granularity == "LSOA") {
-            fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+        // Explicitly setting reactivity
+        if (scenario != null && coBenefits != null && timeSelected != null) {
+
+            if (mapStyleLoaded) {
+                loadData().then(
+                    () => {
+                        render()
+                    }
+                )
+            }
         }
     }
 
-    // async function loadData() {
-    //     cobenefData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
-    // }
+    function initMap() {
 
-    function render() {
+        cobenefData.forEach((d) => {
+            // Might change total
+            dataZoneToValue[d.Lookup_Value] = d.total
+        })
 
+        // Put cobenef values inside the geojson for maplibre rendering
+        for (let zone of datazones.features) {
+            let zoneId = zone.properties.LSOA21CD;
+            zone.properties.value = dataZoneToValue[zoneId]
+        }
+
+        // Add data source
+        map.addSource('datazones', {
+            type: 'geojson',
+            data: datazones
+        });
+
+        map.addLayer({
+            id: 'fill',
+            type: 'fill',
+            source: 'datazones',
+            paint: {
+                'fill-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'value'], // Replace with your data property
+                    ...colorScale.domain().flatMap((d) => [d, colorScale(d)])
+                ],
+                'fill-opacity': 0.9
+            }
+        });
+
+        // Optional: Add border
+        // map.addLayer({
+        //     id: 'state-borders',
+        //     type: 'line',
+        //     source: 'datazones',
+        //     paint: {
+        //         'line-color': '#000000',
+        //         'line-width': 0.1
+        //     }
+        // });
+
+        // map.addLayer({
+        //     id: 'choropleth-layer',
+        //     type: 'fill',
+        //     source: 'datazones',
+        //     paint: {
+        //         'fill-color': ['get', 'color'], // Assume color is a data property
+        //         'fill-opacity': 0.7
+        //     }
+        // });
+
+
+        const tooltip = document.getElementById('tooltip');
+
+        map.on('mousemove', 'choropleth-layer', (e) => {
+            const feature = e.features[0];
+            const value = feature.properties.value; // Replace with your value property
+            tooltip.innerHTML = `Value: ${value}`;
+            tooltip.style.left = e.point.x + 10 + 'px';
+            tooltip.style.top = e.point.y + 10 + 'px';
+            tooltip.style.display = 'block';
+        });
+
+        map.on('mouseleave', 'choropleth-layer', () => {
+            tooltip.style.display = 'none';
+        });
     }
 
-    $: {
 
+    onMount(() => {
 
-    }
+        // UK centering
+        let center = [-4.5481, 54.2361]
 
+        map = new maplibregl.Map({
+            container: 'map', // container id
+            // style: 'https://demotiles.maplibre.org/style.json', // style URL
+            style: {version: 8, sources: {}, layers: []},
+            center: center, // starting position [lng, lat]
+            zoom: 5, // starting zoom
+            preserveDrawingBuffer: true,
+        });
 
-    onMount(async () => {
+        // console.log("MAP ", datazones)
 
-        // first load of data
-        // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
-        fullData = await getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
+        map.on('style.load', () => {
+            mapStyleLoaded = true;
 
+            loadData().then(() => {
+                initMap();
+            });
+        })
 
-        map = new Map(fullData, granularity, mapDiv);
-        map.initMap();
-
-        //
-        // legendSvg = Legend(colorScale, {
-        //     title: "Cobenefits (Millions of £)"
-        // })
-        // legendDiv.append(legendSvg)
+        legendSvg = Legend(colorScale, {
+            title: "Cobenefits (Millions of £)"
+        })
+        legendDiv.append(legendSvg)
         // document.querySelector("#legend").append(leg)
     })
 
@@ -99,7 +197,6 @@
         const time = e.currentTarget.value;
         timeSelected = time;
     }
-
 </script>
 
 
@@ -116,7 +213,7 @@
 
     <div id="map-row" class="row">
         <div class="component column" id="mapComp">
-            <div id="map" bind:this={mapDiv}>
+            <div id="map">
             </div>
             <div id="map-legend" bind:this={legendDiv}>
             </div>

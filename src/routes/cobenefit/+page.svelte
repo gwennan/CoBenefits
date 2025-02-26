@@ -3,7 +3,7 @@
     import * as Plot from "@observablehq/plot";
     import {onMount} from 'svelte';
 
-    import {Map} from "$lib/map";
+    import {Map} from "$lib/components/map";
     import {SEF, SEF_CATEGORICAL, type SEFactor} from "../../globals";
 
     let element: HTMLElement

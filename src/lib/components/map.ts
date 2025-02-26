@@ -5,17 +5,26 @@ import {onMount} from 'svelte';
 
 import * as maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css";
-import {getCustomData, getTableData, getTotalPerPathway} from "$lib/duckdb";
-import {type CoBenefit, COBENEFS, type Scenario} from "../globals";
+import * as topojson from "topojson-client";
+import {getCustomCBData, getTableData, getTotalPerPathway} from "$lib/duckdb";
+import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
 import {Legend} from "$lib/utils";
 
+
 // does this work??
-import {load} from "../routes/+layout";
+import {load} from "../../routes/+layout";
 
 
-let datazones = await load().then(data => data.datazones);
+const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
+const LADzonesPath = 'maps/LAD.json';
 
-// console.log("WDJJIDOE", datazones);
+
+// let datazones = await load().then(data => data.datazones);
+let datazones = await d3.json(LSOAzonesPath)
+datazones = topojson.feature(datazones, datazones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+
+let LADZones = await d3.json(LADzonesPath)
+LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
 
 
 export class Map {
@@ -26,25 +35,60 @@ export class Map {
     component: HTMLElement;
     dataZoneToValue: Record<string, number>;
     tooltip: HTMLElement;
+    geojson;
+    granularity;
 
 
-    constructor(data, component: HTMLElement) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement) {
         this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
+        this.granularity = granularity;
 
-        data.forEach((d) => {
-            // change total for time selection
-            this.dataZoneToValue[d.Lookup_Value] = d["total"];
-        })
-        // Put cobenef values inside the geojson for maplibre rendering
-        for (let zone of datazones.features) {
-            let zoneId = zone.properties.LSOA21CD;
-            zone.properties.value = this.dataZoneToValue[zoneId]
+        console.log("dd ", data)
+
+        if (granularity == "LAD") {
+            this.geojson = LADZones;
+
+            data.forEach((d) => {
+                // change total for time selection
+                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+            })
+
+            console.log(this.dataZoneToValue)
+
+            // Put cobenef values inside the geojson for maplibre rendering
+            for (let zone of this.geojson.features) {
+                let zoneId = zone.properties.LAD24CD;
+                zone.properties.value = this.dataZoneToValue[zoneId]
+            }
+
+        } else {
+            this.geojson = datazones;
+
+
+            data.forEach((d) => {
+                // change total for time selection
+                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+            })
+            // Put cobenef values inside the geojson for maplibre rendering
+            for (let zone of this.geojson.features) {
+                let zoneId = zone.properties.LSOA21CD;
+                zone.properties.value = this.dataZoneToValue[zoneId]
+
+            }
+
+
         }
 
-        let domain = d3.extent(data.map(d => d.total));
+        let domain = d3.extent(data.map(d => d.val));
         domain.splice(1, 0, 0);
+
+        if (domain[0] > 0) {
+            domain[0] = -0.1;
+        }
+
+        console.log(data, domain)
 
         this.colorScale = d3.scaleDiverging()
             .domain(domain)
@@ -66,13 +110,6 @@ export class Map {
             zoom: 5, // starting zoom
             preserveDrawingBuffer: true,
         });
-
-
-        // this.map.on('style.load', () => {
-        //     loadData().then(() => {
-        //         initMap();
-        //     });
-        // })
 
         // console.log("MAP ", datazones)
 
@@ -99,7 +136,7 @@ export class Map {
             // Add data source
             this.map.addSource('datazones', {
                 type: 'geojson',
-                data: datazones
+                data: this.geojson
             });
 
             this.map.addLayer({
@@ -119,7 +156,6 @@ export class Map {
         })
 
         this.map.on('mousemove', (event) => {
-
 
             const zones = this.map.queryRenderedFeatures(event.point, {
                 layers: ['fill']
@@ -151,17 +187,18 @@ export class Map {
         // });
     }
 
-    update() {
+    update = () => {
 
         // Put cobenef values inside the geojson for maplibre rendering
-        for (let zone of datazones.features) {
-            let zoneId = zone.properties.LSOA21CD;
+        for (let zone of this.geojson.features) {
+
+            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LSOA21CD;
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
 
         // Add data source
         this.map.getSource('datazones').setData(
-            datazones
+            this.geojson
         );
     }
 }
