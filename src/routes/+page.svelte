@@ -1,4 +1,6 @@
 <script>
+    import { base } from '$app/paths';
+
 import {COBENEFS} from "../globals";
 
 export let data;
@@ -16,6 +18,10 @@ $: {
 <h1>Welcome to the Cobenefit Atlas!</h1>
 
 
+<!--<div>-->
+<!--        <h1> Glossary</h1>-->
+<!--</div>-->
+
 <main>
 
     <!-- Spinner -->
@@ -31,11 +37,11 @@ $: {
     {/if}
 
     <div>
-        <a href="/overview">Overview</a>
+        <a href="{base}/overview">Overview</a>
     </div>
 
     <div>
-        <a href="/map">Map Application</a>
+        <a href="{base}/map">Map Application</a>
     </div>
 
     <div>
@@ -45,7 +51,7 @@ $: {
             {#each COBENEFS as coBenef}
 
                 <li>
-                    <a href="/cobenefit?cobenefit={coBenef}">{coBenef}</a>
+                    <a href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a>
                 </li>
 
             {/each}

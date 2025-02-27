@@ -38,16 +38,18 @@ export class Map {
     geojson;
     granularity;
     loaded: boolean
+    dataKey: string;
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey="val") {
         // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
+        this.dataKey = dataKey;
         this.loaded = false;
 
-        console.log("dd ", data)
+        // console.log("dd ", data)
         this.loadData(data);
 
 
@@ -92,10 +94,8 @@ export class Map {
 
             data.forEach((d) => {
                 // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+                this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
             })
-
-            console.log(this.dataZoneToValue)
 
             // Put cobenef values inside the geojson for maplibre rendering
             for (let zone of this.geojson.features) {
@@ -108,7 +108,7 @@ export class Map {
 
             data.forEach((d) => {
                 // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+                this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
             })
             // Put cobenef values inside the geojson for maplibre rendering
             for (let zone of this.geojson.features) {
@@ -117,10 +117,13 @@ export class Map {
             }
         }
 
-        let domain = d3.extent(data.map(d => d.val));
+        // console.log(this.dataZoneToValue)
+
+
+        let domain = d3.extent(data.map(d => d[this.dataKey]));
         domain.splice(1, 0, 0);
 
-        if (domain[0] > 0) {
+        if (domain[0] >= 0) {
             domain[0] = -0.1;
         }
 
@@ -137,8 +140,6 @@ export class Map {
                 type: 'geojson',
                 data: this.geojson
             });
-
-            console.log("source added")
 
             this.map.addLayer({
                 id: 'fill',
@@ -172,7 +173,6 @@ export class Map {
                  Zone: ${this.zoneName(zone)}
                  <br>
                  Value: ${cobenefValue}
-                 dwdw
                  `;
                 this.tooltip.style.left = event.point.x + 10 + 'px';
                 this.tooltip.style.top = event.point.y + 10 + 'px';

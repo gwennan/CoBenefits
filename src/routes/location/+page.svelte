@@ -36,6 +36,9 @@
         SEF.forEach(sef => {
             let plot
             let plotFullDistrib;
+
+            console.log(totalCBAllZones.map(d => d[sef]));
+
             if (SEF_CATEGORICAL.includes(sef)) {
                 plotFullDistrib = Plot.plot({
                     height: height / 2,
@@ -46,14 +49,15 @@
                     marginTop: 60,
                     y: {grid: true, label: "mean value (£)"},
                     // Very weird it's needed!
-                    x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
+                    // x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
+                    x: {grid: true, label: sef, type: "band"},
                     style: {fontSize: "18px"},
                     color: {legend: true},
                     marks: [
                         Plot.barY(totalCBAllZones, Plot.binX({y: "count"}, {
-                            // x: d => Math.floor(Number(d[sef])).toString(),
+                            x: d => Math.floor(Number(d[sef]))
                             // x: sef
-                            x: d => Math.floor(d[sef])
+                            // x: d => Math.floor(d[sef])
                             // y: "total"
                         })),
                     ]
@@ -61,8 +65,10 @@
                 SEFPlotFullDistrib[sef]?.append(plotFullDistrib);
 
 
-                // console.log(23, )
+                // console.log(23, plotFullDistrib.scale('x').domain.map(d => Math.floor(d))
 
+                let domain = plotFullDistrib.scale('x').domain.map(d => Math.floor(d));
+                console.log(domain);
 
                 plot = Plot.plot({
                     height: height / 2,
@@ -74,13 +80,14 @@
                     y: {grid: true, label: "mean value (£)"},
                     // Very weird it's needed!
                     // x: {grid: true, label: sef},
-                    x: {grid: true, label: sef, domain: plotFullDistrib.scale('x').domain, type: "band", tickFormat: d => Math.floor(d)},
+                    x: {grid: true, label: sef, domain: domain, type: "band", tickFormat: d => Math.floor(d)},
                     // x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
                     style: {fontSize: "18px"},
                     color: {legend: true},
                     marks: [
                         Plot.barY(oneLADData, Plot.binX({y: "count"}, {
                             x: d => Math.floor(d[sef]),
+                            // x: d => Math.floor(d[sef]),
                             // x: sef
                             // y: "total"
                         })),

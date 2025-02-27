@@ -26,7 +26,7 @@
     let mapDiv: HTMLElement;
 
     onMount(() => {
-        map = new Map(fullData, mapDiv);
+        map = new Map(fullData, "LSOA", mapDiv, "total");
         map.initMap();
     })
 
@@ -34,7 +34,7 @@
         if (chartType == "barchart") {
             plot?.append(
                 Plot.plot({
-                    height: height,
+                    height: height / 1.4,
                     marginLeft: 60,
                     marginRight: 60,
                     marginBottom: 60,
@@ -67,19 +67,17 @@
             // distrib
             plot?.append(
                 Plot.plot({
-                    height: height,
+                    height: height / 1.4,
                     marginLeft: 60,
                     marginRight: 60,
                     y: {label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     facet: {data: fullData, y: "scenario"},
                     marks: [
-
                         Plot.areaY(fullData, Plot.binX({y: "count"}, {
                             x: "total",
                             tip: true
-                        }))
-                    ]
+                        }))                    ]
                 })
             );
         } else if (chartType == "violin") {
@@ -88,6 +86,8 @@
     }
 
     function renderSEFPlot() {
+
+        // FACETED CHART
         // SEFPlotLAD?.append(
         //     Plot.plot({
         //         height: height,
@@ -144,6 +144,8 @@
                             x: "SE",
                             y: "total"
                         })),
+                        Plot.ruleX([d3.mean(SEFData.filter(d => d["SEFMAME"] == sef).map(d => d.SE))], {stroke: "red"}),
+                        Plot.ruleX([d3.median(SEFData.filter(d => d["SEFMAME"] == sef).map(d => d.SE))], {stroke: "blue"}),
                     ]
                 })
             }
@@ -166,8 +168,11 @@
         if (chartType) {
         }
 
-        renderPlot();
-        renderSEFPlot();
+        if (height) {
+
+            renderPlot();
+            renderSEFPlot();
+        }
     }
 
 
