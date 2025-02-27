@@ -9,10 +9,10 @@
     import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
+    import {legend} from "@observablehq/plot";
 
 
     export let data;
-
 
     let element: HTMLElement
     let mapDiv: HTMLElement;
@@ -41,6 +41,11 @@
     //     } else if (granularity == "LSOA") {
     //         fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
     //     }
+    //
+    //     if (map) {
+    //         console.log("map update")
+    //         map.update(fullData);
+    //     }
     // })()
 
     $: {
@@ -49,20 +54,26 @@
         } else if (granularity == "LSOA") {
             fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
+
+        fullData.then((data) => {
+            map.update(data);
+        })
+
+        if (map?.loaded) {
+            legendSvg = map.legend();
+            legendDiv.innerHTML = "";
+            legendDiv.append(legendSvg)
+            // document.querySelector("#legend").append(legendSvg)
+        }
     }
 
-    // async function loadData() {
-    //     cobenefData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+    // $: {
+    //     if (map?.loaded) {
+    //         legendSvg = map.legend();
+    //         legendDiv.append(legendSvg)
+    //         document.querySelector("#legend").append(legendSvg)
+    //     }
     // }
-
-    function render() {
-
-    }
-
-    $: {
-
-
-    }
 
 
     onMount(async () => {
@@ -74,6 +85,10 @@
 
         map = new Map(fullData, granularity, mapDiv);
         map.initMap();
+        console.log("map initiated")
+
+        legendSvg = map.legend();
+        legendDiv.append(legendSvg)
 
         //
         // legendSvg = Legend(colorScale, {
@@ -94,6 +109,7 @@
         } else {
             coBenefits.add(cobenef)
         }
+        coBenefits = coBenefits;
     }
     const onChangeTime = (e) => {
         const time = e.currentTarget.value;
@@ -180,11 +196,9 @@
     /*    box-sizing: content-box;*/
     /*}*/
 
-    /*#mapComp {*/
-    /*    flex: 0 0 75%; !* Don't grow or shrink, fixed at 75% width *!*/
-    /*    display: flex;*/
-    /*    flex-direction: column;*/
-    /*}*/
+    #mapComp {
+        position: relative;
+    }
 
     .page-container {
         height: 100vh;
@@ -204,8 +218,8 @@
     #map-legend {
         position: absolute;
         width: 25%;
-        top: 10%;
-        right: 25%;
+        top: 5%;
+        right: 10%;
         padding: 10px;
     }
 

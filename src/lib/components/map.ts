@@ -37,63 +37,18 @@ export class Map {
     tooltip: HTMLElement;
     geojson;
     granularity;
+    loaded: boolean
 
 
     constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement) {
-        this.data = data;
+        // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
+        this.loaded = false;
 
         console.log("dd ", data)
-
-        if (granularity == "LAD") {
-            this.geojson = LADZones;
-
-            data.forEach((d) => {
-                // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d["val"];
-            })
-
-            console.log(this.dataZoneToValue)
-
-            // Put cobenef values inside the geojson for maplibre rendering
-            for (let zone of this.geojson.features) {
-                let zoneId = zone.properties.LAD24CD;
-                zone.properties.value = this.dataZoneToValue[zoneId]
-            }
-
-        } else {
-            this.geojson = datazones;
-
-
-            data.forEach((d) => {
-                // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d["val"];
-            })
-            // Put cobenef values inside the geojson for maplibre rendering
-            for (let zone of this.geojson.features) {
-                let zoneId = zone.properties.LSOA21CD;
-                zone.properties.value = this.dataZoneToValue[zoneId]
-
-            }
-
-
-        }
-
-        let domain = d3.extent(data.map(d => d.val));
-        domain.splice(1, 0, 0);
-
-        if (domain[0] > 0) {
-            domain[0] = -0.1;
-        }
-
-        console.log(data, domain)
-
-        this.colorScale = d3.scaleDiverging()
-            .domain(domain)
-            // .interpolator(d3.interpolatePuOr)
-            .interpolator(d3.interpolateBrBG)
+        this.loadData(data);
 
 
         // UK centering
@@ -126,9 +81,53 @@ export class Map {
         this.tooltip.style.border = "1px solid black";
         this.tooltip.style.pointerEvents = "none";
         this.tooltip.style.display = "none";
-
         this.component.append(this.tooltip);
+    }
 
+    loadData(data) {
+        this.data = data;
+
+        if (this.granularity == "LAD") {
+            this.geojson = LADZones;
+
+            data.forEach((d) => {
+                // change total for time selection
+                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+            })
+
+            console.log(this.dataZoneToValue)
+
+            // Put cobenef values inside the geojson for maplibre rendering
+            for (let zone of this.geojson.features) {
+                let zoneId = zone.properties.LAD24CD;
+                zone.properties.value = this.dataZoneToValue[zoneId]
+            }
+
+        } else {
+            this.geojson = datazones;
+
+            data.forEach((d) => {
+                // change total for time selection
+                this.dataZoneToValue[d.Lookup_Value] = d["val"];
+            })
+            // Put cobenef values inside the geojson for maplibre rendering
+            for (let zone of this.geojson.features) {
+                let zoneId = zone.properties.LSOA21CD;
+                zone.properties.value = this.dataZoneToValue[zoneId]
+            }
+        }
+
+        let domain = d3.extent(data.map(d => d.val));
+        domain.splice(1, 0, 0);
+
+        if (domain[0] > 0) {
+            domain[0] = -0.1;
+        }
+
+        this.colorScale = d3.scaleDiverging()
+            .domain(domain)
+            // .interpolator(d3.interpolatePuOr)
+            .interpolator(d3.interpolateBrBG)
     }
 
     initMap() {
@@ -138,6 +137,8 @@ export class Map {
                 type: 'geojson',
                 data: this.geojson
             });
+
+            console.log("source added")
 
             this.map.addLayer({
                 id: 'fill',
@@ -153,6 +154,8 @@ export class Map {
                     'fill-opacity': 0.9
                 }
             });
+
+            this.loaded = true;
         })
 
         this.map.on('mousemove', (event) => {
@@ -165,7 +168,12 @@ export class Map {
 
             if (zone) {
                 let cobenefValue = zone.properties.value;
-                this.tooltip.innerHTML = `Value: ${cobenefValue}`;
+                this.tooltip.innerHTML = `
+                 Zone: ${this.zoneName(zone)}
+                 <br>
+                 Value: ${cobenefValue}
+                 dwdw
+                 `;
                 this.tooltip.style.left = event.point.x + 10 + 'px';
                 this.tooltip.style.top = event.point.y + 10 + 'px';
                 this.tooltip.style.display = 'block';
@@ -187,18 +195,33 @@ export class Map {
         // });
     }
 
-    update = () => {
+    update = (newData) => {
+        if (!this.loaded) return;
+
+        this.loadData(newData);
 
         // Put cobenef values inside the geojson for maplibre rendering
         for (let zone of this.geojson.features) {
 
-            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LSOA21CD;
+            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
+            // console.log(1111, zoneId, this.granularity)
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
-
-        // Add data source
+        //
+        // // Add data source
         this.map.getSource('datazones').setData(
             this.geojson
         );
+    }
+
+    legend() {
+        let legendSvg = Legend(this.colorScale, {
+            title: "Cobenefits (Millions of £)"
+        })
+        return legendSvg;
+    }
+
+    zoneName(zone) {
+        return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
     }
 }
