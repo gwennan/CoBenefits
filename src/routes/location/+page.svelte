@@ -23,21 +23,94 @@
     const totalCBAllZones = data.totalCBAllZones;
     let map: Map;
 
-    // console.log(11, fullData.slice(0, 10))
+    console.log(11, totalCBAllZones);
+    console.log("ONE LAD", oneLADData);
+
 
     let mapDiv: HTMLElement;
 
     onMount(() => {
-        // map = new Map(fullData, mapDiv);
-        // map.initMap();
+        map = new Map(LAD, "LAD", mapDiv);
+        map.initMap();
     })
+
+    function renderPlot() {
+        if (chartType == "boxplot") {
+            plot?.append(
+                Plot.plot({
+                    height: height / 1.4,
+                    marginLeft: 60,
+                    marginRight: 60,
+                    marginBottom: 60,
+                    y: {type: "band"},
+                    style: {fontSize: "18px"},
+                    marks: [
+                        Plot.boxX(oneLADData, {x: "total", y: "scenario", tip: true}),
+                        // Plot.tickX([{totalCBAllZones, scenario: "BNZ"}], {y: "scenario", x:'v', stroke: 'red'}),
+
+                        //  Median and Mean from ALL datazones
+                        Plot.tickX(
+                          totalCBAllZones,
+                          Plot.groupY(
+                            {x: "median"},
+                            {x: "total", y: "scenario", stroke: "blue", strokeWidth: 2}
+                          )
+                        ),
+                        Plot.tickX(
+                          totalCBAllZones,
+                          Plot.groupY(
+                            {x: "mean"},
+                            {x: "total", y: "scenario", stroke: "red", strokeWidth: 2}
+                          )
+                        )
+
+                    ]
+                }))
+        } else if (chartType == "barchart") {
+
+                plot?.append(
+                Plot.plot({
+                    height: height / 1.4,
+                    marginLeft: 60,
+                    marginRight: 60,
+                    marginBottom: 60,
+                    y: {type: "band"},
+                    style: {fontSize: "18px"},
+                    marks: [
+                        Plot.barX(oneLADData, Plot.groupY({x: "sum"}, {
+                            x: "total",
+                            y: "scenario"
+                        })),
+
+                        //  Median and Mean from ALL datazones
+                        Plot.tickX(
+                          totalCBAllZones,
+                          // Plot.groupY(
+                          //   {x: "mean"},
+                          //   {x: "total", y: "scenario", stroke: "red", strokeWidth: 2}
+                          // )
+                            Plot.groupX(
+        { x: "mean", y: "sum" }, // Perform sum, then calculate mean
+        { x: "total", y: "LAD" } // Group by 'category', and sum 'value'
+      )
+                        )
+
+                    ]
+                })
+            );
+
+            } else if (chartType == "distribution") {
+
+            }
+
+
+
+    }
 
     function renderSEFPlot() {
         SEF.forEach(sef => {
             let plot
             let plotFullDistrib;
-
-            console.log(totalCBAllZones.map(d => d[sef]));
 
             if (SEF_CATEGORICAL.includes(sef)) {
                 plotFullDistrib = Plot.plot({
@@ -68,7 +141,7 @@
                 // console.log(23, plotFullDistrib.scale('x').domain.map(d => Math.floor(d))
 
                 let domain = plotFullDistrib.scale('x').domain.map(d => Math.floor(d));
-                console.log(domain);
+                // console.log(domain);
 
                 plot = Plot.plot({
                     height: height / 2,
@@ -136,7 +209,7 @@
         if (chartType) {
         }
 
-        // renderPlot();
+        renderPlot();
         renderSEFPlot();
     }
 
@@ -156,17 +229,17 @@
 
     <div id="vis-block">
         <div class="component column" bind:clientHeight={height}>
-            <!--            <h3>{coBenefit} datazone distribution</h3>-->
+                        <h3>{LAD} datazone distribution</h3>
 
-            <!--            <input type="radio" on:change={onChange} name="visType" value="barchart" checked>-->
-            <!--            <label for="html">Barchart</label><br>-->
-            <!--            &lt;!&ndash;        <input type="radio" on:change={onChange} name="visType" value="violin">&ndash;&gt;-->
-            <!--            &lt;!&ndash;        <label for="css">Violin</label><br>&ndash;&gt;-->
-            <!--            <input type="radio" on:change={onChange} name="visType" value="distribution">-->
-            <!--            <label for="javascript">Distribution</label>-->
+                        <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
+                        <label for="html">Barchart</label><br>
+                        <!--        <input type="radio" on:change={onChange} name="visType" value="violin">-->
+                        <!--        <label for="css">Violin</label><br>-->
+                        <input type="radio" on:change={onChange} name="visType" value="distribution">
+                        <label for="javascript">Distribution</label>
 
-            <!--            <div class="plot" bind:this={plot}>-->
-            <!--            </div>-->
+                        <div class="plot" bind:this={plot}>
+                        </div>
         </div>
 
         <div class="component column">

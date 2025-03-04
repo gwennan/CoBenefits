@@ -41,7 +41,7 @@ export class Map {
     dataKey: string;
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey="val") {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val") {
         // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
@@ -89,48 +89,78 @@ export class Map {
     loadData(data) {
         this.data = data;
 
-        if (this.granularity == "LAD") {
+        let justHighlightArea = false;
+        if (!Array.isArray(this.data)) {
+            justHighlightArea = true;
+        }
+
+        if (justHighlightArea) {
+            if (this.granularity != "LAD") throw "Only works for LAD";
             this.geojson = LADZones;
 
-            data.forEach((d) => {
-                // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
-            })
-
-            // Put cobenef values inside the geojson for maplibre rendering
             for (let zone of this.geojson.features) {
                 let zoneId = zone.properties.LAD24CD;
-                zone.properties.value = this.dataZoneToValue[zoneId]
+
+                if (zoneId == data) {
+                    zone.properties.value = 1
+                } else {
+                    zone.properties.value = 0
+                }
             }
 
         } else {
-            this.geojson = datazones;
+            if (this.granularity == "LAD") {
+                this.geojson = LADZones;
 
-            data.forEach((d) => {
-                // change total for time selection
-                this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
-            })
-            // Put cobenef values inside the geojson for maplibre rendering
-            for (let zone of this.geojson.features) {
-                let zoneId = zone.properties.LSOA21CD;
-                zone.properties.value = this.dataZoneToValue[zoneId]
+                data.forEach((d) => {
+                    // change total for time selection
+                    this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
+                })
+
+                // Put cobenef values inside the geojson for maplibre rendering
+                for (let zone of this.geojson.features) {
+                    let zoneId = zone.properties.LAD24CD;
+                    zone.properties.value = this.dataZoneToValue[zoneId]
+                }
+
+            } else {
+                this.geojson = datazones;
+
+                data.forEach((d) => {
+                    // change total for time selection
+                    this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
+                })
+                // Put cobenef values inside the geojson for maplibre rendering
+                for (let zone of this.geojson.features) {
+                    let zoneId = zone.properties.LSOA21CD;
+                    zone.properties.value = this.dataZoneToValue[zoneId]
+                }
             }
         }
-
         // console.log(this.dataZoneToValue)
 
 
-        let domain = d3.extent(data.map(d => d[this.dataKey]));
-        domain.splice(1, 0, 0);
+        let domain;
+        if (justHighlightArea) {
+            domain = [0, 1]
+            this.colorScale = d3.scaleLinear()
+                .domain(domain)
+                .range(["white", "red"])
 
-        if (domain[0] >= 0) {
-            domain[0] = -0.1;
+        } else {
+            domain = d3.extent(data.map(d => d[this.dataKey]));
+            domain.splice(1, 0, 0);
+            if (domain[0] >= 0) {
+                domain[0] = -0.1;
+            }
+
+            this.colorScale = d3.scaleDiverging()
+                .domain(domain)
+                // .interpolator(d3.interpolatePuOr)
+                .interpolator(d3.interpolateBrBG)
+
         }
 
-        this.colorScale = d3.scaleDiverging()
-            .domain(domain)
-            // .interpolator(d3.interpolatePuOr)
-            .interpolator(d3.interpolateBrBG)
     }
 
     initMap() {
@@ -153,6 +183,17 @@ export class Map {
                         ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
                     ],
                     'fill-opacity': 0.9
+                }
+            });
+
+            // Optional: Add border
+            this.map.addLayer({
+                id: 'state-borders',
+                type: 'line',
+                source: 'datazones',
+                paint: {
+                    'line-color': '#000000',
+                    'line-width': 0.4
                 }
             });
 
@@ -181,18 +222,6 @@ export class Map {
                 this.tooltip.style.display = 'none';
             }
         });
-
-
-        // Optional: Add border
-        // map.addLayer({
-        //     id: 'state-borders',
-        //     type: 'line',
-        //     source: 'datazones',
-        //     paint: {
-        //         'line-color': '#000000',
-        //         'line-width': 0.1
-        //     }
-        // });
     }
 
     update = (newData) => {

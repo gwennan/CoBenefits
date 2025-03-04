@@ -37,8 +37,9 @@ staticNotDeployed/predicted_data_final.csv
 staticNotDeployed/predicted_data_per.csv
 staticNotDeployed/UK_Archetypes.xlsx
 staticNotDeployed/coBenefits
-staticNotDeployed/simulations_new/BNZ.csv
+staticNotDeployed/simulations_new/**/*
 
+Archive/
 
 
 

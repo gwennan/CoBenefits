@@ -24,10 +24,15 @@
     // console.log(11, fullData.slice(0, 10))
 
     let mapDiv: HTMLElement;
+    let mapLegendDiv: HTMLElement;
 
     onMount(() => {
         map = new Map(fullData, "LSOA", mapDiv, "total");
         map.initMap();
+
+        let legendSvg = map.legend();
+        // mapLegendDiv.innerHTML = "";
+        mapLegendDiv.append(legendSvg)
     })
 
     function renderPlot() {
@@ -59,7 +64,7 @@
                                     strokeWidth: 3
                                 }
                             )
-                        )
+                        ),
                     ]
                 })
             );
@@ -169,7 +174,6 @@
         }
 
         if (height) {
-
             renderPlot();
             renderSEFPlot();
         }
@@ -206,6 +210,7 @@
 
         <div class="component column">
             <h3> Map </h3>
+            <div id="map-legend" bind:this={mapLegendDiv}></div>
             <div id="map" bind:this={mapDiv}>
             </div>
         </div>

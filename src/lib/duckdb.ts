@@ -181,7 +181,7 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-    return `SELECT total, Lookup_value, co_benefit_type, LAD, ${SEF.join(", ")  }
+    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")  }
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
 }
@@ -189,7 +189,7 @@ export function getTotalCBAllDatazones() {
 
 // Co-benefit=total to get only one row per datazone
 export function getSEFForOneLAD(LAD: string) {
-    return `SELECT total, Lookup_value, co_benefit_type, LAD, ${SEF.join(", ")  }
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${SEF.join(", ")  }
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
         AND co_benefit_type='Total'`

@@ -26,7 +26,7 @@
     let cobenefData: Array<Record<any, any>>;
 
     let scenario: Scenario = "BNZ";
-    let coBenefits: Set<CoBenefit> = new Set();
+    let coBenefits: Set<CoBenefit> = new Set(COBENEFS);
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
     let granularity: "LSOA" | "LAD" = "LAD";
@@ -49,6 +49,7 @@
     // })()
 
     $: {
+        console.log(2323, coBenefits);
         if (granularity == "LAD") {
             fullData = getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
         } else if (granularity == "LSOA") {
@@ -104,6 +105,11 @@
     }
     const onChangeCobenef = (e) => {
         const cobenef: CoBenefit = e.currentTarget.value;
+
+        if (coBenefits.size == 0) {
+            coBenefits = new Set(COBENEFS);
+        }
+
         if (coBenefits.has(cobenef)) {
             coBenefits.delete(cobenef)
         } else {

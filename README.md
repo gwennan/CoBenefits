@@ -1,3 +1,31 @@
+## Data
+
+The data is not included in the repository because of the size. You need to download the data first and put it in the static/ and staticNotDeployed/ directories
+
+You can run the notebook [dataProcess.ipynb](dataProcess.ipynb) to generate the .parquet files used in the web application.
+
+
+## Running the app
+
+The atlas is a npm Svelte app.
+
+Install the dependencies:
+```
+npm i
+```
+
+Run the app locally:
+```
+npm run dev
+```
+
+Build the application:
+```
+npm run build
+```
+ 
+
+
 ## Map
 
 The data uses Lower Areas (LSOA), and Local Area Districts (LAD).
