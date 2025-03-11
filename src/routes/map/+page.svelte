@@ -5,7 +5,7 @@
 
     import * as maplibregl from "maplibre-gl"
     import "maplibre-gl/dist/maplibre-gl.css";
-    import {getCustomCBData, getCustomCBDataLAD, getTableData, getTotalPerPathway} from "$lib/duckdb";
+    import {getCustomCBData, getAverageCBGroupedByLAD, getTableData, getTotalPerPathway} from "$lib/duckdb";
     import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
@@ -36,7 +36,7 @@
 
     // $: (async () => {
     //     if (granularity == "LAD") {
-    //         fullData = await getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
+    //         fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
     //         console.log(2323, fullData)
     //     } else if (granularity == "LSOA") {
     //         fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
@@ -51,7 +51,7 @@
     $: {
         console.log(2323, coBenefits);
         if (granularity == "LAD") {
-            fullData = getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
+            fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
         } else if (granularity == "LSOA") {
             fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
@@ -81,7 +81,7 @@
 
         // first load of data
         // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
-        fullData = await getTableData(getCustomCBDataLAD(Array.from(coBenefits), scenario, timeSelected))
+        fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
 
 
         map = new Map(fullData, granularity, mapDiv);

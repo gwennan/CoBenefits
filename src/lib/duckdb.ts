@@ -136,7 +136,7 @@ export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, tim
     return query
 }
 
-export function getCustomCBDataLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
     let query;
 
     if (cobenefits.length == 0) {
@@ -147,6 +147,25 @@ export function getCustomCBDataLAD(cobenefits: CoBenefit[], scenario: Scenario, 
 
     } else {
         query = `SELECT scenario, AVG("${time}") as val, LAD as Lookup_Value
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
+            GROUP BY LAD, scenario`
+
+    }
+    return query
+}
+
+export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+    let query;
+
+    if (cobenefits.length == 0) {
+        query = `SELECT scenario , SUM("${time}") as val, LAD as Lookup_Value
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type='Total'
+            GROUP BY LAD, scenario`
+
+    } else {
+        query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
             GROUP BY LAD, scenario`
@@ -181,7 +200,11 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")  }
+
+    const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
+
+    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
+    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
 }
@@ -216,7 +239,7 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
 
 export function getAllLAD() {
     return `SELECT DISTINCT LAD
-    FROM your_table_name`;
+    FROM ${DB_TABLE_NAME}`;
 }
 
 

@@ -73,6 +73,8 @@ button:focus {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    /*justify-content: space-between;*/
+    justify-content: space-evenly;
     gap: 1%;
     width: 100%;
 }

@@ -39,15 +39,17 @@ export class Map {
     granularity;
     loaded: boolean
     dataKey: string;
+    border: boolean
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val") {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border=false) {
         // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
         this.dataKey = dataKey;
         this.loaded = false;
+        this.border = border;
 
         // console.log("dd ", data)
         this.loadData(data);
@@ -91,6 +93,7 @@ export class Map {
 
         let justHighlightArea = false;
         if (!Array.isArray(this.data)) {
+            console.log(2323232323, this.data)
             justHighlightArea = true;
         }
 
@@ -109,6 +112,7 @@ export class Map {
             }
 
         } else {
+            console.log("OK")
             if (this.granularity == "LAD") {
                 this.geojson = LADZones;
 
@@ -124,6 +128,7 @@ export class Map {
                 }
 
             } else {
+                console.log("EEK")
                 this.geojson = datazones;
 
                 data.forEach((d) => {
@@ -153,6 +158,8 @@ export class Map {
             if (domain[0] >= 0) {
                 domain[0] = -0.1;
             }
+
+            console.log(domain)
 
             this.colorScale = d3.scaleDiverging()
                 .domain(domain)
@@ -187,15 +194,17 @@ export class Map {
             });
 
             // Optional: Add border
-            this.map.addLayer({
-                id: 'state-borders',
-                type: 'line',
-                source: 'datazones',
-                paint: {
-                    'line-color': '#000000',
-                    'line-width': 0.4
-                }
-            });
+            if (this.border) {
+                this.map.addLayer({
+                    id: 'state-borders',
+                    type: 'line',
+                    source: 'datazones',
+                    paint: {
+                        'line-color': '#000000',
+                        'line-width': 0.4
+                    }
+                });
+            }
 
             this.loaded = true;
         })

@@ -1,7 +1,7 @@
 import {
-    getAllLAD,
+    getAllLAD, getAverageCBGroupedByLAD,
     getSefForOneCoBenefit,
-    getSEFForOneLAD,
+    getSEFForOneLAD, getSUMCBGroupedByLAD,
     getTableData, getTotalCBAllDatazones,
     getTotalForOneZone,
     getTotalPerOneCoBenefit, getTotalPerPathway
@@ -16,6 +16,7 @@ export async function load({ url }) {
     const LAD  = url.searchParams.get('location');
 
     let totalCBAllZones = await getTableData(getTotalCBAllDatazones());
+    let totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([]));
     let oneLADData = await getTableData(getSEFForOneLAD(LAD));
 
     console.log("SEND DATA")
@@ -24,6 +25,7 @@ export async function load({ url }) {
         // SEFData: SEFData,
         totalCBAllZones,
         oneLADData,
+        totalCBAllLAD,
         LAD
     };
 }

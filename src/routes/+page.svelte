@@ -5,6 +5,8 @@ import {COBENEFS} from "../globals";
 
 export let data;
 
+// let allLADs = data.allLAD;
+
 let isLoading = true;
 
 $: {
@@ -56,6 +58,18 @@ $: {
 
             {/each}
         </ul>
+    </div>
+
+    <div>
+        Report pages by Local District
+
+<!--        <ul>-->
+<!--            {#each allLADs as LAD}-->
+<!--                <li>-->
+<!--                    <a href="{base}/location?location={LAD}" > {LAD} </a>-->
+<!--                </li>-->
+<!--            {/each}-->
+<!--        </ul>-->
 
     </div>
 </main>
