@@ -49,7 +49,7 @@
     // })()
 
     $: {
-        console.log(2323, coBenefits);
+        console.log('sv update')
         if (granularity == "LAD") {
             fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
         } else if (granularity == "LSOA") {
@@ -91,7 +91,51 @@
         legendSvg = map.legend();
         legendDiv.append(legendSvg)
 
-        //
+
+        // Listen for zoom events
+        map.map.on('zoom', () => {
+            const currentZoom = map.map.getZoom();
+
+            console.log("zz ", currentZoom);
+            if (currentZoom > 30 && map.granularity != "LSOA") {
+            // if (currentZoom > 8 && map.granularity != "LSOA") {
+                console.log("GOOOOO")
+
+                granularity = "LSOA";
+                // Zoom level is greater than the threshold, update the layer
+
+
+                // Remove all layers from the map
+                const layers = map.map.getStyle().layers; // Get all layers in the current map style
+                if (layers) {
+                    layers.forEach(layer => {
+                        map.map.removeLayer(layer.id); // Remove each layer by its id
+                    });
+                }
+
+                // Remove all sources from the map
+                const sources = map.map.getStyle().sources;
+                for (const sourceId in sources) {
+                    map.map.removeSource(sourceId); // Remove each source by its id
+                }
+
+                map.reset();
+                // map.dataKey = "total";
+                map.granularity = "LSOA";
+                getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
+                    map.loadData(data);
+                    map.loadLayers();
+                    // map.initMap();
+                })
+                // map.loadData(data);
+                // map.initMap();
+
+            } else {
+                // Zoom level is below or equal to the threshold, revert changes
+            }
+        });
+
+
         // legendSvg = Legend(colorScale, {
         //     title: "Cobenefits (Millions of £)"
         // })

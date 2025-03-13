@@ -42,7 +42,7 @@ export class Map {
     border: boolean
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border=false) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false) {
         // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
@@ -51,12 +51,10 @@ export class Map {
         this.loaded = false;
         this.border = border;
 
-        // console.log("dd ", data)
+        console.log("dd ", data)
         this.loadData(data);
 
-
         // UK centering
-        // this.center = [-4.5481, 54.2361]
         // this.center = [-3.19648, 55.95206] // Edn
         // this.center = [-0.12574, 51.50853] // London
         this.center = [-1.54785, 53.79648] // Leeds
@@ -88,12 +86,17 @@ export class Map {
         this.component.append(this.tooltip);
     }
 
+    reset() {
+        this.dataZoneToValue = {};
+        this.loaded = false;
+    }
+
     loadData(data) {
         this.data = data;
 
         let justHighlightArea = false;
         if (!Array.isArray(this.data)) {
-            console.log(2323232323, this.data)
+            // console.log(2323232323, this.data)
             justHighlightArea = true;
         }
 
@@ -112,7 +115,6 @@ export class Map {
             }
 
         } else {
-            console.log("OK")
             if (this.granularity == "LAD") {
                 this.geojson = LADZones;
 
@@ -128,7 +130,6 @@ export class Map {
                 }
 
             } else {
-                console.log("EEK")
                 this.geojson = datazones;
 
                 data.forEach((d) => {
@@ -142,7 +143,7 @@ export class Map {
                 }
             }
         }
-        // console.log(this.dataZoneToValue)
+        console.log(" OK ", this.dataZoneToValue)
 
 
         let domain;
@@ -159,54 +160,59 @@ export class Map {
                 domain[0] = -0.1;
             }
 
-            console.log(domain)
-
             this.colorScale = d3.scaleDiverging()
                 .domain(domain)
                 // .interpolator(d3.interpolatePuOr)
                 .interpolator(d3.interpolateBrBG)
 
+            console.log("DOMAIN ", domain)
+
         }
 
     }
 
-    initMap() {
-        this.map.on('style.load', () => {
-            // Add data source
-            this.map.addSource('datazones', {
-                type: 'geojson',
-                data: this.geojson
-            });
+    loadLayers() {
+        // Add data source
+        this.map.addSource('datazones', {
+            type: 'geojson',
+            data: this.geojson
+        });
 
+        this.map.addLayer({
+            id: 'fill',
+            type: 'fill',
+            source: 'datazones',
+            paint: {
+                'fill-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'value'], // Replace with your data property
+                    ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
+                ],
+                'fill-opacity': 0.9
+            }
+        });
+
+        // Optional: Add border
+        if (this.border) {
+        // if (true) {
             this.map.addLayer({
-                id: 'fill',
-                type: 'fill',
+                id: 'state-borders',
+                type: 'line',
                 source: 'datazones',
                 paint: {
-                    'fill-color': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'value'], // Replace with your data property
-                        ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
-                    ],
-                    'fill-opacity': 0.9
+                    'line-color': '#000000',
+                    'line-width': 0.4
                 }
             });
+        }
 
-            // Optional: Add border
-            if (this.border) {
-                this.map.addLayer({
-                    id: 'state-borders',
-                    type: 'line',
-                    source: 'datazones',
-                    paint: {
-                        'line-color': '#000000',
-                        'line-width': 0.4
-                    }
-                });
-            }
+        this.loaded = true;
+    }
 
-            this.loaded = true;
+    initMap() {
+        this.map.on('style.load', () => {
+            this.loadLayers();
         })
 
         this.map.on('mousemove', (event) => {
@@ -231,6 +237,20 @@ export class Map {
                 this.tooltip.style.display = 'none';
             }
         });
+
+        // // Listen for zoom events
+        // this.map.on('zoom',  () => {
+        //     const currentZoom = this.map.getZoom();
+        //
+        //     // console.log("zz ", currentZoom);
+        //     if (currentZoom > 8) {
+        //         // Zoom level is greater than the threshold, update the layer
+        //         this.granularity = "LSOA"
+        //
+        //     } else {
+        //         // Zoom level is below or equal to the threshold, revert changes
+        //     }
+        // });
     }
 
     update = (newData) => {
