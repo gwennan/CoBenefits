@@ -1,12 +1,12 @@
 import {
     getAllLAD, getAverageCBGroupedByLAD,
     getSefForOneCoBenefit,
-    getSEFForOneLAD, getSUMCBGroupedByLAD,
+    getTotalCBForOneLAD, getSUMCBGroupedByLAD,
     getTableData, getTotalCBAllDatazones,
     getTotalForOneZone,
-    getTotalPerOneCoBenefit, getTotalPerPathway
+    getTotalPerOneCoBenefit, getTotalPerPathway, getAllCBForOneLAD
 } from "$lib/duckdb";
-import {type CoBenefit, SEF} from "../../globals";
+import {COBENEFS} from "../../globals";
 // import {getTableData, initDB} from "$lib/duckdb";
 
 // Called the page report
@@ -17,15 +17,21 @@ export async function load({ url }) {
 
     let totalCBAllZones = await getTableData(getTotalCBAllDatazones());
     let totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([]));
-    let oneLADData = await getTableData(getSEFForOneLAD(LAD));
+
+    let allCBAllLAD = await getTableData(getAverageCBGroupedByLAD(COBENEFS));
+
+    let oneLADData = await getTableData(getTotalCBForOneLAD(LAD));
+    let oneLADAllCBs = await getTableData(getAllCBForOneLAD(LAD));
 
     console.log("SEND DATA")
 
     return {
-        // SEFData: SEFData,
-        totalCBAllZones,
-        oneLADData,
+        LAD,
         totalCBAllLAD,
-        LAD
+        totalCBAllZones,
+        allCBAllLAD,
+        oneLADData,
+        oneLADAllCBs,
+
     };
 }

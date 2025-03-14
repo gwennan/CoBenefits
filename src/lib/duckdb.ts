@@ -146,10 +146,10 @@ export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scen
             GROUP BY LAD, scenario`
 
     } else {
-        query = `SELECT scenario, AVG("${time}") as val, LAD as Lookup_Value
+        query = `SELECT scenario, co_benefit_type, AVG("${time}") as val, LAD as Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
-            GROUP BY LAD, scenario`
+            GROUP BY LAD, scenario, co_benefit_type`
 
     }
     return query
@@ -210,12 +210,20 @@ export function getTotalCBAllDatazones() {
 }
 
 
-// Co-benefit=total to get only one row per datazone
-export function getSEFForOneLAD(LAD: string) {
+// Co-benefit=total to get only one row per datazone. We can use this for the SEF data too.
+export function getTotalCBForOneLAD(LAD: string) {
     return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${SEF.join(", ")  }
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
         AND co_benefit_type='Total'`
+}
+
+export function getAllCBForOneLAD(LAD: string) {
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario
+        FROM ${DB_TABLE_NAME}
+        WHERE LAD = '${LAD}'
+        AND co_benefit_type!='Total'
+        `
 }
 
 

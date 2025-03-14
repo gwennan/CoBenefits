@@ -4,10 +4,13 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {SEF, SEF_CATEGORICAL, type SEFactor} from "../../globals";
+    import {SEF, SEF_CATEGORICAL, type SEFactor, VIS_COLOR, AVERAGE_COLOR, MARGINS} from "../../globals";
+
+
 
     let element: HTMLElement
     let plot: HTMLElement
+    let plotPerCb: HTMLElement
     let SEFPlotLAD: Record<SEFactor, HTMLElement> = {};
     let SEFPlotFullDistrib: Record<SEFactor, HTMLElement> = {};
     let chartType: "barchart" | "boxplot" | "distribution" = "barchart"
@@ -15,26 +18,20 @@
 
     let height = 300;
 
-    const margins = {
-        marginLeft: 60,
-        marginRight: 60,
-        marginBottom: 60,
-        marginTop: 60
-    }
-
     // Data from load function
     export let data;
 
-    // const oneZoneData = data.oneZoneData;
-    const oneLADData = data.oneLADData;
     const LAD = data.LAD;
+
+    const oneLADData = data.oneLADData;
+    const oneLADAllCbs = data.oneLADAllCBs;
+    const allCBAllLAD = data.allCBAllLAD;
+
+    console.log(23, allCBAllLAD);
+
     const totalCBAllZones = data.totalCBAllZones;
     const totalCBAllLAD = data.totalCBAllLAD;
     let map: Map;
-
-    console.log(11, totalCBAllZones);
-    console.log("ONE LAD", oneLADData);
-
 
     let mapDiv: HTMLElement;
 
@@ -48,26 +45,26 @@
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
-                    ...margins,
-                    y: {type: "band"},
+                    ...MARGINS,
+                    x: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
-                        Plot.boxX(oneLADData, {x: "total", y: "scenario", tip: true}),
+                        Plot.boxY(oneLADData, {y: "total", x: "scenario", tip: true}),
                         // Plot.tickX([{totalCBAllZones, scenario: "BNZ"}], {y: "scenario", x:'v', stroke: 'red'}),
 
                         //  Median and Mean from ALL datazones
-                        Plot.tickX(
+                        Plot.tickY(
                             totalCBAllZones,
-                            Plot.groupY(
-                                {x: "median"},
-                                {x: "total", y: "scenario", stroke: "blue", strokeWidth: 2}
+                            Plot.groupX(
+                                {y: "median"},
+                                {y: "total", x: "scenario", stroke: "blue", strokeWidth: 2}
                             )
                         ),
-                        Plot.tickX(
+                        Plot.tickY(
                             totalCBAllZones,
-                            Plot.groupY(
-                                {x: "mean"},
-                                {x: "total", y: "scenario", stroke: "red", strokeWidth: 2}
+                            Plot.groupX(
+                                {y: "mean"},
+                                {y: "total", x: "scenario", stroke: "red", strokeWidth: 2}
                             )
                         )
                     ]
@@ -76,30 +73,38 @@
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
-                    ...margins,
-                    y: {type: "band"},
+                    ...MARGINS,
+                    x: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
-                        Plot.barX(oneLADData, Plot.groupY({x: "sum"}, {
-                            x: "total",
-                            y: "scenario"
+
+                        Plot.barY(
+                            totalCBAllLAD,
+                            Plot.groupX(
+                                {y: "mean"},
+                                {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
+                            )
+                        ),
+                        Plot.barY(oneLADData, Plot.groupX({y: "sum"}, {
+                            y: "total",
+                            x: "scenario"
                         })),
 
                         //  Median and Mean from ALL datazones
-                        Plot.tickX(
-                            totalCBAllLAD,
-                            Plot.groupY(
-                                {x: "mean"},
-                                {x: "val", y: "scenario", stroke: "red", strokeWidth: 2}
-                            )
-                        ),
-                        Plot.tickX(
-                            totalCBAllLAD,
-                            Plot.groupY(
-                                {x: "median"},
-                                {x: "val", y: "scenario", stroke: "blue", strokeWidth: 2}
-                            )
-                        )
+                        // Plot.tickY(
+                        //     totalCBAllLAD,
+                        //     Plot.groupX(
+                        //         {y: "mean"},
+                        //         {y: "val", x: "scenario", stroke: "red", strokeWidth: 2}
+                        //     )
+                        // ),
+                        // Plot.tickY(
+                        //     totalCBAllLAD,
+                        //     Plot.groupX(
+                        //         {y: "median"},
+                        //         {y: "val", x: "scenario", stroke: "blue", strokeWidth: 2}
+                        //     )
+                        // )
 
                     ]
                 })
@@ -109,7 +114,7 @@
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
-                    ...margins,
+                    ...MARGINS,
                     y: {label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     facet: {data: totalCBAllZones, y: "scenario"},
@@ -138,8 +143,45 @@
             );
 
         }
+    }
+
+    function renderPerCobenefPlot() {
+        plotPerCb?.append(
+            Plot.plot({
+                height: height,
+                // marginLeft: 170,
+                x: {type: "band"},
+
+                marks: [
+                    Plot.barY(oneLADAllCbs, Plot.groupX({y: "mean"}, {
+                        y: "total",
+                        x: "co_benefit_type",
+                        tip: true
+                    })),
+                    Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
+                        y: "val",
+                        x: "co_benefit_type",
+                        dx: 20,
+                        tip: true
+                    }))
 
 
+                    // Plot.link(
+                    //     dataPerCb,
+                    //     Plot.groupY(
+                    //         {
+                    //             x1: (data) => d3.mean(data) - d3.deviation(data),
+                    //             x2: (data) => d3.mean(data) + d3.deviation(data)
+                    //         },
+                    //         {
+                    //             x: "total",
+                    //             y: "co_benefit_type",
+                    //             stroke: "gray",
+                    //             strokeWidth: 3
+                    //         }
+                    //     )
+                ]
+            }))
     }
 
     function renderSEFPlot() {
@@ -152,16 +194,16 @@
                 if (SEF_CATEGORICAL.includes(sef)) {
                     plot = Plot.plot({
                         height: height / 3,
-                        width: 500  * 2,
-                        ...margins,
+                        width: 500 * 2,
+                        ...MARGINS,
                         // y: {grid: true, label: "mean value (£)"},
                         style: {fontSize: "18px"},
                         color: {legend: true, scheme: "greys"},
-                        x: {domain: d3.range(0,6), ticks: new Set(oneLADData.map(d => d[sef]))},
+                        x: {domain: d3.range(0, 6), ticks: new Set(oneLADData.map(d => d[sef]))},
                         marks: [
                             // Plot.cell(oneLADData, {x: sef}),
                             Plot.cell(oneLADData,
-                                Plot.groupX({fill:"count"}, {x: sef, stroke: "black" })
+                                Plot.groupX({fill: "count"}, {x: sef, stroke: "black"})
                             ),
                             Plot.cell([Math.floor(d3.mean(totalCBAllZones.map(d => d[sef])))],
                                 {x: d => d, stroke: "red", fill: null, strokeWidth: 2}
@@ -171,8 +213,8 @@
                 } else {
                     plot = Plot.plot({
                         height: height / 3,
-                        width: 500  * 2,
-                        ...margins,
+                        width: 500 * 2,
+                        ...MARGINS,
                         // y: {grid: true, label: "mean value (£)"},
                         style: {fontSize: "18px"},
                         color: {legend: true},
@@ -202,7 +244,7 @@
                     plotFullDistrib = Plot.plot({
                         height: height / 2,
                         width: 500,
-                        ...margins,
+                        ...MARGINS,
                         y: {grid: true, label: "mean value (£)"},
                         x: {grid: true, label: sef, type: "band"},
                         style: {fontSize: "18px"},
@@ -218,7 +260,7 @@
                     plot = Plot.plot({
                         height: height / 2,
                         width: 500,
-                        ...margins,
+                        ...MARGINS,
                         y: {grid: true, label: "mean value (£)"},
                         x: {grid: true, label: sef, domain: domain, tickFormat: d => Math.floor(d)},
                         style: {fontSize: "18px"},
@@ -234,7 +276,7 @@
                     plotFullDistrib = Plot.plot({
                         height: height / 2,
                         width: 500,
-                        ...margins,
+                        ...MARGINS,
                         // y: {grid: true, label: "mean value (£)"},
                         style: {fontSize: "18px"},
                         color: {legend: true},
@@ -250,7 +292,7 @@
 
                     plot = Plot.plot({
                         height: height / 2,
-                        ...margins,
+                        ...MARGINS,
                         // y: {label: "Datazones Frequency"},
                         x: {domain},
                         style: {fontSize: "18px"},
@@ -268,23 +310,20 @@
                 SEFPlotLAD[sef]?.append(plot)
 
             }
-
-
         })
-
-
     }
 
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
+        plotPerCb?.firstChild?.remove(); // remove old chart, if any
 
         //ugly hack for reactivity
         if (chartType) {
         }
 
         renderPlot();
-
+        renderPerCobenefPlot();
     }
 
     $: {
@@ -315,7 +354,7 @@
 
     <div id="vis-block">
         <div class="component column" bind:clientHeight={height}>
-            <h3>{LAD} datazone distribution</h3>
+            <h3>Cobenefit value per Scenario</h3>
 
             <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
             <label for="html">Barchart</label><br>
@@ -325,6 +364,13 @@
             <label for="javascript">Distribution</label>
 
             <div class="plot" bind:this={plot}>
+            </div>
+        </div>
+
+        <div class="component column">
+            <h3>Per Cobenefit</h3>
+
+            <div class="plot" bind:this={plotPerCb}>
             </div>
         </div>
 
@@ -339,12 +385,9 @@
     <div id="multiple-comp" class="component">
         <h1> Socio Economic Factors </h1>
 
-        <!--        <div>-->
         <input type="checkbox" bind:checked={isSEFAggregated}/>
         <label for="checkbox">Aggregate Plots</label>
-        <!--</div>-->
 
-        <!--        <div >-->
         {#each SEF as sef}
             <div>
                 <h2>{sef}</h2>
@@ -369,13 +412,9 @@
                         </div>
                     {/if}
 
-
                 </div>
-
             </div>
-
         {/each}
-        <!--        </div>-->
     </div>
 
 
