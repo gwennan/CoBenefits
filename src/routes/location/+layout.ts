@@ -7,7 +7,6 @@ import {
     getTotalPerOneCoBenefit, getTotalPerPathway, getAllCBForOneLAD
 } from "$lib/duckdb";
 import {COBENEFS} from "../../globals";
-// import {getTableData, initDB} from "$lib/duckdb";
 
 // Called the page report
 export async function load({ url }) {
@@ -32,6 +31,5 @@ export async function load({ url }) {
         allCBAllLAD,
         oneLADData,
         oneLADAllCBs,
-
     };
 }

@@ -4,15 +4,29 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {SEF, SEF_CATEGORICAL, type SEFactor, VIS_COLOR, AVERAGE_COLOR, MARGINS} from "../../globals";
-
+    import {
+        SEF,
+        SEF_CATEGORICAL,
+        type SEFactor,
+        VIS_COLOR,
+        AVERAGE_COLOR,
+        MARGINS,
+        AVERAGE_DX,
+        SCENARIOS, type Scenario, TIMES
+    } from "../../globals";
+    import {legend} from "@observablehq/plot";
 
 
     let element: HTMLElement
     let plot: HTMLElement
     let plotPerCb: HTMLElement
+    let heatmapPlot: HTMLElement
+    let CBOverTimePLot: HTMLElement
+    let CBOverTimePerScenarioPLot: HTMLElement
+    let CBOverTimePerCBPLot: HTMLElement
     let SEFPlotLAD: Record<SEFactor, HTMLElement> = {};
     let SEFPlotFullDistrib: Record<SEFactor, HTMLElement> = {};
+    let scenarioXcoBenefPLots: Record<Scenario, HTMLElement> = {};
     let chartType: "barchart" | "boxplot" | "distribution" = "barchart"
     let isSEFAggregated = false;
 
@@ -25,13 +39,15 @@
 
     const oneLADData = data.oneLADData;
     const oneLADAllCbs = data.oneLADAllCBs;
+
     const allCBAllLAD = data.allCBAllLAD;
-
-    console.log(23, allCBAllLAD);
-
     const totalCBAllZones = data.totalCBAllZones;
+
+    // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
+
     let map: Map;
+
 
     let mapDiv: HTMLElement;
 
@@ -149,19 +165,20 @@
         plotPerCb?.append(
             Plot.plot({
                 height: height,
-                // marginLeft: 170,
+                MARGINS,
                 x: {type: "band"},
 
                 marks: [
-                    Plot.barY(oneLADAllCbs, Plot.groupX({y: "mean"}, {
-                        y: "total",
-                        x: "co_benefit_type",
-                        tip: true
-                    })),
                     Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
-                        dx: 20,
+                        dx: AVERAGE_DX,
+                        fill: AVERAGE_COLOR,
+                        tip: true
+                    })),
+                    Plot.barY(oneLADAllCbs, Plot.groupX({y: "mean"}, {
+                        y: "total",
+                        x: "co_benefit_type",
                         tip: true
                     }))
 
@@ -190,7 +207,6 @@
             let plotFullDistrib;
 
             if (isSEFAggregated) {
-
                 if (SEF_CATEGORICAL.includes(sef)) {
                     plot = Plot.plot({
                         height: height / 3,
@@ -305,18 +321,222 @@
                         ]
                     })
                 }
-
                 SEFPlotFullDistrib[sef]?.append(plotFullDistrib);
                 SEFPlotLAD[sef]?.append(plot)
-
             }
         })
+    }
+
+    function renderHeatmap() {
+
+        // console.log(29, oneLADAllCbs)
+        // console.log(30, allCBAllLAD)
+
+        // May want to show sum
+        heatmapPlot?.append(Plot.plot({
+            ...MARGINS,
+            marginLeft: 100,
+            height: height,
+            width: 300,
+            grid: true,
+            // x: {axis: "top", label: "Season"},
+            // y: {label: "Episode"},
+            color: {type: "linear", scheme: "greys", legend: true},
+            marks: [
+                Plot.cell(allCBAllLAD, Plot.group({fill: "mean"}, {
+                    x: "scenario",
+                    y: "co_benefit_type",
+                    fill: "val",
+                    stroke: "black",
+                    dx: AVERAGE_DX / 2,
+                    dy: -AVERAGE_DX / 2,
+                    inset: 0.5
+                })),
+                Plot.cell(oneLADAllCbs, Plot.group({fill: "mean"}, {
+                    x: "scenario",
+                    y: "co_benefit_type",
+                    fill: "total",
+                    stroke: "black",
+                    inset: 0.5
+                }))
+                // Plot.text(allCBAllLAD, {x: "scenario", y: "co_benefit_type", text: (d) => d.val?.toFixed(1), fill: "black", title: "title"})
+            ]
+        }))
+    }
+
+    function renderScenarioXCBPlot() {
+        for (let scenario of SCENARIOS) {
+            let plot = Plot.plot({
+                height: height,
+                width: 410,
+                ...MARGINS,
+                marginRight: 0,
+                x: {type: "band"},
+
+                marks: [
+                    Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
+                        x: "val",
+                        y: "co_benefit_type",
+                        // dx: AVERAGE_DX,
+                        dy: -AVERAGE_DX / 2,
+                        fill: AVERAGE_COLOR,
+                        tip: true
+                    })),
+                    Plot.barX(oneLADAllCbs, Plot.groupY({x: "mean"}, {
+                        x: "total",
+                        y: "co_benefit_type",
+                        tip: true
+                    }))
+                ]
+            })
+
+            scenarioXcoBenefPLots[scenario]?.append(plot);
+
+        }
+    }
+
+    function renderCBOverTimePlot() {
+        let dataLAD = oneLADData.flatMap(d => {
+            return TIMES.map(t => {
+                return {time: t, value: d[t], scenario: d.scenario, zone: "local"}
+            })
+        })
+        let dataAllZones = totalCBAllZones.flatMap(d => {
+            return TIMES.map(t => {
+                return {time: t, value: d[t], scenario: d.scenario, zone: "UK"}
+            })
+        })
+        let data = dataLAD.concat(dataAllZones)
+        console.log(23232323009, data)
+
+        let plot = Plot.plot({
+            height: height,
+            width: 800,
+            ...MARGINS,
+            paddingLeft: 200,
+            marginRight: 0,
+            x: {tickSize: 0, label: null, ticks: []},
+            // x: {tickSize: 0, label: null, ticks: [], padding: 0},
+            color: {range: [VIS_COLOR, AVERAGE_COLOR]},
+
+            marks: [
+                // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
+                //     x: "val",
+                //     y: "co_benefit_type",
+                //     // dx: AVERAGE_DX,
+                //     dy: -AVERAGE_DX / 2,
+                //     fill: AVERAGE_COLOR,
+                //     tip: true
+                // })),
+                Plot.barY(data, Plot.groupX({y: "mean"}, {
+                    x: "zone",
+                    y: "value",
+                    fx: "time",
+                    tip: true,
+                    fill: "zone",
+                }))
+            ]
+        })
+        CBOverTimePLot?.append(plot);
+
+
+        // Make the bars overlay and one on top of the other depending of values
+        // TODO: finish
+        d3.select(CBOverTimePLot)
+            .select("g[aria-label='bar']")
+            .selectAll("g")
+            .each(function (d, i) {
+                // Translate the second <rect>
+                const secondRect = d3.select(this).selectAll("rect").nodes()[0];
+
+                // Get the current transform of the second rect, if any
+                const currentTransform = d3.select(secondRect).attr("transform") || "";
+
+                // Apply translation (e.g., move it 20 units to the right and 10 down)
+                d3.select(secondRect)
+                    .attr("transform", `${currentTransform} translate(-20, 0)`);
+
+
+                // Select both <rect> elements within the current <g>
+
+                let first = d3.select(this).selectAll("rect").nodes()[0].getAttribute("height")
+                let second = d3.select(this).selectAll("rect").nodes()[1].getAttribute("height")
+
+                console.log(first, second)
+                const rects = d3.select(this).selectAll("rect");
+
+                // if (first < second) {
+                rects.each(function (d, i2) {
+                    if (i2 == 0) {
+                        console.log(333, this)
+                        d3.select(this).raise()
+                    }
+
+                    //Do stuff with first and last child
+                });
+            });
+
+
+
+        let plotPerScenario = Plot.plot({
+            height: height,
+            width: 800,
+            ...MARGINS,
+            paddingLeft: 200,
+            marginRight: 0,
+            // x: {tickSize: 0, label: null, ticks: []},
+            color: {legend: true},
+
+            marks: [
+                Plot.lineY(data, Plot.groupX({y: "mean"}, {
+                    x: "time",
+                    y: "value",
+                    tip: true,
+                    stroke: "scenario"
+                    // fill: "scenario",
+                })),
+
+            ]
+        })
+        CBOverTimePerScenarioPLot?.append(plotPerScenario);
+
+
+        let dataCBs = oneLADAllCbs.flatMap(d => {
+            return TIMES.map(t => {
+                return {time: t, value: d[t], cobenefit: d.co_benefit_type}
+            })
+        })
+        console.log(9999, dataCBs)
+
+        let plotPerCB = Plot.plot({
+            height: height,
+            width: 800,
+            ...MARGINS,
+            paddingLeft: 200,
+            marginRight: 0,
+            // x: {tickSize: 0, label: null, ticks: []},
+            color: {legend: true},
+
+            marks: [
+                Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
+                    x: "time",
+                    y: "value",
+                    tip: true,
+                    fill: "cobenefit"
+                    // fill: "scenario",
+                })),
+
+            ]
+        })
+        CBOverTimePerCBPLot?.append(plotPerCB);
+
     }
 
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
         plotPerCb?.firstChild?.remove(); // remove old chart, if any
+        CBOverTimePLot?.firstChild?.remove(); // remove old chart, if any
 
         //ugly hack for reactivity
         if (chartType) {
@@ -324,6 +544,7 @@
 
         renderPlot();
         renderPerCobenefPlot();
+        renderCBOverTimePlot();
     }
 
     $: {
@@ -338,6 +559,16 @@
         renderSEFPlot();
     }
 
+    $: {
+        heatmapPlot?.firstChild?.remove();
+
+        Object.values(scenarioXcoBenefPLots).forEach(plot => {
+            plot?.firstChild?.remove();
+        })
+
+        renderHeatmap();
+        renderScenarioXCBPlot();
+    }
 
     function onChange(event) {
         chartType = event.currentTarget.value;
@@ -369,7 +600,6 @@
 
         <div class="component column">
             <h3>Per Cobenefit</h3>
-
             <div class="plot" bind:this={plotPerCb}>
             </div>
         </div>
@@ -378,6 +608,36 @@
             <h3> Map </h3>
             <div id="map" bind:this={mapDiv}>
             </div>
+        </div>
+    </div>
+
+    <div class="component">
+        <h3> Scenario x Cobenefit </h3>
+
+        <div class="row">
+            <div class="plot" bind:this={heatmapPlot}></div>
+
+            {#each SCENARIOS as scenario}
+                <h4> {scenario} </h4>
+                <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
+                </div>
+            {/each}
+        </div>
+    </div>
+
+    <div class="component">
+        <h3> Cobenefits over Time </h3>
+
+        <div class="row">
+            <div class="plot" bind:this={CBOverTimePLot}></div>
+        </div>
+
+        <div class="row">
+            <div class="plot" bind:this={CBOverTimePerScenarioPLot}></div>
+        </div>
+
+        <div class="row">
+            <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
         </div>
     </div>
 

@@ -3,7 +3,7 @@ import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?
 import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
 
-import {type CoBenefit, type Scenario, SEF, type SEFactor} from "../globals";
+import {type CoBenefit, type Scenario, SEF, type SEFactor, TIMES} from "../globals";
 import { browser } from '$app/environment';
 
 let db: AsyncDuckDB;
@@ -11,10 +11,6 @@ let db: AsyncDuckDB;
 // Name of the database table name
 const DB_TABLE_NAME = "cobenefits";
 const DB_TABLE_SE_NAME = "socioEconmicFactors";
-
-console.log(22);
-
-
 
 
 const initDB = async () => {
@@ -85,25 +81,16 @@ async function getTableData(request: string) {
     // await conn.query(`CREATE TABLE ${DB_TABLE_NAME} AS SELECT * FROM read_parquet('filename');`);
     // console.log("Table created from parquet");
 
-
     // Now you can query the table
     // result is actually an Arrow Table
     // const result = await conn.query(`SELECT * FROM ${DB_TABLE_NAME}`);
 
-    // const result = await conn.query(`SELECT total, scenario FROM ${DB_TABLE_NAME}`);
-
-
     const result = await conn.query(request);
-
 
     // Close the connection to release memory
     await conn.close();
 
     const allData = result.toArray().map((row) => row.toJSON());
-
-    // Apache Arrow
-    // const allData = result;
-
     return allData;
 }
 
@@ -163,13 +150,11 @@ export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='Total'
             GROUP BY LAD, scenario`
-
     } else {
         query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
             GROUP BY LAD, scenario`
-
     }
     return query
 }
@@ -184,14 +169,14 @@ export function getTotalPerBenefit() {
 
 
 export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
-    return `SELECT total, Lookup_Value, scenario, 2025_2029, 2030_2034, 2035_2039, 2040_2044, 2045_2040
+    return `SELECT total, Lookup_Value, scenario
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='${cobenefit}'`
 }
 
 
 export function getTotalForOneZone(datazone: string) {
-    return `SELECT total, Lookup_Value, scenario, 2025_2029, 2030_2034, 2035_2039, 2040_2044, 2045_2040
+    return `SELECT total, Lookup_Value, scenario
             FROM ${DB_TABLE_NAME}
             WHERE Lookup_Value='${datazone}'`
 }
@@ -200,11 +185,10 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-
     const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
-    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}
+    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => d).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
 }
@@ -212,13 +196,29 @@ export function getTotalCBAllDatazones() {
 
 // Co-benefit=total to get only one row per datazone. We can use this for the SEF data too.
 export function getTotalCBForOneLAD(LAD: string) {
-    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${SEF.join(", ")  }
+    let q= `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => d).join(", ")} ,  ${SEF.join(", ") }
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
         AND co_benefit_type='Total'`
+
+    // let q= `SELECT ${TIMES.map(d => d).join(" , ")}
+    //     FROM ${DB_TABLE_NAME}
+    //     WHERE LAD = '${LAD}'
+    //     AND co_benefit_type='Total'`
+
+    console.log("Q ", q)
+    return q;
 }
 
 export function getAllCBForOneLAD(LAD: string) {
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario,  ${SEF.join(", ")}, ${TIMES.map(d => d).join(", ")}
+        FROM ${DB_TABLE_NAME}
+        WHERE LAD = '${LAD}'
+        AND co_benefit_type!='Total'
+        `
+}
+
+export function getTotalCBForOneLADTimed(LAD: string) {
     return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
