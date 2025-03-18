@@ -17,8 +17,6 @@
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
 
-    import logo from '/badges/Truncated axis.png';
-
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -50,21 +48,6 @@
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
 
-    // console.log(1,oneLADAllCbs)
-    // console.log(2,oneLADData)
-    //
-    // console.log(99,oneLADAllCbs.reduce((a, b) => {
-    //     return a + b.total
-    // }, 0))
-    // console.log(999,oneLADData.reduce((a, b) => {
-    //     return a + b.total
-    // }, 0))
-    // console.log(99,oneLADAllCbs.filter(d => d.scenario == "BNZ").reduce((a, b) => {
-    //     return a + b.total
-    // }, 0))
-    // console.log(999,oneLADData.filter(d => d.scenario == "BNZ").reduce((a, b) => {
-    //     return a + b.total
-    // }, 0))
 
     const LADToName = data.LADToName;
 
@@ -108,7 +91,6 @@
                     ]
                 }))
         } else if (chartType == "barchart") {
-            console.log(233333, oneLADData)
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
@@ -116,13 +98,14 @@
                     x: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
-                        // Plot.barY(
-                        //     totalCBAllLAD,
-                        //     Plot.groupX(
-                        //         {y: "mean"},
-                        //         {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
-                        //     )
-                        // ),
+
+                        Plot.barY(
+                            totalCBAllLAD,
+                            Plot.groupX(
+                                {y: "mean"},
+                                {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
+                            )
+                        ),
                         Plot.barY(oneLADData, Plot.groupX({y: "sum"}, {
                             y: "total",
                             x: "scenario",
@@ -192,18 +175,19 @@
                 x: {type: "band"},
 
                 marks: [
-                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
-                    //     y: "val",
-                    //     x: "co_benefit_type",
-                    //     dx: AVERAGE_DX,
-                    //     fill: AVERAGE_COLOR,
-                    //     tip: true
-                    // })),
+                    Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
+                        y: "val",
+                        x: "co_benefit_type",
+                        dx: AVERAGE_DX,
+                        fill: AVERAGE_COLOR,
+                        tip: true
+                    })),
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
                         tip: true
                     }))
+
 
                     // Plot.link(
                     //     dataPerCb,
@@ -651,74 +635,49 @@
 
 <div class="page-container" bind:this={element}>
 
-    <div class="section header">
-        <p class="page-subtitle">Data Report</p>
-        <h1 class="page-title"> {LADToName[LAD]}</h1>
-        <p class="description">Explore how this local authority will benefit from achieving Net Zero and general factors of their households.</p>
+    <div class="component header">
+        <h1> {LADToName[LAD]} </h1>
+        <p> {LADToName[LAD]} ({LAD}) is ... </p>
     </div>
 
-    <div class="section">
-        <div class="section-header">
-            <p class="section-subtitle">Overview</p>
-            <h2 class="section-title">How much co-benefit values would this area recieve?</h2>
-            <p class="description">We calculate and model 11 types of co-benefits across five different pathyways suggested by Climate Change Committee in the Sixth Carbon Budget from 2025-2050 on the level of data zones across UK.</p>
+    <div id="vis-block">
+        <div class="component column" bind:clientHeight={height}>
+            <h3>Cobenefit value per Scenario</h3>
+
+            <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
+            <label for="html">Barchart</label><br>
+            <input type="radio" on:change={onChange} name="visType" value="boxplot">
+            <label for="css">Boxplot</label><br>
+            <input type="radio" on:change={onChange} name="visType" value="distribution">
+            <label for="javascript">Distribution</label>
+
+            <div class="plot" bind:this={plot}>
+            </div>
         </div>
 
-        <div id="vis-block">
-            <div class="component column" bind:clientHeight={height}>
-                <h3 class="component-title">Total Co-benefits Values Across Five Pathways (vs. UK Average)</h3>
-                <p class="description">Aggregated values from 2025-2050 in {LADToName[LAD]} verus average value of benefits recieved across all local authorities in UK.</p>
-
-                <div class="radio-set">
-                    <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
-                    <label for="html">Barchart</label><br>
-                    <input type="radio" on:change={onChange} name="visType" value="boxplot">
-                    <label for="css">Boxplot</label><br>
-                    <input type="radio" on:change={onChange} name="visType" value="distribution">
-                    <label for="javascript">Distribution</label>
-                </div>
-
-                <div class="plot" bind:this={plot}>
-                </div>
+        <div class="component column">
+            <h3>Per Cobenefit</h3>
+            <div class="plot" bind:this={plotPerCb}>
             </div>
+        </div>
 
-            <div class="component column">
-                <h3 class="component-title">11 Types of Co-Benefits Values (vs. UK Average)</h3>
-                <p class="description">Co-benefits values in {LADToName[LAD]} verus average value across all local authorities in UK.</p>
-                <div class="plot" bind:this={plotPerCb}>
-                </div>
-            </div>
-
-            <div class="component column">
-                <h3 class="component-title">{LADToName[LAD]} on UK Map</h3>
-                <p class="description">Scroll for zooming in and out.</p>
-                <div id="map" bind:this={mapDiv}>
-                </div>
+        <div class="component column">
+            <h3> Map </h3>
+            <div id="map" bind:this={mapDiv}>
             </div>
         </div>
     </div>
 
-    <div class="section">
-        <div class="section-header">
-            <p class="section-subtitle">Breakdown</p>
-            <h2 class="section-title">How would the co-benefit results vary if we take different pathways?</h2>
-            <p class="description">We break down the modeled co-benefit values in different pathways towards achieving Net Zero. All Results are compared with the average value across all local authorities in UK.</p>
-        </div>
+    <div class="component">
+        <h3> Scenario x Cobenefit </h3>
 
         <div class="row">
-            <div class="component">
-                <h3 class="component-title">Five Pathways and their 11 Co-benefits</h3>
-                <p class="description">Scroll for zooming in and out.</p>
-                <div class="plot" bind:this={heatmapPlot}></div>
-            </div>
+            <div class="plot" bind:this={heatmapPlot}></div>
 
             {#each SCENARIOS as scenario}
-                <div class="component">
-                    <h3 class="component-title"> Pathway: {scenario}</h3>
-                    <p class="description">Please refer to CCC website on definitions of {scenario}.</p>
-                    <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
-                    </div>
-                </div>  
+                <h4> {scenario} </h4>
+                <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
+                </div>
             {/each}
         </div>
     </div>
@@ -732,15 +691,9 @@
 
         <div class="row">
             <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
-<!--                <div class="badge">-->
-<!--                    <img class="badge" src="badges/Truncated axis.png" alt="background image" />-->
-                    <img class="badge" src={logo} alt="background image" />
-<!--                </div>-->
+                <div class="badge"> SUP </div>
             </div>
         </div>
-
-        <img class="badge" src={logo} alt="background image" />
-
 
         <div class="row">
             <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
@@ -787,8 +740,9 @@
                 </div>
             </div>
         {/each}
-
     </div>
+
+
 </div>
 
 <style>
@@ -797,10 +751,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         gap: 1%;
-        /* width: 98%; */
-        padding-left: 1%;
-        padding-right: 1%;
-        padding-bottom: 1%;
+        width: 100%;
     }
 
 
@@ -819,12 +770,6 @@
     .inside-row {
         display: flex;
         flex-direction: row;
-    }
-
-    /* Ratio of 8.75 using png from the website*/
-    img {
-        width: 105px;
-        height: 12px;
     }
 
 </style>
