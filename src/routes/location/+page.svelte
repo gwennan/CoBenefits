@@ -108,7 +108,8 @@
                         ),
                         Plot.barY(oneLADData, Plot.groupX({y: "sum"}, {
                             y: "total",
-                            x: "scenario"
+                            x: "scenario",
+                            tip: true
                         })),
 
                         //  Median and Mean from ALL datazones
@@ -174,14 +175,14 @@
                 x: {type: "band"},
 
                 marks: [
-                    Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
-                        y: "val",
-                        x: "co_benefit_type",
-                        dx: AVERAGE_DX,
-                        fill: AVERAGE_COLOR,
-                        tip: true
-                    })),
-                    Plot.barY(oneLADAllCbs, Plot.groupX({y: "mean"}, {
+                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
+                    //     y: "val",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
+                    Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
                         tip: true
@@ -546,6 +547,7 @@
         CBOverTimePerScenarioPLot?.append(plotPerScenario);
 
 
+
         let dataCBs = oneLADAllCbs.flatMap(d => {
             return TIMES.map(t => {
                 return {time: t, value: d[t], cobenefit: d.co_benefit_type}
@@ -688,7 +690,9 @@
         </div>
 
         <div class="row">
-            <div class="plot" bind:this={CBOverTimePerScenarioPLot}></div>
+            <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
+                <div class="badge"> SUP </div>
+            </div>
         </div>
 
         <div class="row">

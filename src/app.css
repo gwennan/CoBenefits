@@ -51,7 +51,6 @@ button:focus {
     /*outline: 4px auto -webkit-focus-ring-color;*/
 }
 
-
 .page-container {
     display: flex;
     flex-direction: column;
@@ -94,6 +93,16 @@ button:focus {
     top: 0;
     padding: 10px 16px;
     z-index: 10;
+}
+
+.plot {
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
 
 .column {
