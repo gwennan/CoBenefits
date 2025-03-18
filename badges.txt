@@ -1,0 +1,65 @@
+map
+'Mouse Over'
+'Zoom'
+'Some elements too small to be shown'
+
+renderPlot()
+for chartType == "boxplot":
+
+for chartType == "barchart":
+
+for chartType == "distribution":
+
+renderPerCobenefPlot()
+
+
+
+renderSEFPlot()
+if (isSEFAggregated) {if (SEF_CATEGORICAL.includes(sef)):
+
+else:
+
+if (SEF_CATEGORICAL.includes(sef)): 
+
+else:
+
+for cbplot:
+
+renderHeatmap()
+'Aggregated data'
+'Alternative Units'
+'Contains modeled data'
+'Contains predictions'
+'(Can) contain overlapping visual marks'
+
+renderScenarioXCBPlot()
+
+for plot: 
+'Contains modeled data'
+'Contains predictions'
+'Mouse Over'
+'Aggregated data'
+'(Can) contain overlapping visual marks'
+
+renderCBOverTimePlot()
+
+for plot:
+'Contains modeled data'
+'Contains predictions'
+'Mouse Over'
+'Aggregated data'
+
+for plotPerScenario:
+'Contains modeled data'
+'Contains predictions'
+'Mouse Over'
+'Aggregated data'
+
+for plotPerCB:
+'Contains modeled data'
+'Contains predictions'
+'Mouse Over'
+'Some elements too small to be shown'
+
+
+
