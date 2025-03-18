@@ -128,7 +128,7 @@
                             totalCBAllLAD,
                             Plot.groupX(
                                 {y: "mean"},
-                                {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
+                                {y: "val", x: "scenario", fill: "lightblue", opacity: 0.7, dx: 20}
                             )
                         ),
                         Plot.barY(oneLADData, Plot.groupX({y: "sum"}, {
@@ -354,7 +354,8 @@
                             Plot.lineY(oneLADData, Plot.normalizeY(Plot.binX({y: "count"}, {
                                 x: sef,
                                 tip: true,
-                                opacity: 0.3
+                                stroke:"lightblue",
+                                strokeWidth: 1.2,
                             }))),
                             Plot.lineY(totalCBAllZones, Plot.normalizeY(Plot.binX({y: "count"}, {
                                 x: sef,
@@ -379,11 +380,20 @@
                 marks: [
                     Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
                         x: sef,
-                        y: "total"
+                        y: "total",
+                        stroke: "lightblue",
+                        strokeWidth: 0.5,
+                    }),
+                    Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
+                        x: sef,
+                        y: "total",
+                        stroke: "lightblue",
+                        strokeWidth: 1.2,
+                        thresholds: 10
                     }),
                     Plot.dot(oneLADData, {
                         x: sef,
-                        y: "total"
+                        y: "total",
                     }),
                     Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
                       x: sef,
@@ -732,67 +742,100 @@
         </div>
     </div>
 
-    <div class="component">
-        <h3> Cobenefits over Time </h3>
-
-        <div class="row">
-            <div class="plot" bind:this={CBOverTimePLot}></div>
+    <div class="section">
+        <div class="section-header">
+            <p class="section-subtitle">Temporal Trends</p>
+            <h2 class="section-title">How co-benefits change over time?</h2>
+            <p class="description">Detailed breakdown of temporal trends for total co-benefits, types of co-benefits, and five pathways.</p>
         </div>
 
-        <div class="row">
-            <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
-                <div class="badge"> SUP </div>
+        <div class="component singlevis">
+            <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. UK Average)</h3>
+            <div class="row">
+                <div class="plot" bind:this={CBOverTimePLot}></div>
             </div>
         </div>
+    
+        
 
-        <div class="row">
-            <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
-        </div>
-    </div>
-
-
-    <div id="multiple-comp" class="component">
-        <h1> Socio Economic Factors </h1>
-
-        <input type="checkbox" bind:checked={isSEFAggregated}/>
-        <label for="checkbox">Aggregate Plots</label>
-
-        {#each SEF as sef}
-            <div>
-                <h2>{sef}</h2>
-
-                <!--                <div class="inside-row">-->
+        <div class="component singlevis">
+            <h3 class="component-title">11 Types of Co-benefits Distribution Following Balance Pathway from 2025-2050</h3>
+            <div class="row">
                 <div class="row">
-
-                    {#if isSEFAggregated}
-                        <div class="plot" bind:this={SEFPlotLAD[sef]}>
-                        </div>
-                    {:else}
-                        <div>
-                            LAD Distribution:
-                            <div class="plot" bind:this={SEFPlotLAD[sef]}>
-                            </div>
-                        </div>
-
-                        <div>
-                            Global Distribution:
-                            <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>
-                            </div>
-                        </div>
-
-                        <div>
-                            Per Cobenefit
-                            <div class="plot" bind:this={SEFPlotPerCB[sef]}>
-                            </div>
-                        </div>
-                    {/if}
-
+                    <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
+                    <div class="badge"> SUP </div>
                 </div>
             </div>
-        {/each}
+        </div>
+
+        <div class="component singlevis">
+            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>
+            <div class="row">
+                <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
+                    <div class="badge"> SUP </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="section">
+        <div class="section-header">
+            <p class="section-subtitle">Households</p>
+            <h2 class="section-title">Social Economic Factors of Households</h2>
+            <p class="description">We describe the distribution of household economic factors aggregated on the data zone level and the different level of co-benefits recieved by those data zones.</p>
+
+            <input type="checkbox" bind:checked={isSEFAggregated}/>
+            <label for="checkbox">Aggregate Plots</label>
+        </div>
+
+        <div id="multiple-comp">
+            {#each SEF as sef}
+                <div>
+                    <h2>{sef}</h2>
+                    <!--                <div class="inside-row">-->
+                    <div class="row">
+
+  
+                        {#if isSEFAggregated}
+                            <div class="component">
+                                <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                </div>
+                            </div>
+                        {:else}
+                            <div class="component">
+                                <h3 class="component-title">Data Zones Distribution (vs. UK average)</h3>
+                                <p class="description short">Histogram shows the number of data zones distributed across different household social economic factors.</p>
+                                <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                </div>
+                            </div>
+
+
+                        <div class="component">
+                            <div>
+                                <h3 class="component-title">Co-benefits Recieved by Data Zones across {sef} Values</h3>
+                                <p class="description short">Density plot refers to UK distribution while the scattered points refer to data zones in the local authority.</p>
+                                <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="plot" bind:this={SEFPlotPerCB[sef]}>
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+
+                    </div>
+                </div>
+            {/each}
+
+        </div>
 
     </div>
-</div>
+    
+    </div>
+
+    
 
 <style>
     #vis-block {
