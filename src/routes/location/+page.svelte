@@ -12,7 +12,7 @@
         AVERAGE_COLOR,
         MARGINS,
         AVERAGE_DX,
-        SCENARIOS, type Scenario, TIMES
+        SCENARIOS, type Scenario, TIMES, COBENEFS_RANGE, COBENEFS
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -47,6 +47,9 @@
 
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
+
+
+    const LADToName = data.LADToName;
 
     let map: Map;
 
@@ -341,9 +344,6 @@
                 SEFPlotLAD[sef]?.append(plot)
             }
 
-
-
-            console.log(98767897, totalCBAllZones)
             let cbplot = Plot.plot({
                 height: height / 2,
                 ...MARGINS,
@@ -450,7 +450,8 @@
             })
         })
         let data = dataLAD.concat(dataAllZones)
-        console.log(23232323009, data)
+
+        console.log(data[20])
 
         let plot = Plot.plot({
             height: height,
@@ -505,13 +506,13 @@
                 let first = d3.select(this).selectAll("rect").nodes()[0].getAttribute("height")
                 let second = d3.select(this).selectAll("rect").nodes()[1].getAttribute("height")
 
-                console.log(first, second)
+                // console.log(first, second)
                 const rects = d3.select(this).selectAll("rect");
 
                 // if (first < second) {
                 rects.each(function (d, i2) {
                     if (i2 == 0) {
-                        console.log(333, this)
+                        // console.log(333, this)
                         d3.select(this).raise()
                     }
 
@@ -557,7 +558,7 @@
             paddingLeft: 200,
             marginRight: 0,
             // x: {tickSize: 0, label: null, ticks: []},
-            color: {legend: true},
+            color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS},
 
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
@@ -625,8 +626,8 @@
 <div class="page-container" bind:this={element}>
 
     <div class="component header">
-        <h1> {LAD} </h1>
-        <p> {LAD} is ... </p>
+        <h1> {LADToName[LAD]} </h1>
+        <p> {LADToName[LAD]} ({LAD}) is ... </p>
     </div>
 
     <div id="vis-block">

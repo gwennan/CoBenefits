@@ -30,7 +30,7 @@ static/maps
 static/UK_Archetypes_global_measures.csv
 static/UK_Archetypes_info.csv
 static/database.duckdb
-static/database.parquet
+staticNotDeployed/oldParquet/database.parquet
 
 
 staticNotDeployed/predicted_data_final.csv

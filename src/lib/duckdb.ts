@@ -42,7 +42,10 @@ const initDB = async () => {
 async function loadData() {
     console.log("loading parqet file in db");
 
-    const response = await fetch('database.parquet');
+    // const response = await fetch('database.parquet');
+    const response = await fetch('database_onlyIreland.parquet');
+
+
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -56,18 +59,18 @@ async function loadData() {
     console.log("Table created from parquet");
 
 
-    // Load socio economic table
-    const response2 = await fetch('tableSocio.parquet');
-    const arrayBuffer2 = await response2.arrayBuffer();
-    const uint8Array2 = new Uint8Array(arrayBuffer2);
-
-    // Load the parquet file into the DuckDB instance
-    await db.registerFileBuffer("filename2", uint8Array2);
-
-    await conn.query(`CREATE TABLE ${DB_TABLE_SE_NAME} AS SELECT * FROM read_parquet('filename2');`);
-
-    // Close the connection to release memory
-    await conn.close();
+    // Load socio economic table (currenlty merged)
+    // const response2 = await fetch('tableSocio.parquet');
+    // const arrayBuffer2 = await response2.arrayBuffer();
+    // const uint8Array2 = new Uint8Array(arrayBuffer2);
+    //
+    // // Load the parquet file into the DuckDB instance
+    // await db.registerFileBuffer("filename2", uint8Array2);
+    //
+    // await conn.query(`CREATE TABLE ${DB_TABLE_SE_NAME} AS SELECT * FROM read_parquet('filename2');`);
+    //
+    // // Close the connection to release memory
+    // await conn.close();
 
     console.log("INFO ", await getTableData(getInfo()));
 }
@@ -188,7 +191,7 @@ export function getTotalCBAllDatazones() {
     const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
-    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => d).join(", ")}
+    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
 }
@@ -196,7 +199,7 @@ export function getTotalCBAllDatazones() {
 
 // Co-benefit=total to get only one row per datazone. We can use this for the SEF data too.
 export function getTotalCBForOneLAD(LAD: string) {
-    let q= `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => d).join(", ")} ,  ${SEF.join(", ") }
+    let q= `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => `"${d}"`).join(", ")} ,  ${SEF.join(", ") }
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
         AND co_benefit_type='Total'`
@@ -211,7 +214,7 @@ export function getTotalCBForOneLAD(LAD: string) {
 }
 
 export function getAllCBForOneLAD(LAD: string) {
-    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario,  ${SEF.join(", ")}, ${TIMES.map(d => d).join(", ")}
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario,  ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE LAD = '${LAD}'
         AND co_benefit_type!='Total'
