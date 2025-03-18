@@ -180,6 +180,15 @@ button:focus {
     margin: 5px 0;
 }
 
+.singlevis {
+    max-width: 900px;
+    margin: 10px 20px
+}
+
+.short {
+    max-width: 600px;
+}
+
 /*@media (prefers-color-scheme: light) {*/
 /*    :root {*/
 /*        color: #213547;*/

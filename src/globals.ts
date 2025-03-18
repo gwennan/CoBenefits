@@ -31,7 +31,7 @@ export type SEFactor = typeof COBENEFS[number]
 
 // DESIGN PARAMS
 export const VIS_COLOR = "black";
-export const AVERAGE_COLOR = "gray";
+export const AVERAGE_COLOR = "lightblue";
 export const MARGINS = {
         marginLeft: 60,
         marginRight: 60,
