@@ -175,13 +175,13 @@
                 x: {type: "band"},
 
                 marks: [
-                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
-                    //     y: "val",
-                    //     x: "co_benefit_type",
-                    //     dx: AVERAGE_DX,
-                    //     fill: AVERAGE_COLOR,
-                    //     tip: true
-                    // })),
+                    Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
+                        y: "val",
+                        x: "co_benefit_type",
+                        dx: AVERAGE_DX,
+                        fill: AVERAGE_COLOR,
+                        tip: true
+                    })),
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
