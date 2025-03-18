@@ -49,6 +49,31 @@
     const totalCBAllLAD = data.totalCBAllLAD;
 
 
+    // console.log(1,oneLADAllCbs)
+     // console.log(2,oneLADData)
+     //
+     console.log(99,oneLADAllCbs.reduce((a, b) => {
+         return a + b.total
+     }, 0))
+     console.log(999,oneLADData.reduce((a, b) => {
+         return a + b.total
+     }, 0))
+
+     console.log(99,oneLADAllCbs.filter(d => d.scenario == "BNZ").reduce((a, b) => {
+         return a + b.total
+     }, 0))
+     console.log(999,oneLADData.filter(d => d.scenario == "BNZ").reduce((a, b) => {
+         return a + b.total
+     }, 0))
+
+    console.log(88,oneLADAllCbs.filter(d => d.scenario == "Tailwinds").reduce((a, b) => {
+         return a + b.total
+     }, 0))
+     console.log(888,oneLADData.filter(d => d.scenario == "Tailwinds").reduce((a, b) => {
+         return a + b.total
+     }, 0))
+
+
     const LADToName = data.LADToName;
 
     let map: Map;
