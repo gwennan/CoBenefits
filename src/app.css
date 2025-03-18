@@ -80,18 +80,34 @@ button:focus {
     width: 100%;
 }
 
-.component {
+.section {
     background: white;
-    border: 1px solid black;
+}
+
+.component {
+    background: #F8F8F8;
+    border: 1px solid #ECECEC;
     border-radius: 15px;
     padding-left: 1%;
     padding-right: 1%;
+    padding-top: 15px;
+    margin: 10px 0
+}
+
+.section-header {
+    background: white;
+    /* border: 1px solid black; */
+    /* border-radius: 15px; */
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 1%;
+    margin-bottom: 20px;
 }
 
 .header {
     position: sticky;
     top: 0;
-    padding: 10px 16px;
+    padding: 20px 16px;
     z-index: 10;
 }
 
@@ -108,6 +124,60 @@ button:focus {
 .column {
     flex: 1;
     /*flex-basis: %;*/
+}
+
+.radio-set{
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+}
+
+.description {
+    font-size: 16px;
+    color: #555;
+    max-width: 800px;
+    margin: 0;
+}
+
+.section-subtitle {
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin: 5px 0;
+}
+
+.component-title {
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 500;
+    color: #333;
+    margin: 5px 0;
 }
 
 /*@media (prefers-color-scheme: light) {*/
