@@ -17,6 +17,8 @@
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
 
+    import logo from '/badges/Truncated axis.png';
+
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -48,6 +50,21 @@
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
 
+    // console.log(1,oneLADAllCbs)
+    // console.log(2,oneLADData)
+    //
+    // console.log(99,oneLADAllCbs.reduce((a, b) => {
+    //     return a + b.total
+    // }, 0))
+    // console.log(999,oneLADData.reduce((a, b) => {
+    //     return a + b.total
+    // }, 0))
+    // console.log(99,oneLADAllCbs.filter(d => d.scenario == "BNZ").reduce((a, b) => {
+    //     return a + b.total
+    // }, 0))
+    // console.log(999,oneLADData.filter(d => d.scenario == "BNZ").reduce((a, b) => {
+    //     return a + b.total
+    // }, 0))
 
     const LADToName = data.LADToName;
 
@@ -91,6 +108,7 @@
                     ]
                 }))
         } else if (chartType == "barchart") {
+            console.log(233333, oneLADData)
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
@@ -98,14 +116,13 @@
                     x: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
-
-                        Plot.barY(
-                            totalCBAllLAD,
-                            Plot.groupX(
-                                {y: "mean"},
-                                {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
-                            )
-                        ),
+                        // Plot.barY(
+                        //     totalCBAllLAD,
+                        //     Plot.groupX(
+                        //         {y: "mean"},
+                        //         {y: "val", x: "scenario", fill: "gray", opacity: 0.7, dx: 20}
+                        //     )
+                        // ),
                         Plot.barY(oneLADData, Plot.groupX({y: "sum"}, {
                             y: "total",
                             x: "scenario",
@@ -175,19 +192,18 @@
                 x: {type: "band"},
 
                 marks: [
-                    Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
-                        y: "val",
-                        x: "co_benefit_type",
-                        dx: AVERAGE_DX,
-                        fill: AVERAGE_COLOR,
-                        tip: true
-                    })),
+                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
+                    //     y: "val",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
                         tip: true
                     }))
-
 
                     // Plot.link(
                     //     dataPerCb,
@@ -691,9 +707,15 @@
 
         <div class="row">
             <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
-                <div class="badge"> SUP </div>
+<!--                <div class="badge">-->
+<!--                    <img class="badge" src="badges/Truncated axis.png" alt="background image" />-->
+                    <img class="badge" src={logo} alt="background image" />
+<!--                </div>-->
             </div>
         </div>
+
+        <img class="badge" src={logo} alt="background image" />
+
 
         <div class="row">
             <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
@@ -770,6 +792,12 @@
     .inside-row {
         display: flex;
         flex-direction: row;
+    }
+
+    /* Ratio of 8.75 using png from the website*/
+    img {
+        width: 105px;
+        height: 12px;
     }
 
 </style>

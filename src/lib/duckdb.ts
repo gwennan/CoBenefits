@@ -208,8 +208,6 @@ export function getTotalCBForOneLAD(LAD: string) {
     //     FROM ${DB_TABLE_NAME}
     //     WHERE LAD = '${LAD}'
     //     AND co_benefit_type='Total'`
-
-    console.log("Q ", q)
     return q;
 }
 
