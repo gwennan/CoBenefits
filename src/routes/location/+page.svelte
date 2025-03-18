@@ -452,6 +452,7 @@
         let data = dataLAD.concat(dataAllZones)
         console.log(23232323009, data)
 
+
         let plot = Plot.plot({
             height: height,
             width: 800,
@@ -552,13 +553,20 @@
 
         let plotPerCB = Plot.plot({
             height: height,
-            width: 800,
+            width: 1000,
             ...MARGINS,
             paddingLeft: 200,
             marginRight: 0,
+            insetLeft:10,
+            insetRight:10,
+            insetBottom:30,
+            style: {fontSize: "10px"},
+            color: {legend: true,
+                    domain:  ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"], 
+                    range: ['#5DBB46', '#E11484', '#00AED9', '#F36D25', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#FDB713', '#48773E', '#183668'] },
+            y: {tickFormat: ".2f", label:'Value (£)'},
+            x: {label:'Year'},
             // x: {tickSize: 0, label: null, ticks: []},
-            color: {legend: true},
-
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
                     x: "time",
@@ -566,7 +574,9 @@
                     tip: true,
                     fill: "cobenefit"
                     // fill: "scenario",
-                })),
+                })), 
+                Plot.ruleY([0], {strokeWidth:8, stroke:'white', opacity:1, strokeLinecap:'round'}),
+                Plot.ruleY([0], {strokeWidth:2, stroke:'#333333', opacity:1, strokeLinecap:'round'}),
 
             ]
         })

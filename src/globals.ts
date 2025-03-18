@@ -13,7 +13,9 @@ SEF.sort((a,b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
 
 // The years labels have an Y for start otherwise it causes sql issues
 // export const TIMES = ["2025_2029", "2030_2034", "2035_2039", "2040_2044", "2045_2040"]
-export const TIMES = ["Y2025_2029", "Y2030_2034", "Y2035_2039", "Y2040_2044", "Y2045_2049"]
+// export const TIMES = ["Y2025_2029", "Y2030_2034", "Y2035_2039", "Y2040_2044", "Y2045_2049"]
+export const TIMES = ["Y2025", "Y2026", "Y2027", "Y2028", "Y2029", "Y2030", "Y2031", "Y2032", "Y2033", "Y2034", "Y2035", "Y2036", "Y2037", "Y2038", "Y2039", "Y2040", "Y2041", "Y2042", 
+    "Y2043", "Y2044", "Y2045", "Y2046", "Y2047", "Y2048", "Y2049", "Y2050"]
 
 export type CoBenefit = typeof COBENEFS[number]
 export type Scenario = typeof SCENARIOS[number]
