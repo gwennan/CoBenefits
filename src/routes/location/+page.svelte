@@ -15,6 +15,7 @@
         SCENARIOS, type Scenario, TIMES
     } from "../../globals";
     import {legend} from "@observablehq/plot";
+    import {getRandomSubarray} from "$lib/utils";
 
 
     let element: HTMLElement
@@ -26,6 +27,7 @@
     let CBOverTimePerCBPLot: HTMLElement
     let SEFPlotLAD: Record<SEFactor, HTMLElement> = {};
     let SEFPlotFullDistrib: Record<SEFactor, HTMLElement> = {};
+    let SEFPlotPerCB: Record<SEFactor, HTMLElement> = {};
     let scenarioXcoBenefPLots: Record<Scenario, HTMLElement> = {};
     let chartType: "barchart" | "boxplot" | "distribution" = "barchart"
     let isSEFAggregated = false;
@@ -255,68 +257,82 @@
                 SEFPlotLAD[sef]?.append(plot)
 
 
-            } else {
+            }
+            else {
                 if (SEF_CATEGORICAL.includes(sef)) {
-                    plotFullDistrib = Plot.plot({
-                        height: height / 2,
-                        width: 500,
-                        ...MARGINS,
-                        y: {grid: true, label: "mean value (£)"},
-                        x: {grid: true, label: sef, type: "band"},
-                        style: {fontSize: "18px"},
-                        color: {legend: true},
-                        marks: [
-                            Plot.barY(totalCBAllZones, Plot.groupX({y: "count"}, {
-                                x: sef
-                            })),
-                        ]
-                    })
-                    let domain = plotFullDistrib.scale('x').domain;
+                    // plotFullDistrib = Plot.plot({
+                    //     height: height / 2,
+                    //     width: 500,
+                    //     ...MARGINS,
+                    //     y: {grid: true, label: "mean value (£)"},
+                    //     x: {grid: true, label: sef, type: "band"},
+                    //     style: {fontSize: "18px"},
+                    //     color: {legend: true},
+                    //     marks: [
+                    //         Plot.barY(totalCBAllZones, Plot.groupX({y: "count"}, {
+                    //             x: sef
+                    //         })),
+                    //     ]
+                    // })
+                    // let domain = plotFullDistrib.scale('x').domain;
 
                     plot = Plot.plot({
                         height: height / 2,
                         width: 500,
                         ...MARGINS,
-                        y: {grid: true, label: "mean value (£)"},
-                        x: {grid: true, label: sef, domain: domain, tickFormat: d => Math.floor(d)},
+                        marginLeft: 100,
+                        // y: {grid: true, label: "mean value (£)"},
+                        // x: {grid: true, label: sef, domain: domain, tickFormat: d => Math.floor(d)},
+                        x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
-                            Plot.barY(oneLADData, Plot.groupX({y: "count"}, {
+                            Plot.barY(totalCBAllZones, Plot.normalizeY(Plot.groupX({y: "count"}, {
+                                x: sef,
+                                dx: 20,
+                                fill: AVERAGE_COLOR
+                            })  )),
+                            Plot.barY(oneLADData, Plot.normalizeY(Plot.groupX({y: "count"}, {
                                 x: sef
-                            })),
+                            })))
                         ]
                     })
                 } else {
-
-                    plotFullDistrib = Plot.plot({
-                        height: height / 2,
-                        width: 500,
-                        ...MARGINS,
-                        // y: {grid: true, label: "mean value (£)"},
-                        style: {fontSize: "18px"},
-                        color: {legend: true},
-                        marks: [
-                            Plot.areaY(totalCBAllZones, Plot.binX({y: "count"}, {
-                                x: sef,
-                                tip: true
-                            })),
-                        ]
-                    })
-
-                    let domain = plotFullDistrib.scale('x').domain;
+                    // plotFullDistrib = Plot.plot({
+                    //     height: height / 2,
+                    //     width: 500,
+                    //     ...MARGINS,
+                    //     // y: {grid: true, label: "mean value (£)"},
+                    //     style: {fontSize: "18px"},
+                    //     color: {legend: true},
+                    //     marks: [
+                    //         Plot.areaY(totalCBAllZones, Plot.binX({y: "count"}, {
+                    //             x: sef,
+                    //             tip: true
+                    //         })),
+                    //     ]
+                    // })
+                    //
+                    // let domain = plotFullDistrib.scale('x').domain;
 
                     plot = Plot.plot({
                         height: height / 2,
                         ...MARGINS,
                         // y: {label: "Datazones Frequency"},
-                        x: {domain},
+                        // x: {domain},
                         style: {fontSize: "18px"},
                         marks: [
-                            Plot.areaY(oneLADData, Plot.binX({y: "count"}, {
+                            Plot.lineY(oneLADData, Plot.normalizeY(Plot.binX({y: "count"}, {
                                 x: sef,
-                                tip: true
-                            })),
+                                tip: true,
+                                opacity: 0.3
+                            }))),
+                            Plot.lineY(totalCBAllZones, Plot.normalizeY(Plot.binX({y: "count"}, {
+                                x: sef,
+                                tip: true,
+                                // fill: AVERAGE_COLOR,
+                                // opacity: 0.3,
+                            }))),
                             //  Median and Mean from ALL datazones
                         ]
                     })
@@ -324,6 +340,33 @@
                 SEFPlotFullDistrib[sef]?.append(plotFullDistrib);
                 SEFPlotLAD[sef]?.append(plot)
             }
+
+
+
+            console.log(98767897, totalCBAllZones)
+            let cbplot = Plot.plot({
+                height: height / 2,
+                ...MARGINS,
+                // y: {label: "Datazones Frequency"},
+                // x: {domain},
+                style: {fontSize: "18px"},
+                marks: [
+                    Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
+                        x: sef,
+                        y: "total"
+                    }),
+                    Plot.dot(oneLADData, {
+                        x: sef,
+                        y: "total"
+                    }),
+                    Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
+                      x: sef,
+                      y: "total"
+                    }),
+                ]
+            })
+
+            SEFPlotPerCB[sef]?.append(cbplot)
         })
     }
 
@@ -506,7 +549,6 @@
                 return {time: t, value: d[t], cobenefit: d.co_benefit_type}
             })
         })
-        console.log(9999, dataCBs)
 
         let plotPerCB = Plot.plot({
             height: height,
@@ -556,6 +598,10 @@
             sefPlot?.firstChild?.remove();
         })
 
+        Object.values(SEFPlotPerCB).forEach(sefPlot => {
+            sefPlot?.firstChild?.remove();
+        })
+
         renderSEFPlot();
     }
 
@@ -578,7 +624,7 @@
 
 <div class="page-container" bind:this={element}>
 
-    <div class="component">
+    <div class="component header">
         <h1> {LAD} </h1>
         <p> {LAD} is ... </p>
     </div>
@@ -668,6 +714,12 @@
                         <div>
                             Global Distribution:
                             <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>
+                            </div>
+                        </div>
+
+                        <div>
+                            Per Cobenefit
+                            <div class="plot" bind:this={SEFPlotPerCB[sef]}>
                             </div>
                         </div>
                     {/if}
