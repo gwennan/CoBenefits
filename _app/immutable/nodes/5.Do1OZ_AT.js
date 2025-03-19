@@ -1,0 +1,1 @@
+import{g as a,k as t,l as e}from"../chunks/duckdb.DuD3n8A6.js";import{L as s}from"../chunks/layout.C1r_BJWO.js";async function o(){return{data:await a(t()),dataPerCb:await a(e())}}const l=Object.freeze(Object.defineProperty({__proto__:null,load:o},Symbol.toStringTag,{value:"Module"}));export{s as component,l as universal};
