@@ -68,6 +68,7 @@
     })
 
     function renderPlot() {
+        console.log("RENDER")
         if (chartType == "boxplot") {
             plot?.append(
                 Plot.plot({
@@ -451,7 +452,8 @@
                 width: 410,
                 ...MARGINS,
                 marginRight: 0,
-                x: {type: "band"},
+                marginLeft: 100,
+                // x: {type: "band"},
 
                 marks: [
                     Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
@@ -629,6 +631,12 @@
         if (figure) {
           figure.remove();
         }
+
+        // Sometimes it's not a figure markup but a svg?
+        const svg = plotDiv.querySelector('svg');
+        if (svg) {
+          svg.remove();
+        }
     }
 
 
@@ -639,7 +647,12 @@
         // CBOverTimePerScenarioPLot?.firstChild?.remove();
         // CBOverTimePerCBPLot?.firstChild?.remove();
 
-        if (plot) removeChart(plot) // remove old chart, if any
+         // remove old chart, if any
+        if (plot) {
+            console.log("REM")
+            removeChart(plot)
+        }
+
         if (plotPerCb) removeChart(plotPerCb) // remove old chart, if any
         if (CBOverTimePLot) removeChart(CBOverTimePLot) // remove old chart, if any
         if (CBOverTimePerScenarioPLot) removeChart(CBOverTimePerScenarioPLot)
