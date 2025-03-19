@@ -22,6 +22,7 @@
     import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
     import mouseOverBadge from '$lib/badges/Mouse Over.png';
     import roundingBadge from '$lib/badges/Rounding.png';
+    import aggregationBadge from '$lib/badges/Aggregated data.png';
     import zoomBadge from '$lib/badges/Zoom.png';
 
     import normalizedBadge from '$lib/badges/Data normalized.png';
@@ -63,6 +64,9 @@
 
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
+    // const allCBAllLAD = data.allCBAllLAD;
+
+    console.log(9876, totalCBAllLAD)
 
 
     const LADToName = data.LADToName;
@@ -78,7 +82,6 @@
     })
 
     function renderPlot() {
-        console.log("RENDER")
         if (chartType == "boxplot") {
             plot?.append(
                 Plot.plot({
@@ -206,6 +209,14 @@
                     //     fill: AVERAGE_COLOR,
                     //     tip: true
                     // })),
+
+                    Plot.barY(totalCBAllLAD, Plot.groupX({y: "mean"}, {
+                        y: "val",
+                        x: "co_benefit_type",
+                        dx: AVERAGE_DX,
+                        fill: AVERAGE_COLOR,
+                        tip: true
+                    })),
 
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
@@ -754,6 +765,7 @@
                 <div class="plot" bind:this={plot}>
                     <div class="badge-container">
                         <img class="badge" src={mouseOverBadge} />
+                        <img class="badge" src={aggregationBadge} />
                     </div>
                 </div>
             </div>
