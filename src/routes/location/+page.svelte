@@ -17,6 +17,8 @@
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
 
+    // BADGES
+    import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -615,13 +617,29 @@
 
     }
 
+    function removeChart(plotDiv) {
+        // Select the figure element within the div
+        const figure = plotDiv.querySelector('figure');
+
+        // Remove the figure element if it exists
+        if (figure) {
+          figure.remove();
+        }
+    }
+
 
     $: {
-        plot?.firstChild?.remove(); // remove old chart, if any
-        plotPerCb?.firstChild?.remove(); // remove old chart, if any
-        CBOverTimePLot?.firstChild?.remove(); // remove old chart, if any
-        CBOverTimePerScenarioPLot?.firstChild?.remove();
-        CBOverTimePerCBPLot?.firstChild?.remove();
+        // plot?.firstChild?.remove(); // remove old chart, if any
+        // plotPerCb?.firstChild?.remove(); // remove old chart, if any
+        // CBOverTimePLot?.firstChild?.remove(); // remove old chart, if any
+        // CBOverTimePerScenarioPLot?.firstChild?.remove();
+        // CBOverTimePerCBPLot?.firstChild?.remove();
+
+        if (plot) removeChart(plot) // remove old chart, if any
+        if (plotPerCb) removeChart(plotPerCb) // remove old chart, if any
+        if (CBOverTimePLot) removeChart(CBOverTimePLot) // remove old chart, if any
+        if (CBOverTimePerScenarioPLot) removeChart(CBOverTimePerScenarioPLot)
+        if (CBOverTimePerCBPLot) removeChart(CBOverTimePerCBPLot)
 
         //ugly hack for reactivity
         if (chartType) {
@@ -759,8 +777,8 @@
             <h3 class="component-title">11 Types of Co-benefits Distribution Following Balance Pathway from 2025-2050</h3>
             <div class="row">
                 <div class="row">
-                    <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
-                    <div class="badge"> SUP </div>
+                    <div class="plot" bind:this={CBOverTimePerCBPLot}>
+                    </div>
                 </div>
             </div>
         </div>
@@ -769,8 +787,11 @@
             <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
-                    <div class="badge"> SUP </div>
+                    <div class="badge-container">
+                        <img class="badge" src={TruncAxisBadge} />
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
