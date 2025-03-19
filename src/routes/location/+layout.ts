@@ -4,7 +4,7 @@ import {
     getTotalCBForOneLAD, getSUMCBGroupedByLAD,
     getTableData, getTotalCBAllDatazones,
     getTotalForOneZone,
-    getTotalPerOneCoBenefit, getTotalPerPathway, getAllCBForOneLAD, getAllCBAllDatazones
+    getTotalPerOneCoBenefit, getTotalPerPathway, getAllCBForOneLAD, getAllCBAllDatazones, getSUMCBGroupedByLADAndCB
 } from "$lib/duckdb";
 import {COBENEFS} from "../../globals";
 
@@ -22,6 +22,8 @@ export async function load({ url }) {
 
     let allCBAllLAD = await getTableData(getAverageCBGroupedByLAD(COBENEFS));
 
+    let allCBAllLADSUM = await getTableData(getSUMCBGroupedByLADAndCB());
+
     let oneLADData = await getTableData(getTotalCBForOneLAD(LAD));
     let oneLADAllCBs = await getTableData(getAllCBForOneLAD(LAD));
 
@@ -34,6 +36,7 @@ export async function load({ url }) {
         allCBAllLAD,
         oneLADData,
         oneLADAllCBs,
+        allCBAllLADSUM,
         allCBsAllZones
     };
 }

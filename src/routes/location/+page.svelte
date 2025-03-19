@@ -65,6 +65,8 @@
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
     // const allCBAllLAD = data.allCBAllLAD;
+    const allCBAllLADSUM = data.allCBAllLADSUM;
+
 
     console.log(9876, totalCBAllLAD)
 
@@ -210,7 +212,7 @@
                     //     tip: true
                     // })),
 
-                    Plot.barY(totalCBAllLAD, Plot.groupX({y: "mean"}, {
+                    Plot.barY(allCBAllLADSUM, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
                         dx: AVERAGE_DX,
@@ -774,6 +776,9 @@
                 <h3 class="component-title">11 Types of Co-Benefits Values (vs. UK Average)</h3>
                 <p class="description">Co-benefits values in {LADToName[LAD]} verus average value across all local authorities in UK.</p>
                 <div class="plot" bind:this={plotPerCb}>
+                    <div class="badge-container">
+                        <img class="badge" src={aggregationBadge} />
+                    </div>
                 </div>
             </div>
 
@@ -781,6 +786,9 @@
                 <h3 class="component-title">{LADToName[LAD]} on UK Map</h3>
                 <p class="description">Scroll for zooming in and out.</p>
                 <div id="map" bind:this={mapDiv}>
+                    <div class="badge-container">
+                        <img class="badge" src={zoomBadge} />
+                    </div>
                 </div>
             </div>
         </div>

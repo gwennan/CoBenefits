@@ -3,7 +3,7 @@ import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?
 import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
 
-import {type CoBenefit, type Scenario, SEF, type SEFactor, TIMES} from "../globals";
+import {type CoBenefit, COBENEFS, type Scenario, SEF, type SEFactor, TIMES} from "../globals";
 import { browser } from '$app/environment';
 
 let db: AsyncDuckDB;
@@ -159,6 +159,14 @@ export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
             GROUP BY LAD, scenario`
     }
+    return query
+}
+
+export function getSUMCBGroupedByLADAndCB(time="total") {
+    let query = `SELECT SUM("${time}") as val, LAD as Lookup_Value, co_benefit_type
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type in (${COBENEFS.map(v => `'${v}'`).join(",")})
+            GROUP BY LAD, co_benefit_type`
     return query
 }
 
