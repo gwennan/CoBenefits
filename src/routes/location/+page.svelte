@@ -285,8 +285,6 @@
                         width: 500,
                         ...MARGINS,
                         marginLeft: 100,
-                        // y: {grid: true, label: "mean value (£)"},
-                        // x: {grid: true, label: sef, domain: domain, tickFormat: d => Math.floor(d)},
                         x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
                         style: {fontSize: "18px"},
                         color: {legend: true},
@@ -295,7 +293,7 @@
                                 x: sef,
                                 dx: 20,
                                 fill: AVERAGE_COLOR
-                            })  )),
+                            }))),
                             Plot.barY(oneLADData, Plot.normalizeY(Plot.groupX({y: "count"}, {
                                 x: sef
                             })))
@@ -326,18 +324,27 @@
                         // x: {domain},
                         style: {fontSize: "18px"},
                         marks: [
-                            Plot.lineY(oneLADData, Plot.normalizeY(Plot.binX({y: "count"}, {
+                            Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
                                 x: sef,
                                 tip: true,
-                                stroke:"lightblue",
-                                strokeWidth: 1.2,
-                            }))),
-                            Plot.lineY(totalCBAllZones, Plot.normalizeY(Plot.binX({y: "count"}, {
+                                fill: AVERAGE_COLOR,
+                                stroke: AVERAGE_COLOR,
+                                // stroke:"lightblue",
+                                // strokeWidth: 1.2,
+                                fillOpacity: 0.2,
+                                strokeWidth: 3
+
+                            })),
+                            Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
                                 x: sef,
                                 tip: true,
+                                fill: "black",
+                                stroke: "black",
+                                fillOpacity: 0.2,
+                                strokeWidth: 3
                                 // fill: AVERAGE_COLOR,
                                 // opacity: 0.3,
-                            }))),
+                            })),
                             //  Median and Mean from ALL datazones
                         ]
                     })
@@ -352,28 +359,41 @@
                 // y: {label: "Datazones Frequency"},
                 // x: {domain},
                 style: {fontSize: "18px"},
+                color: {range: ["rgb(227, 248, 255)", "lightblue"]},
                 marks: [
-                    Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
+                    // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
+                    //     x: sef,
+                    //     y: "total",
+                    //     stroke: "lightblue",
+                    //     strokeWidth: 0.5,
+                    // }),
+                    // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
+                    //     x: sef,
+                    //     y: "total",
+                    //     stroke: "lightblue",
+                    //     strokeWidth: 1.2,
+                    //     thresholds: 10
+                    // }),
+                    Plot.density(getRandomSubarray(totalCBAllZones, 30000), {
                         x: sef,
                         y: "total",
-                        stroke: "lightblue",
-                        strokeWidth: 0.5,
-                    }),
-                    Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
-                        x: sef,
-                        y: "total",
-                        stroke: "lightblue",
-                        strokeWidth: 1.2,
+                        fill: "density",
+                        // strokeWidth: 1.2,
                         thresholds: 10
                     }),
                     Plot.dot(oneLADData, {
                         x: sef,
                         y: "total",
+                        fill: "black",
+                        r: 2
                     }),
                     Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
                       x: sef,
                       y: "total"
                     }),
+                    // Declaring the axes so they are on top of the densities
+                    Plot.axisY(),
+                    Plot.axisX({anchor: "bottom"})
                 ]
             })
 
@@ -600,6 +620,8 @@
         plot?.firstChild?.remove(); // remove old chart, if any
         plotPerCb?.firstChild?.remove(); // remove old chart, if any
         CBOverTimePLot?.firstChild?.remove(); // remove old chart, if any
+        CBOverTimePerScenarioPLot?.firstChild?.remove();
+        CBOverTimePerCBPLot?.firstChild?.remove();
 
         //ugly hack for reactivity
         if (chartType) {
