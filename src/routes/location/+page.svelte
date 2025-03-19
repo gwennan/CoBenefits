@@ -26,7 +26,7 @@
 
     import normalizedBadge from '$lib/badges/Data normalized.png';
     import predictionsBadge from '$lib/badges/Contains predictions.png';
-    import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources.png';
+    import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
     import modeledDataBadge from '$lib/badges/Contains modeled data.png';
     import binningBadge from '$lib/badges/Binning applied.png';
 
