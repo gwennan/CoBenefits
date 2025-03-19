@@ -1,5 +1,10 @@
+import * as d3 from "d3"
+
 export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
-export const SCENARIOS = ["BNZ", "test"]
+// export const SCENARIOS = ["BNZ", "test"]
+export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
+
+
 // export const SCENARIOS = ["BNZ", "test", "all"]
 export let SEF = ['Under_35',
        'Over_65', 'EPC', 'Median_Income', 'Tenure', 'Typology', 'Unemployment',
@@ -14,8 +19,10 @@ SEF.sort((a,b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
 // The years labels have an Y for start otherwise it causes sql issues
 // export const TIMES = ["2025_2029", "2030_2034", "2035_2039", "2040_2044", "2045_2040"]
 // export const TIMES = ["Y2025_2029", "Y2030_2034", "Y2035_2039", "Y2040_2044", "Y2045_2049"]
-export const TIMES = ["Y2025", "Y2026", "Y2027", "Y2028", "Y2029", "Y2030", "Y2031", "Y2032", "Y2033", "Y2034", "Y2035", "Y2036", "Y2037", "Y2038", "Y2039", "Y2040", "Y2041", "Y2042", 
-    "Y2043", "Y2044", "Y2045", "Y2046", "Y2047", "Y2048", "Y2049", "Y2050"]
+
+export let TIMES = Array(26).fill(2025).map((x, y) => x + y)
+TIMES = TIMES.map(t => `${t}`)
+
 
 export type CoBenefit = typeof COBENEFS[number]
 export type Scenario = typeof SCENARIOS[number]
@@ -24,7 +31,7 @@ export type SEFactor = typeof COBENEFS[number]
 
 // DESIGN PARAMS
 export const VIS_COLOR = "black";
-export const AVERAGE_COLOR = "gray";
+export const AVERAGE_COLOR = "lightblue";
 export const MARGINS = {
         marginLeft: 60,
         marginRight: 60,
@@ -34,4 +41,6 @@ export const MARGINS = {
 
 export const AVERAGE_DX = 20;
 
+export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#F36D25', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#FDB713', '#48773E', '#183668'];
+export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
 
