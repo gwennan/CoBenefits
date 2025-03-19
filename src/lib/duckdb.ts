@@ -188,12 +188,22 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-    const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
+    // const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
     return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
+}
+
+// Co-benefit=total to get only one row per datazone
+export function getAllCBAllDatazones() {
+    // const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
+
+    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
+    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type!='Total'`
 }
 
 

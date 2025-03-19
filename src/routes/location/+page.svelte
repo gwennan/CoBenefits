@@ -24,6 +24,13 @@
     import roundingBadge from '$lib/badges/Rounding.png';
     import zoomBadge from '$lib/badges/Zoom.png';
 
+    import normalizedBadge from '$lib/badges/Data normalized.png';
+    import predictionsBadge from '$lib/badges/Contains predictions.png';
+    import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources.png';
+    import modeledDataBadge from '$lib/badges/Contains modeled data.png';
+    import binningBadge from '$lib/badges/Binning applied.png';
+
+
     let element: HTMLElement
     let plot: HTMLElement
     let plotPerCb: HTMLElement
@@ -48,8 +55,11 @@
     const oneLADData = data.oneLADData;
     const oneLADAllCbs = data.oneLADAllCBs;
 
-    const allCBAllLAD = data.allCBAllLAD;
     const totalCBAllZones = data.totalCBAllZones;
+    const allCBAllZones = data.totalCBAllZones;
+
+    const allCBAllLAD = data.allCBAllLAD;
+
 
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
@@ -182,13 +192,21 @@
                 x: {type: "band"},
 
                 marks: [
-                    Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
-                        y: "val",
-                        x: "co_benefit_type",
-                        dx: AVERAGE_DX,
-                        fill: AVERAGE_COLOR,
-                        tip: true
-                    })),
+                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
+                    //     y: "val",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
+                    // Plot.barY(allCBAllZones, Plot.groupX({y: "sum"}, {
+                    //     y: "total",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
+
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
@@ -852,6 +870,11 @@
                                 <h3 class="component-title">Data Zones Distribution (vs. UK average)</h3>
                                 <p class="description short">Histogram shows the number of data zones distributed across different household social economic factors.</p>
                                 <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                    <div class="badge-container">
+                                        <img class="badge" src={normalizedBadge} />
+                                        <img class="badge" src={modeledDataBadge} />
+                                        <img class="badge" src={binningBadge} />
+                                    </div>
                                 </div>
                             </div>
 
@@ -868,6 +891,8 @@
                                 <div class="plot" bind:this={SEFPlotPerCB[sef]}>
                                     <div class="badge-container">
                                         <img class="badge" src={overlapBadge} />
+                                        <img class="badge" src={multipleDataSourceBadge} />
+                                        <img class="badge" src={modeledDataBadge} />
                                     </div>
                                 </div>
                             </div>
