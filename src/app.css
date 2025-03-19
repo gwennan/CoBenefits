@@ -121,7 +121,7 @@ button:focus {
 
     /* Ratio of 8.75 using png from the website*/
     width: 175px;
-    height: 20px;
+    /*height: 20px;*/
 }
 
 .badge {

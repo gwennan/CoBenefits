@@ -21,6 +21,7 @@
     import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
     import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
     import mouseOverBadge from '$lib/badges/Mouse Over.png';
+    import roundingBadge from '$lib/badges/Rounding.png';
     import zoomBadge from '$lib/badges/Zoom.png';
 
     let element: HTMLElement
@@ -676,7 +677,8 @@
         heatmapPlot?.firstChild?.remove();
 
         Object.values(scenarioXcoBenefPLots).forEach(plot => {
-            plot?.firstChild?.remove();
+            // plot?.firstChild?.remove();
+            if (plot) removeChart(plot)
         })
 
         renderHeatmap();
@@ -760,6 +762,9 @@
                     <h3 class="component-title"> Pathway: {scenario}</h3>
                     <p class="description">Please refer to CCC website on definitions of {scenario}.</p>
                     <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
+                        <div class="badge-container">
+                            <img class="badge" src={roundingBadge} />
+                        </div>
                     </div>
                 </div>  
             {/each}
