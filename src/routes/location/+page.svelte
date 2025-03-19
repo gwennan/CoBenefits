@@ -19,6 +19,9 @@
 
     // BADGES
     import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
+    import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
+    import mouseOverBadge from '$lib/badges/Mouse Over.png';
+    import zoomBadge from '$lib/badges/Zoom.png';
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -652,15 +655,18 @@
 
     $: {
         Object.values(SEFPlotLAD).forEach(sefPlot => {
-            sefPlot?.firstChild?.remove();
+            if (sefPlot) removeChart(sefPlot)
+            // sefPlot?.firstChild?.remove();
         })
 
         Object.values(SEFPlotFullDistrib).forEach(sefPlot => {
-            sefPlot?.firstChild?.remove();
+            if (sefPlot) removeChart(sefPlot)
+            // sefPlot?.firstChild?.remove();
         })
 
         Object.values(SEFPlotPerCB).forEach(sefPlot => {
-            sefPlot?.firstChild?.remove();
+            if (sefPlot) removeChart(sefPlot)
+            // sefPlot?.firstChild?.remove();
         })
 
         renderSEFPlot();
@@ -713,6 +719,9 @@
                 </div>
 
                 <div class="plot" bind:this={plot}>
+                    <div class="badge-container">
+                        <img class="badge" src={mouseOverBadge} />
+                    </div>
                 </div>
             </div>
 
@@ -767,7 +776,8 @@
         <div class="component singlevis">
             <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. UK Average)</h3>
             <div class="row">
-                <div class="plot" bind:this={CBOverTimePLot}></div>
+                <div class="plot" bind:this={CBOverTimePLot}>
+                </div>
             </div>
         </div>
     
@@ -838,6 +848,9 @@
 
                             <div>
                                 <div class="plot" bind:this={SEFPlotPerCB[sef]}>
+                                    <div class="badge-container">
+                                        <img class="badge" src={overlapBadge} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
