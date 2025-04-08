@@ -815,6 +815,7 @@
                     <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
                         <div class="badge-container">
                             <img class="badge" src={roundingBadge} />
+                            <img class="badge" src={aggregationBadge} />
                         </div>
                     </div>
                 </div>  
@@ -833,6 +834,9 @@
             <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. UK Average)</h3>
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePLot}>
+                    <div class="badge-container">
+                            <img class="badge" src={predictionsBadge} />
+                        </div>
                 </div>
             </div>
         </div>
@@ -844,6 +848,9 @@
             <div class="row">
                 <div class="row">
                     <div class="plot" bind:this={CBOverTimePerCBPLot}>
+                        <div class="badge-container">
+                            <img class="badge" src={predictionsBadge} />
+                        </div>
                     </div>
                 </div>
             </div>
