@@ -118,6 +118,7 @@ export class Map {
             if (this.granularity == "LAD") {
                 this.geojson = LADZones;
 
+                console.log(22222, data)
                 data.forEach((d) => {
                     // change total for time selection
                     this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
@@ -154,6 +155,7 @@ export class Map {
                 .range(["white", "red"])
 
         } else {
+            console.log(777777, data, this.dataKey);
             domain = d3.extent(data.map(d => d[this.dataKey]));
             domain.splice(1, 0, 0);
             if (domain[0] >= 0) {
@@ -166,7 +168,6 @@ export class Map {
                 .interpolator(d3.interpolateBrBG)
 
             console.log("DOMAIN ", domain)
-
         }
 
     }

@@ -104,7 +104,7 @@ button:focus {
 }
 
 .header {
-    position: sticky;
+    /*position: sticky;*/
     top: 0;
     padding: 20px 16px;
     z-index: 10;
