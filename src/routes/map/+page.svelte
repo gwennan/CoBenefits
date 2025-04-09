@@ -48,25 +48,24 @@
     //     }
     // })()
 
-    $: {
-        console.log('sv update')
-        if (granularity == "LAD") {
-            fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-        } else if (granularity == "LSOA") {
-            fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
-        }
-
-        fullData.then((data) => {
-            map.update(data);
-        })
-
-        if (map?.loaded) {
-            legendSvg = map.legend();
-            legendDiv.innerHTML = "";
-            legendDiv.append(legendSvg)
-            // document.querySelector("#legend").append(legendSvg)
-        }
-    }
+    // $: {
+    //     if (granularity == "LAD") {
+    //         fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+    //     } else if (granularity == "LSOA") {
+    //         fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+    //     }
+    //
+    //     fullData.then((data) => {
+    //         map.update(data);
+    //     })
+    //
+    //     if (map?.loaded) {
+    //         legendSvg = map.legend();
+    //         legendDiv.innerHTML = "";
+    //         legendDiv.append(legendSvg)
+    //         // document.querySelector("#legend").append(legendSvg)
+    //     }
+    // }
 
     // $: {
     //     if (map?.loaded) {
@@ -81,9 +80,12 @@
 
         // first load of data
         // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
-        fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+        console.log(timeSelected, scenario, Array.from(coBenefits))
+        // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+        fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
 
 
+        console.log(granularity)
         map = new Map(fullData, granularity, mapDiv);
         map.initMap();
         console.log("map initiated")
@@ -93,47 +95,47 @@
 
 
         // Listen for zoom events
-        map.map.on('zoom', () => {
-            const currentZoom = map.map.getZoom();
-
-            console.log("zz ", currentZoom);
-            if (currentZoom > 30 && map.granularity != "LSOA") {
-            // if (currentZoom > 8 && map.granularity != "LSOA") {
-                console.log("GOOOOO")
-
-                granularity = "LSOA";
-                // Zoom level is greater than the threshold, update the layer
-
-
-                // Remove all layers from the map
-                const layers = map.map.getStyle().layers; // Get all layers in the current map style
-                if (layers) {
-                    layers.forEach(layer => {
-                        map.map.removeLayer(layer.id); // Remove each layer by its id
-                    });
-                }
-
-                // Remove all sources from the map
-                const sources = map.map.getStyle().sources;
-                for (const sourceId in sources) {
-                    map.map.removeSource(sourceId); // Remove each source by its id
-                }
-
-                map.reset();
-                // map.dataKey = "total";
-                map.granularity = "LSOA";
-                getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
-                    map.loadData(data);
-                    map.loadLayers();
-                    // map.initMap();
-                })
-                // map.loadData(data);
-                // map.initMap();
-
-            } else {
-                // Zoom level is below or equal to the threshold, revert changes
-            }
-        });
+        // map.map.on('zoom', () => {
+        //     const currentZoom = map.map.getZoom();
+        //
+        //     console.log("zz ", currentZoom);
+        //     if (currentZoom > 30 && map.granularity != "LSOA") {
+        //     // if (currentZoom > 8 && map.granularity != "LSOA") {
+        //         console.log("GOOOOO")
+        //
+        //         granularity = "LSOA";
+        //         // Zoom level is greater than the threshold, update the layer
+        //
+        //
+        //         // Remove all layers from the map
+        //         const layers = map.map.getStyle().layers; // Get all layers in the current map style
+        //         if (layers) {
+        //             layers.forEach(layer => {
+        //                 map.map.removeLayer(layer.id); // Remove each layer by its id
+        //             });
+        //         }
+        //
+        //         // Remove all sources from the map
+        //         const sources = map.map.getStyle().sources;
+        //         for (const sourceId in sources) {
+        //             map.map.removeSource(sourceId); // Remove each source by its id
+        //         }
+        //
+        //         map.reset();
+        //         // map.dataKey = "total";
+        //         map.granularity = "LSOA";
+        //         getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
+        //             map.loadData(data);
+        //             map.loadLayers();
+        //             // map.initMap();
+        //         })
+        //         // map.loadData(data);
+        //         // map.initMap();
+        //
+        //     } else {
+        //         // Zoom level is below or equal to the threshold, revert changes
+        //     }
+        // });
 
 
         // legendSvg = Legend(colorScale, {
@@ -192,11 +194,11 @@
         <div class="component column" id="control-panel">
 
             <div>
-                <h2> Scenario </h2>
-                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>
-                <label for="html">BNZ</label><br>
-                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">
-                <label for="css">Test</label><br>
+<!--                <h2> Scenario </h2>-->
+<!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
+<!--                <label for="html">BNZ</label><br>-->
+<!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
+<!--                <label for="css">Test</label><br>-->
 
                 <h2> Co Benefits </h2>
                 {#each COBENEFS as coBenef}

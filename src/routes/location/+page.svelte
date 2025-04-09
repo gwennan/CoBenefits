@@ -22,7 +22,14 @@
     import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
     import mouseOverBadge from '$lib/badges/Mouse Over.png';
     import roundingBadge from '$lib/badges/Rounding.png';
+    import aggregationBadge from '$lib/badges/Aggregated data.png';
     import zoomBadge from '$lib/badges/Zoom.png';
+    import normalizedBadge from '$lib/badges/Data normalized.png';
+    import predictionsBadge from '$lib/badges/Contains predictions.png';
+    import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
+    import modeledDataBadge from '$lib/badges/Contains modeled data.png';
+    import binningBadge from '$lib/badges/Binning applied.png';
+
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -38,7 +45,7 @@
     let chartType: "barchart" | "boxplot" | "distribution" = "barchart"
     let isSEFAggregated = false;
 
-    let height = 300;
+    let height = 400;
 
     // Data from load function
     export let data;
@@ -48,12 +55,19 @@
     const oneLADData = data.oneLADData;
     const oneLADAllCbs = data.oneLADAllCBs;
 
-    const allCBAllLAD = data.allCBAllLAD;
     const totalCBAllZones = data.totalCBAllZones;
+    const allCBAllZones = data.totalCBAllZones;
+
+    const allCBAllLAD = data.allCBAllLAD;
+
 
     // aggregated by sum
     const totalCBAllLAD = data.totalCBAllLAD;
+    // const allCBAllLAD = data.allCBAllLAD;
+    const allCBAllLADSUM = data.allCBAllLADSUM;
 
+
+    // console.log(9876, totalCBAllLAD)
 
     const LADToName = data.LADToName;
 
@@ -68,7 +82,6 @@
     })
 
     function renderPlot() {
-        console.log("RENDER")
         if (chartType == "boxplot") {
             plot?.append(
                 Plot.plot({
@@ -178,17 +191,34 @@
         plotPerCb?.append(
             Plot.plot({
                 height: height,
+                width: 811,
                 MARGINS,
                 x: {type: "band"},
 
                 marks: [
-                    Plot.barY(allCBAllLAD, Plot.groupX({y: "sum"}, {
+                    // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
+                    //     y: "val",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
+                    // Plot.barY(allCBAllZones, Plot.groupX({y: "sum"}, {
+                    //     y: "total",
+                    //     x: "co_benefit_type",
+                    //     dx: AVERAGE_DX,
+                    //     fill: AVERAGE_COLOR,
+                    //     tip: true
+                    // })),
+
+                    Plot.barY(allCBAllLADSUM, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
                         dx: AVERAGE_DX,
                         fill: AVERAGE_COLOR,
                         tip: true
                     })),
+
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
@@ -410,9 +440,6 @@
 
     function renderHeatmap() {
 
-        // console.log(29, oneLADAllCbs)
-        // console.log(30, allCBAllLAD)
-
         // May want to show sum
         heatmapPlot?.append(Plot.plot({
             ...MARGINS,
@@ -542,7 +569,6 @@
 
 
                 // Select both <rect> elements within the current <g>
-
                 let first = d3.select(this).selectAll("rect").nodes()[0].getAttribute("height")
                 let second = d3.select(this).selectAll("rect").nodes()[1].getAttribute("height")
 
@@ -568,9 +594,7 @@
             ...MARGINS,
             paddingLeft: 200,
             marginRight: 0,
-            // x: {tickSize: 0, label: null, ticks: []},
             color: {legend: true},
-
             marks: [
                 Plot.lineY(data, Plot.groupX({y: "mean"}, {
                     x: "time",
@@ -579,11 +603,9 @@
                     stroke: "scenario"
                     // fill: "scenario",
                 })),
-
             ]
         })
         CBOverTimePerScenarioPLot?.append(plotPerScenario);
-
 
 
         let dataCBs = oneLADAllCbs.flatMap(d => {
@@ -720,30 +742,34 @@
         </div>
 
         <div id="vis-block">
-            <div class="component column" bind:clientHeight={height}>
-                <h3 class="component-title">Total Co-benefits Values Across Five Pathways (vs. UK Average)</h3>
-                <p class="description">Aggregated values from 2025-2050 in {LADToName[LAD]} verus average value of benefits recieved across all local authorities in UK.</p>
+<!--            <div class="component column" bind:clientHeight={height}>-->
+<!--                <h3 class="component-title">Total Co-benefits Values Across Five Pathways (vs. UK Average)</h3>-->
+<!--                <p class="description">Aggregated values from 2025-2050 in {LADToName[LAD]} verus average value of benefits recieved across all local authorities in UK.</p>-->
 
-                <div class="radio-set">
-                    <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
-                    <label for="html">Barchart</label><br>
-                    <input type="radio" on:change={onChange} name="visType" value="boxplot">
-                    <label for="css">Boxplot</label><br>
-                    <input type="radio" on:change={onChange} name="visType" value="distribution">
-                    <label for="javascript">Distribution</label>
-                </div>
+<!--                <div class="radio-set">-->
+<!--                    <input type="radio" on:change={onChange} name="visType" value="barchart" checked>-->
+<!--                    <label for="html">Barchart</label><br>-->
+<!--                    <input type="radio" on:change={onChange} name="visType" value="boxplot">-->
+<!--                    <label for="css">Boxplot</label><br>-->
+<!--                    <input type="radio" on:change={onChange} name="visType" value="distribution">-->
+<!--                    <label for="javascript">Distribution</label>-->
+<!--                </div>-->
 
-                <div class="plot" bind:this={plot}>
-                    <div class="badge-container">
-                        <img class="badge" src={mouseOverBadge} />
-                    </div>
-                </div>
-            </div>
+<!--                <div class="plot" bind:this={plot}>-->
+<!--&lt;!&ndash;                    <div class="badge-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img class="badge" src={mouseOverBadge} />&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img class="badge" src={aggregationBadge} />&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                </div>-->
+<!--            </div>-->
 
             <div class="component column">
                 <h3 class="component-title">11 Types of Co-Benefits Values (vs. UK Average)</h3>
                 <p class="description">Co-benefits values in {LADToName[LAD]} verus average value across all local authorities in UK.</p>
                 <div class="plot" bind:this={plotPerCb}>
+<!--                    <div class="badge-container">-->
+<!--                        <img class="badge" src={aggregationBadge} />-->
+<!--                    </div>-->
                 </div>
             </div>
 
@@ -751,38 +777,42 @@
                 <h3 class="component-title">{LADToName[LAD]} on UK Map</h3>
                 <p class="description">Scroll for zooming in and out.</p>
                 <div id="map" bind:this={mapDiv}>
+<!--                    <div class="badge-container">-->
+<!--                        <img class="badge" src={zoomBadge} />-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="section">
-        <div class="section-header">
-            <p class="section-subtitle">Breakdown</p>
-            <h2 class="section-title">How would the co-benefit results vary if we take different pathways?</h2>
-            <p class="description">We break down the modeled co-benefit values in different pathways towards achieving Net Zero. All Results are compared with the average value across all local authorities in UK.</p>
-        </div>
+<!--    <div class="section">-->
+<!--        <div class="section-header">-->
+<!--            <p class="section-subtitle">Breakdown</p>-->
+<!--            <h2 class="section-title">How would the co-benefit results vary if we take different pathways?</h2>-->
+<!--            <p class="description">We break down the modeled co-benefit values in different pathways towards achieving Net Zero. All Results are compared with the average value across all local authorities in UK.</p>-->
+<!--        </div>-->
 
-        <div class="row">
-            <div class="component">
-                <h3 class="component-title">Five Pathways and their 11 Co-benefits</h3>
-                <p class="description">Scroll for zooming in and out.</p>
-                <div class="plot" bind:this={heatmapPlot}></div>
-            </div>
+<!--        <div class="row">-->
+<!--            <div class="component">-->
+<!--                <h3 class="component-title">Five Pathways and their 11 Co-benefits</h3>-->
+<!--                <p class="description">Scroll for zooming in and out.</p>-->
+<!--                <div class="plot" bind:this={heatmapPlot}></div>-->
+<!--            </div>-->
 
-            {#each SCENARIOS as scenario}
-                <div class="component">
-                    <h3 class="component-title"> Pathway: {scenario}</h3>
-                    <p class="description">Please refer to CCC website on definitions of {scenario}.</p>
-                    <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>
-                        <div class="badge-container">
-                            <img class="badge" src={roundingBadge} />
-                        </div>
-                    </div>
-                </div>  
-            {/each}
-        </div>
-    </div>
+<!--            {#each SCENARIOS as scenario}-->
+<!--                <div class="component">-->
+<!--                    <h3 class="component-title"> Pathway: {scenario}</h3>-->
+<!--                    <p class="description">Please refer to CCC website on definitions of {scenario}.</p>-->
+<!--                    <div class="plot" bind:this={scenarioXcoBenefPLots[scenario]}>-->
+<!--&lt;!&ndash;                        <div class="badge-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <img class="badge" src={roundingBadge} />&ndash;&gt;-->
+<!--&lt;!&ndash;                            <img class="badge" src={aggregationBadge} />&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                </div>  -->
+<!--            {/each}-->
+<!--        </div>-->
+<!--    </div>-->
 
     <div class="section">
         <div class="section-header">
@@ -795,6 +825,9 @@
             <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. UK Average)</h3>
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePLot}>
+<!--                    <div class="badge-container">-->
+<!--                            <img class="badge" src={predictionsBadge} />-->
+<!--                        </div>-->
                 </div>
             </div>
         </div>
@@ -806,22 +839,25 @@
             <div class="row">
                 <div class="row">
                     <div class="plot" bind:this={CBOverTimePerCBPLot}>
+<!--                        <div class="badge-container">-->
+<!--                            <img class="badge" src={predictionsBadge} />-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="component singlevis">
-            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>
-            <div class="row">
-                <div class="plot" bind:this={CBOverTimePerScenarioPLot}>
-                    <div class="badge-container">
-                        <img class="badge" src={TruncAxisBadge} />
-                    </div>
-                </div>
+<!--        <div class="component singlevis">-->
+<!--            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>-->
+<!--            <div class="row">-->
+<!--                <div class="plot" bind:this={CBOverTimePerScenarioPLot}>-->
+<!--&lt;!&ndash;                    <div class="badge-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img class="badge" src={TruncAxisBadge} />&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                </div>-->
 
-            </div>
-        </div>
+<!--            </div>-->
+<!--        </div>-->
     </div>
         
     <div class="section">
@@ -852,6 +888,11 @@
                                 <h3 class="component-title">Data Zones Distribution (vs. UK average)</h3>
                                 <p class="description short">Histogram shows the number of data zones distributed across different household social economic factors.</p>
                                 <div class="plot" bind:this={SEFPlotLAD[sef]}>
+<!--                                    <div class="badge-container">-->
+<!--                                        <img class="badge" src={normalizedBadge} />-->
+<!--                                        <img class="badge" src={modeledDataBadge} />-->
+<!--                                        <img class="badge" src={binningBadge} />-->
+<!--                                    </div>-->
                                 </div>
                             </div>
 
@@ -866,9 +907,11 @@
 
                             <div>
                                 <div class="plot" bind:this={SEFPlotPerCB[sef]}>
-                                    <div class="badge-container">
-                                        <img class="badge" src={overlapBadge} />
-                                    </div>
+<!--                                    <div class="badge-container">-->
+<!--                                        <img class="badge" src={overlapBadge} />-->
+<!--                                        <img class="badge" src={multipleDataSourceBadge} />-->
+<!--                                        <img class="badge" src={modeledDataBadge} />-->
+<!--                                    </div>-->
                                 </div>
                             </div>
                         </div>
