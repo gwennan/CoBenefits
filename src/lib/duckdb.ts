@@ -72,7 +72,7 @@ async function loadData() {
     // // Close the connection to release memory
     // await conn.close();
 
-    console.log("INFO ", await getTableData(getInfo()));
+    console.log("DB INFO: ", await getTableData(getInfo()));
 }
 
 
@@ -180,7 +180,7 @@ export function getTotalPerBenefit() {
 
 
 export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
-    return `SELECT total, Lookup_Value, scenario
+    return `SELECT total, Lookup_Value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='${cobenefit}'`
 }

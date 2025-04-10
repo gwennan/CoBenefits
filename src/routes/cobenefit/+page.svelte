@@ -4,14 +4,14 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {SEF, SEF_CATEGORICAL, type SEFactor} from "../../globals";
+    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor} from "../../globals";
 
     let element: HTMLElement
     let plot: HTMLElement
     let SEFPlot: Record<SEFactor, HTMLElement> = {};
     let chartType: "barchart" | "violin" | "distribution" = "barchart"
 
-    let height;
+    let height = 400;
 
     // Data from load function
     export let data;
@@ -20,8 +20,6 @@
     const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
     let map: Map;
-
-    // console.log(11, fullData.slice(0, 10))
 
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
@@ -40,9 +38,7 @@
             plot?.append(
                 Plot.plot({
                     height: height / 1.4,
-                    marginLeft: 60,
-                    marginRight: 60,
-                    marginBottom: 60,
+                    ...MARGINS,
                     y: {type: "band"},
                     style: {fontSize: "18px"},
                     marks: [
@@ -91,7 +87,6 @@
     }
 
     function renderSEFPlot() {
-
         // FACETED CHART
         // SEFPlotLAD?.append(
         //     Plot.plot({
@@ -157,14 +152,11 @@
 
             SEFPlot[sef]?.append(plot)
         })
-
-
     }
 
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
-        // SEFPlotLAD?.firstChild?.remove(); // remove old chart, if any
         Object.values(SEFPlot).forEach(sefPlot => {
           sefPlot.firstChild?.remove();
         })
@@ -188,13 +180,17 @@
 
 <div class="page-container" bind:this={element}>
 
-    <div class="component">
+    <div class="section header">
         <h1> {coBenefit} </h1>
         <p> {coBenefit} is ... </p>
     </div>
 
+<!--    <div id="vis-block">-->
+    <div class="section">
+
+
     <div id="vis-block">
-        <div class="component column" bind:clientHeight={height}>
+        <div class="component singlevis" >
             <h3>{coBenefit} datazone distribution</h3>
 
             <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
@@ -204,17 +200,22 @@
             <input type="radio" on:change={onChange} name="visType" value="distribution">
             <label for="javascript">Distribution</label>
 
-            <div class="plot" bind:this={plot}>
+            <div class="component row">
+                <div class="plot" bind:this={plot}>
+                </div>
             </div>
         </div>
 
-        <div class="component column">
-            <h3> Map </h3>
-            <div id="map-legend" bind:this={mapLegendDiv}></div>
-            <div id="map" bind:this={mapDiv}>
-            </div>
-        </div>
+<!--        <div class="component singlevis">-->
+<!--            <h3> Map </h3>-->
+<!--            <div class="row">-->
+<!--                <div id="map-legend" bind:this={mapLegendDiv}></div>-->
+<!--                <div id="map" bind:this={mapDiv}>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
+        </div>
 
 
     <div id="multiple-comp" class="component">
@@ -231,18 +232,6 @@
 </div>
 
 <style>
-    /*#main {*/
-    /*    display: grid;*/
-    /*    grid-template-columns: repeat(2, 1fr);*/
-    /*    grid-template-rows: repeat(3, 1fr);*/
-    /*    grid-column-gap: 2%;*/
-    /*    grid-row-gap: 1%;*/
-
-    /*    width: 97vw;*/
-    /*    height: 100%;*/
-    /*    !*height: 50vh;*!*/
-    /*}*/
-
     #vis-block {
         display: flex;
         flex-direction: row;
