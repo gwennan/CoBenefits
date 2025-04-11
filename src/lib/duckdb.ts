@@ -42,8 +42,8 @@ const initDB = async () => {
 async function loadData() {
     console.log("loading parqet file in db");
 
-    // const response = await fetch('database.parquet');
-    const response = await fetch('database_onlyIreland.parquet');
+    const response = await fetch('database.parquet');
+    // const response = await fetch('database_onlyIreland.parquet');
 
 
     const arrayBuffer = await response.arrayBuffer();
@@ -196,12 +196,15 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-    // const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
 
-    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
-    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
+
+
+    console.log(22, query);
+    return query;
 }
 
 // Co-benefit=total to get only one row per datazone
