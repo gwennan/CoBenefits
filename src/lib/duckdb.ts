@@ -136,10 +136,15 @@ export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scen
             GROUP BY LAD, scenario`
 
     } else {
-        query = `SELECT scenario, co_benefit_type, AVG("${time}") as val, LAD as Lookup_Value
+        // Need to sum on selected cobenef and then average for the LAD
+        query = `
+        SELECT  scenario, AVG(val) as val, LAD as Lookup_Value
+        FROM (SELECT Lookup_Value, scenario, SUM("${time}") as val, LAD
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
-            GROUP BY LAD, scenario, co_benefit_type`
+            GROUP BY Lookup_value, LAD, scenario ) AS summed 
+            GROUP BY LAD, scenario
+            `
 
     }
     return query

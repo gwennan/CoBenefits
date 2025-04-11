@@ -48,24 +48,33 @@
     //     }
     // })()
 
-    // $: {
-    //     if (granularity == "LAD") {
-    //         fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-    //     } else if (granularity == "LSOA") {
-    //         fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
-    //     }
-    //
-    //     fullData.then((data) => {
-    //         map.update(data);
-    //     })
-    //
-    //     if (map?.loaded) {
-    //         legendSvg = map.legend();
-    //         legendDiv.innerHTML = "";
-    //         legendDiv.append(legendSvg)
-    //         // document.querySelector("#legend").append(legendSvg)
-    //     }
-    // }
+    $: {
+        if (map?.loaded) {
+
+            console.log(3, granularity)
+
+            if (granularity == "LAD") {
+                console.log(222, coBenefits)
+                fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+            } else if (granularity == "LSOA") {
+                console.log(111)
+                fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+            }
+
+            fullData.then((data) => {
+                console.log(2, data)
+                map.update(data);
+            })
+
+            legendSvg = map.legend();
+            legendDiv.innerHTML = "";
+            legendDiv.append(legendSvg)
+            // document.querySelector("#legend").append(legendSvg)
+
+        }
+
+
+    }
 
     // $: {
     //     if (map?.loaded) {
@@ -80,12 +89,12 @@
 
         // first load of data
         // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
-        console.log(timeSelected, scenario, Array.from(coBenefits))
         // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
         fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
 
 
-        console.log(granularity)
+        console.log(1, fullData)
+
         map = new Map(fullData, granularity, mapDiv);
         map.initMap();
         console.log("map initiated")
@@ -194,11 +203,11 @@
         <div class="component column" id="control-panel">
 
             <div>
-<!--                <h2> Scenario </h2>-->
-<!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
-<!--                <label for="html">BNZ</label><br>-->
-<!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
-<!--                <label for="css">Test</label><br>-->
+                <!--                <h2> Scenario </h2>-->
+                <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
+                <!--                <label for="html">BNZ</label><br>-->
+                <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
+                <!--                <label for="css">Test</label><br>-->
 
                 <h2> Co Benefits </h2>
                 {#each COBENEFS as coBenef}

@@ -16,7 +16,8 @@ import {load} from "../../routes/+layout";
 
 
 const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
-const LADzonesPath = 'maps/LAD.json';
+// const LADzonesPath = 'maps/LAD.json';
+const LADzonesPath = 'maps/LAD2.json';
 
 
 // let datazones = await load().then(data => data.datazones);
@@ -24,7 +25,8 @@ let datazones = await d3.json(LSOAzonesPath)
 datazones = topojson.feature(datazones, datazones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
 
 let LADZones = await d3.json(LADzonesPath)
-LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
+// LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
+LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
 
 
 export class Map {
@@ -51,7 +53,6 @@ export class Map {
         this.loaded = false;
         this.border = border;
 
-        console.log("dd ", data)
         this.loadData(data);
 
         // UK centering
@@ -105,7 +106,8 @@ export class Map {
             this.geojson = LADZones;
 
             for (let zone of this.geojson.features) {
-                let zoneId = zone.properties.LAD24CD;
+                // let zoneId = zone.properties.LAD24CD;
+                let zoneId = zone.properties.lad11cd;
 
                 if (zoneId == data) {
                     zone.properties.value = 1
@@ -118,7 +120,6 @@ export class Map {
             if (this.granularity == "LAD") {
                 this.geojson = LADZones;
 
-                console.log(22222, data)
                 data.forEach((d) => {
                     // change total for time selection
                     this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
@@ -126,7 +127,8 @@ export class Map {
 
                 // Put cobenef values inside the geojson for maplibre rendering
                 for (let zone of this.geojson.features) {
-                    let zoneId = zone.properties.LAD24CD;
+                    // let zoneId = zone.properties.LAD24CD;
+                    let zoneId = zone.properties.lad11cd;
                     zone.properties.value = this.dataZoneToValue[zoneId]
                 }
 
@@ -144,7 +146,7 @@ export class Map {
                 }
             }
         }
-        console.log(" OK ", this.dataZoneToValue)
+        // console.log(" OK ", this.dataZoneToValue)
 
 
         let domain;
@@ -155,7 +157,6 @@ export class Map {
                 .range(["white", "red"])
 
         } else {
-            console.log(777777, data, this.dataKey);
             domain = d3.extent(data.map(d => d[this.dataKey]));
             domain.splice(1, 0, 0);
             if (domain[0] >= 0) {
@@ -167,7 +168,7 @@ export class Map {
                 // .interpolator(d3.interpolatePuOr)
                 .interpolator(d3.interpolateBrBG)
 
-            console.log("DOMAIN ", domain)
+            // console.log("DOMAIN ", domain)
         }
 
     }
@@ -262,8 +263,9 @@ export class Map {
         // Put cobenef values inside the geojson for maplibre rendering
         for (let zone of this.geojson.features) {
 
-            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
-            // console.log(1111, zoneId, this.granularity)
+            // let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
+            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.lad11cd;
+
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
         //
@@ -281,6 +283,7 @@ export class Map {
     }
 
     zoneName(zone) {
-        return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
+        // return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
+        return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.lad11cd;
     }
 }
