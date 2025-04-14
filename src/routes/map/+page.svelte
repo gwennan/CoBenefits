@@ -30,6 +30,7 @@
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
     let granularity: "LSOA" | "LAD" = "LAD";
+    // let granularity: "LSOA" | "LAD" = "LSOA";
 
     let fullData;
 
@@ -51,18 +52,13 @@
     $: {
         if (map?.loaded) {
 
-            console.log(3, granularity)
-
             if (granularity == "LAD") {
-                console.log(222, coBenefits)
                 fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
             } else if (granularity == "LSOA") {
-                console.log(111)
                 fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
             }
 
             fullData.then((data) => {
-                console.log(2, data)
                 map.update(data);
             })
 
@@ -90,8 +86,16 @@
         // first load of data
         // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
         // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-        fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
+        // fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
 
+        let fullData;
+        let LSOAData;
+        if (granularity == "LAD") {
+            fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+            LSOAData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
+        } else if (granularity == "LSOA") {
+            fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+        }
 
         console.log(1, fullData)
 
@@ -104,47 +108,48 @@
 
 
         // Listen for zoom events
-        // map.map.on('zoom', () => {
-        //     const currentZoom = map.map.getZoom();
-        //
-        //     console.log("zz ", currentZoom);
-        //     if (currentZoom > 30 && map.granularity != "LSOA") {
-        //     // if (currentZoom > 8 && map.granularity != "LSOA") {
-        //         console.log("GOOOOO")
-        //
-        //         granularity = "LSOA";
-        //         // Zoom level is greater than the threshold, update the layer
-        //
-        //
-        //         // Remove all layers from the map
-        //         const layers = map.map.getStyle().layers; // Get all layers in the current map style
-        //         if (layers) {
-        //             layers.forEach(layer => {
-        //                 map.map.removeLayer(layer.id); // Remove each layer by its id
-        //             });
-        //         }
-        //
-        //         // Remove all sources from the map
-        //         const sources = map.map.getStyle().sources;
-        //         for (const sourceId in sources) {
-        //             map.map.removeSource(sourceId); // Remove each source by its id
-        //         }
-        //
-        //         map.reset();
-        //         // map.dataKey = "total";
-        //         map.granularity = "LSOA";
-        //         getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
-        //             map.loadData(data);
-        //             map.loadLayers();
-        //             // map.initMap();
-        //         })
-        //         // map.loadData(data);
-        //         // map.initMap();
-        //
-        //     } else {
-        //         // Zoom level is below or equal to the threshold, revert changes
-        //     }
-        // });
+        map.map.on('zoom', () => {
+            const currentZoom = map.map.getZoom();
+
+            // console.log("zz ", currentZoom);
+            if (currentZoom > 8 && map.granularity != "LSOA") {
+                console.log("GOOOOO")
+
+                granularity = "LSOA";
+                // Zoom level is greater than the threshold, update the layer
+
+
+                // Remove all layers from the map
+                const layers = map.map.getStyle().layers; // Get all layers in the current map style
+                if (layers) {
+                    layers.forEach(layer => {
+                        map.map.removeLayer(layer.id); // Remove each layer by its id
+                    });
+                }
+
+                // Remove all sources from the map
+                const sources = map.map.getStyle().sources;
+                for (const sourceId in sources) {
+                    map.map.removeSource(sourceId); // Remove each source by its id
+                }
+
+                map.reset();
+                // map.dataKey = "total";
+                map.granularity = "LSOA";
+                // getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
+                //     map.loadData(data);
+                //     map.loadLayers();
+                // })
+
+                map.loadData(LSOAData);
+                map.loadLayers();
+
+
+
+            } else {
+                // Zoom level is below or equal to the threshold, revert changes
+            }
+        });
 
 
         // legendSvg = Legend(colorScale, {
@@ -220,15 +225,15 @@
                 <div id="time">
                     <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime}
                                                      checked><span>total</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="2025_2029"
+                    <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
                                                      on:change={onChangeTime}><span>2025-2029</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="2030_2034"
+                    <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"
                                                      on:change={onChangeTime}><span>2030-2034</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="2035_2039"
+                    <label class="time-radio"><input type="radio" name="toggle" value="Y2035_2039"
                                                      on:change={onChangeTime}><span>2035-2039</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="2040_2044"
+                    <label class="time-radio"><input type="radio" name="toggle" value="Y2040_2044"
                                                      on:change={onChangeTime}><span>2040-2044</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="2045_2049"
+                    <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
                                                      on:change={onChangeTime}><span>2045-2049</span></label>
                 </div>
 
