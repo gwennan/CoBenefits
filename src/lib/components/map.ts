@@ -115,7 +115,6 @@ export class Map {
                     zone.properties.value = 0
                 }
             }
-
         } else {
             if (this.granularity == "LAD") {
                 this.geojson = LADZones;
@@ -131,7 +130,6 @@ export class Map {
                     let zoneId = zone.properties.lad11cd;
                     zone.properties.value = this.dataZoneToValue[zoneId]
                 }
-
             } else {
                 this.geojson = datazones;
 
@@ -139,14 +137,16 @@ export class Map {
                     // change total for time selection
                     this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
                 })
+
                 // Put cobenef values inside the geojson for maplibre rendering
                 for (let zone of this.geojson.features) {
                     let zoneId = zone.properties.LSOA21CD;
                     zone.properties.value = this.dataZoneToValue[zoneId]
+                    // console.log(this.dataZoneToValue[zoneId], zoneId)
                 }
             }
         }
-        // console.log(" OK ", this.dataZoneToValue)
+        // console.log(" OK ", this.dataZoneToValue, Object.keys(this.dataZoneToValue).length)
 
 
         let domain;
@@ -158,17 +158,33 @@ export class Map {
 
         } else {
             domain = d3.extent(data.map(d => d[this.dataKey]));
-            domain.splice(1, 0, 0);
-            if (domain[0] >= 0) {
-                domain[0] = -0.1;
+            // domain.splice(1, 0, 0);
+            // if (domain[0] >= 0) {
+            //     domain[0] = -0.1;
+            // }
+
+            // this.colorScale = d3.scaleDiverging()
+            //     .domain(domain)
+            //     // .interpolator(d3.interpolatePuOr)
+            //     .interpolator(d3.interpolateBrBG)
+
+            // Remove outlier values from the scale otherwise we dont see anything
+            if (this.granularity == "LSOA") {
+                domain[0] = 0;
+                domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
             }
 
-            this.colorScale = d3.scaleDiverging()
+            this.colorScale = d3.scaleSequential()
                 .domain(domain)
-                // .interpolator(d3.interpolatePuOr)
-                .interpolator(d3.interpolateBrBG)
+                .interpolator(d3.interpolateCividis)
+                // .interpolator(d3.interpolateYlGnBu)
+                // .range(d3.interpolatePuBuGn)
 
-            // console.log("DOMAIN ", domain)
+
+            // console.log(d3.mean(data.map(d => d.val)))
+            // console.log(d3.min(data.map(d => d.val)))
+            // console.log(d3.max(data.map(d => d.val)))
+            // console.log("DOMAIN ", domain, this.dataKey)
         }
 
     }

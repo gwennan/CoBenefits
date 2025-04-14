@@ -123,6 +123,7 @@ export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, tim
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
     }
+    console.log(query)
     return query
 }
 
@@ -145,7 +146,6 @@ export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scen
             GROUP BY Lookup_value, LAD, scenario ) AS summed 
             GROUP BY LAD, scenario
             `
-
     }
     return query
 }
