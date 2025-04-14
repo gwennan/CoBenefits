@@ -42,8 +42,8 @@ const initDB = async () => {
 async function loadData() {
     console.log("loading parqet file in db");
 
-    // const response = await fetch('database.parquet');
-    const response = await fetch('database_onlyIreland.parquet');
+    const response = await fetch('database.parquet');
+    // const response = await fetch('database_onlyIreland.parquet');
 
 
     const arrayBuffer = await response.arrayBuffer();
@@ -72,7 +72,7 @@ async function loadData() {
     // // Close the connection to release memory
     // await conn.close();
 
-    console.log("INFO ", await getTableData(getInfo()));
+    console.log("DB INFO: ", await getTableData(getInfo()));
 }
 
 
@@ -136,10 +136,15 @@ export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scen
             GROUP BY LAD, scenario`
 
     } else {
-        query = `SELECT scenario, co_benefit_type, AVG("${time}") as val, LAD as Lookup_Value
+        // Need to sum on selected cobenef and then average for the LAD
+        query = `
+        SELECT  scenario, AVG(val) as val, LAD as Lookup_Value
+        FROM (SELECT Lookup_Value, scenario, SUM("${time}") as val, LAD
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
-            GROUP BY LAD, scenario, co_benefit_type`
+            GROUP BY Lookup_value, LAD, scenario ) AS summed 
+            GROUP BY LAD, scenario
+            `
 
     }
     return query
@@ -180,7 +185,7 @@ export function getTotalPerBenefit() {
 
 
 export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
-    return `SELECT total, Lookup_Value, scenario
+    return `SELECT total, Lookup_Value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
             FROM ${DB_TABLE_NAME}
             WHERE co_benefit_type='${cobenefit}'`
 }
@@ -196,12 +201,15 @@ export function getTotalForOneZone(datazone: string) {
 
 // Co-benefit=total to get only one row per datazone
 export function getTotalCBAllDatazones() {
-    // const roundedSEF = SEF.map(sef => `ROUND(${sef}) AS ${sef}`)
 
-    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
-    return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type='Total'`
+
+
+    console.log(22, query);
+    return query;
 }
 
 // Co-benefit=total to get only one row per datazone
