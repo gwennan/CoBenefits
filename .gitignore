@@ -26,7 +26,12 @@ dist-ssr
 *.xlsx
 
 # Data files
-static/maps
+static/maps/Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946.geojson
+static/maps/Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936.geojson
+static/maps/Local_Authority_Districts_May_2021_UK_BGC_2022_-141878117537581841.geojson
+static/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson
+
+
 static/UK_Archetypes_global_measures.csv
 static/UK_Archetypes_info.csv
 static/database.duckdb
