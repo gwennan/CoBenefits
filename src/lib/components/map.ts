@@ -169,10 +169,11 @@ export class Map {
             //     .interpolator(d3.interpolateBrBG)
 
             // Remove outlier values from the scale otherwise we dont see anything
-            if (this.granularity == "LSOA") {
-                domain[0] = 0;
-                domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
-            }
+            // if (this.granularity == "LSOA") {
+            //     domain[0] = 0;
+            //     domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
+            // }
+
 
             this.colorScale = d3.scaleSequential()
                 .domain(domain)
@@ -184,7 +185,7 @@ export class Map {
             // console.log(d3.mean(data.map(d => d.val)))
             // console.log(d3.min(data.map(d => d.val)))
             // console.log(d3.max(data.map(d => d.val)))
-            // console.log("DOMAIN ", domain, this.dataKey)
+            console.log("DOMAIN ", domain)
         }
 
     }
@@ -289,6 +290,15 @@ export class Map {
         this.map.getSource('datazones').setData(
             this.geojson
         );
+
+        this.map.setPaintProperty("fill", "fill-color", [
+                'interpolate',
+                ['linear'],
+                ['get', 'value'], // Replace with your data property
+                ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
+            ]
+        )
+
     }
 
     legend() {

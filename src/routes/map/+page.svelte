@@ -5,8 +5,14 @@
 
     import * as maplibregl from "maplibre-gl"
     import "maplibre-gl/dist/maplibre-gl.css";
-    import {getCustomCBData, getAverageCBGroupedByLAD, getTableData, getTotalPerPathway} from "$lib/duckdb";
-    import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
+    import {
+        getCustomCBData,
+        getAverageCBGroupedByLAD,
+        getTableData,
+        getTotalPerPathway,
+        getAverageSEFGroupedByLAD, getSEFData
+    } from "$lib/duckdb";
+    import {type CoBenefit, COBENEFS, type Scenario, SEF} from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
     import {legend} from "@observablehq/plot";
@@ -19,6 +25,7 @@
     let legendSvg: SVGSVGElement | null;
     let legendDiv: HTMLElement;
     let map: Map;
+    let mapType: "Cobenefit" | "SEF" = "Cobenefit";
     // let fullData;
 
 
@@ -30,7 +37,8 @@
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
     let granularity: "LSOA" | "LAD" = "LAD";
-    // let granularity: "LSOA" | "LAD" = "LSOA";
+
+    let selectedSef: SEF = "EPC";
 
     let fullData;
 
@@ -52,25 +60,39 @@
     $: {
         if (map?.loaded) {
 
-            if (granularity == "LAD") {
-                fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-            } else if (granularity == "LSOA") {
-                fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+            if (mapType == "Cobenefit") {
+                if (granularity == "LAD") {
+                    fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+                } else if (granularity == "LSOA") {
+                    fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+                }
+            } else if (mapType = "SEF") {
+                if (granularity == "LAD") {
+                    fullData = getTableData(getAverageSEFGroupedByLAD(selectedSef))
+                } else if (granularity == "LSOA") {
+                    fullData = getTableData(getSEFData(selectedSef))
+                }
             }
 
             fullData.then((data) => {
+                // console.log(99, data)
                 map.update(data);
+                updateLegend();
+
+
             })
 
-            legendSvg = map.legend();
-            legendDiv.innerHTML = "";
-            legendDiv.append(legendSvg)
-            // document.querySelector("#legend").append(legendSvg)
-
         }
+    }
 
+    function updateLegend() {
+
+        legendSvg = map.legend();
+        legendDiv.innerHTML = "";
+        legendDiv.append(legendSvg)
 
     }
+
 
     // $: {
     //     if (map?.loaded) {
@@ -89,10 +111,8 @@
         // fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
 
         let fullData;
-        let LSOAData;
         if (granularity == "LAD") {
             fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-            LSOAData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
         } else if (granularity == "LSOA") {
             fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
@@ -107,49 +127,47 @@
         legendDiv.append(legendSvg)
 
 
-        // Listen for zoom events
-        map.map.on('zoom', () => {
-            const currentZoom = map.map.getZoom();
-
-            // console.log("zz ", currentZoom);
-            if (currentZoom > 8 && map.granularity != "LSOA") {
-                console.log("GOOOOO")
-
-                granularity = "LSOA";
-                // Zoom level is greater than the threshold, update the layer
-
-
-                // Remove all layers from the map
-                const layers = map.map.getStyle().layers; // Get all layers in the current map style
-                if (layers) {
-                    layers.forEach(layer => {
-                        map.map.removeLayer(layer.id); // Remove each layer by its id
-                    });
-                }
-
-                // Remove all sources from the map
-                const sources = map.map.getStyle().sources;
-                for (const sourceId in sources) {
-                    map.map.removeSource(sourceId); // Remove each source by its id
-                }
-
-                map.reset();
-                // map.dataKey = "total";
-                map.granularity = "LSOA";
-                // getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
-                //     map.loadData(data);
-                //     map.loadLayers();
-                // })
-
-                map.loadData(LSOAData);
-                map.loadLayers();
-
-
-
-            } else {
-                // Zoom level is below or equal to the threshold, revert changes
-            }
-        });
+        // Listen for zoom events: Too slow to do it like this
+        // map.map.on('zoom', () => {
+        //     const currentZoom = map.map.getZoom();
+        //
+        //     // console.log("zz ", currentZoom);
+        //     if (currentZoom > 8 && map.granularity != "LSOA") {
+        //
+        //         granularity = "LSOA";
+        //         // Zoom level is greater than the threshold, update the layer
+        //
+        //
+        //         // Remove all layers from the map
+        //         const layers = map.map.getStyle().layers; // Get all layers in the current map style
+        //         if (layers) {
+        //             layers.forEach(layer => {
+        //                 map.map.removeLayer(layer.id); // Remove each layer by its id
+        //             });
+        //         }
+        //
+        //         // Remove all sources from the map
+        //         const sources = map.map.getStyle().sources;
+        //         for (const sourceId in sources) {
+        //             map.map.removeSource(sourceId); // Remove each source by its id
+        //         }
+        //
+        //         map.reset();
+        //         // map.dataKey = "total";
+        //         map.granularity = "LSOA";
+        //         // getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected)).then(data => {
+        //         //     map.loadData(data);
+        //         //     map.loadLayers();
+        //         // })
+        //
+        //         map.loadData(LSOAData);
+        //         map.loadLayers();
+        //
+        //
+        //     } else {
+        //         // Zoom level is below or equal to the threshold, revert changes
+        //     }
+        // });
 
 
         // legendSvg = Legend(colorScale, {
@@ -182,6 +200,12 @@
         timeSelected = time;
     }
 
+    function changeMap(e, selectedMapType) {
+        console.log(e, selectedMapType)
+        mapType = e.currentTarget.value;
+        console.log(mapType, 3)
+    }
+
 </script>
 
 
@@ -207,37 +231,66 @@
 
         <div class="component column" id="control-panel">
 
-            <div>
-                <!--                <h2> Scenario </h2>-->
-                <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
-                <!--                <label for="html">BNZ</label><br>-->
-                <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
-                <!--                <label for="css">Test</label><br>-->
 
-                <h2> Co Benefits </h2>
-                {#each COBENEFS as coBenef}
-                    <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
-                    <!--                <input type="checkbox" id="scales" name="scales" checked />-->
-                    <label for="css">{coBenef}</label><br>
-                {/each}
+            <div class="tab">
+                <button class="tablinks" class:active={mapType == "Cobenefit"} value="Cobenefit" on:click={changeMap}>CoBenefits</button>
+                <button class="tablinks" class:active={mapType == "SEF"} value="SEF" on:click={changeMap}>Socio-Economic Factors</button>
+            </div>
 
-                <h2> Time </h2>
-                <div id="time">
-                    <label class="time-radio"><input type="radio" name="toggle" value="total" on:change={onChangeTime}
-                                                     checked><span>total</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
-                                                     on:change={onChangeTime}><span>2025-2029</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"
-                                                     on:change={onChangeTime}><span>2030-2034</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="Y2035_2039"
-                                                     on:change={onChangeTime}><span>2035-2039</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="Y2040_2044"
-                                                     on:change={onChangeTime}><span>2040-2044</span></label>
-                    <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
-                                                     on:change={onChangeTime}><span>2045-2049</span></label>
+
+            {#if mapType == "Cobenefit"}
+
+                <div class="tabcontent">
+                    <!--                <h2> Scenario </h2>-->
+                    <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
+                    <!--                <label for="html">BNZ</label><br>-->
+                    <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
+                    <!--                <label for="css">Test</label><br>-->
+
+                    <h2> Co Benefits </h2>
+                    {#each COBENEFS as coBenef}
+                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
+                        <!--                <input type="checkbox" id="scales" name="scales" checked />-->
+                        <label for="css">{coBenef}</label><br>
+                    {/each}
+
+                    <h2> Time </h2>
+                    <div id="time">
+                        <label class="time-radio"><input type="radio" name="toggle" value="total"
+                                                         on:change={onChangeTime}
+                                                         checked><span>total</span></label>
+                        <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
+                                                         on:change={onChangeTime}><span>2025-2029</span></label>
+                        <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"
+                                                         on:change={onChangeTime}><span>2030-2034</span></label>
+                        <label class="time-radio"><input type="radio" name="toggle" value="Y2035_2039"
+                                                         on:change={onChangeTime}><span>2035-2039</span></label>
+                        <label class="time-radio"><input type="radio" name="toggle" value="Y2040_2044"
+                                                         on:change={onChangeTime}><span>2040-2044</span></label>
+                        <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
+                                                         on:change={onChangeTime}><span>2045-2049</span></label>
+                    </div>
                 </div>
 
-            </div>
+            {:else if mapType == "SEF"}
+
+                <div class="tabcontent">
+
+                    <h2> Social Economic Factor </h2>
+                    <div id="time">
+                        {#each SEF as sef}
+                            <input type="radio" id="html" name="fav_language" value="HTML" checked={sef == selectedSef}>
+                            <label for="html">{sef}</label><br>
+                        {/each}
+                    </div>
+
+
+
+                </div>
+
+            {/if}
+
+
         </div>
 
     </div>
@@ -292,6 +345,7 @@
     #control-panel {
         flex: 0 0 25%; /* Don't grow or shrink, fixed at 75% width */
         display: flex;
+        flex-direction: column;
     }
 
     .time-radio {
@@ -328,5 +382,40 @@
         border-radius: 3px;
         pointer-events: none;
         display: none;
+    }
+
+    /* Style the tab */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+    /* Style the buttons that are used to open the tab content */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
     }
 </style>

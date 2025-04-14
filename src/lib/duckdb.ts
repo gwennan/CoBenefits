@@ -4,7 +4,7 @@ import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
 
 import {type CoBenefit, COBENEFS, type Scenario, SEF, type SEFactor, TIMES} from "../globals";
-import { browser } from '$app/environment';
+import {browser} from '$app/environment';
 
 let db: AsyncDuckDB;
 
@@ -55,7 +55,9 @@ async function loadData() {
 
     const conn = await db.connect();
 
-    await conn.query(`CREATE TABLE ${DB_TABLE_NAME} AS SELECT * FROM read_parquet('filename');`);
+    await conn.query(`CREATE TABLE ${DB_TABLE_NAME} AS
+    SELECT *
+    FROM read_parquet('filename');`);
     console.log("Table created from parquet");
 
 
@@ -108,70 +110,87 @@ export function getInfo() {
 export function getTotalPerPathway() {
     return `SELECT total, scenario, Lookup_Value
             FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type='Total'`
+            WHERE co_benefit_type = 'Total'`
 }
 
-export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
-    let query;
-
-    if (cobenefits.length == 0) {
-        query = `SELECT "${time}" as val, scenario, Lookup_Value
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type='Total'`
-    } else {
-        query = `SELECT "${time}" as val, scenario, Lookup_Value
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
-    }
-    console.log(query)
+export function getSEFData(sef: SEF) {
+    // Select total line because the value is repeated for one LSOA
+    let query = `SELECT ${sef} as val, Lookup_Value
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type = 'Total'`
     return query
 }
 
-export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+// CAST(25.65 AS int);
+export function getAverageSEFGroupedByLAD(sef: SEF) {
+    let query;
+    query = `SELECT AVG(${sef}) as val, LAD as Lookup_Value
+             FROM ${DB_TABLE_NAME}
+             WHERE co_benefit_type = 'Total'
+             GROUP BY LAD, scenario`
+    return query
+}
+
+export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, time = "total") {
     let query;
 
     if (cobenefits.length == 0) {
-        query = `SELECT scenario , AVG("${time}") as val, LAD as Lookup_Value
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type='Total'
-            GROUP BY LAD, scenario`
+        query = `SELECT "${time}" as val, scenario, Lookup_Value
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type = 'Total'`
+    } else {
+        query = `SELECT "${time}" as val, scenario, Lookup_Value
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
+    }
+    return query
+}
+
+export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time = "total") {
+    let query;
+
+    if (cobenefits.length == 0) {
+        query = `SELECT scenario, AVG("${time}") as val, LAD as Lookup_Value
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type = 'Total'
+                 GROUP BY LAD, scenario`
 
     } else {
         // Need to sum on selected cobenef and then average for the LAD
         query = `
-        SELECT  scenario, AVG(val) as val, LAD as Lookup_Value
-        FROM (SELECT Lookup_Value, scenario, SUM("${time}") as val, LAD
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
-            GROUP BY Lookup_value, LAD, scenario ) AS summed 
+            SELECT scenario, AVG(val) as val, LAD as Lookup_Value
+            FROM (SELECT Lookup_Value, scenario, SUM("${time}") as val, LAD
+                  FROM ${DB_TABLE_NAME}
+                  WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
+                  GROUP BY Lookup_value, LAD, scenario) AS summed
             GROUP BY LAD, scenario
-            `
+        `
     }
     return query
 }
 
-export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time="total") {
+export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time = "total") {
     let query;
 
     if (cobenefits.length == 0) {
-        query = `SELECT scenario , SUM("${time}") as val, LAD as Lookup_Value
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type='Total'
-            GROUP BY LAD, scenario`
+        query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type = 'Total'
+                 GROUP BY LAD, scenario`
     } else {
         query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
-            GROUP BY LAD, scenario`
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
+                 GROUP BY LAD, scenario`
     }
     return query
 }
 
-export function getSUMCBGroupedByLADAndCB(time="total") {
+export function getSUMCBGroupedByLADAndCB(time = "total") {
     let query = `SELECT SUM("${time}") as val, LAD as Lookup_Value, co_benefit_type
-            FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type in (${COBENEFS.map(v => `'${v}'`).join(",")})
-            GROUP BY LAD, co_benefit_type`
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type in (${COBENEFS.map(v => `'${v}'`).join(",")})
+                 GROUP BY LAD, co_benefit_type`
     return query
 }
 
@@ -183,20 +202,18 @@ export function getTotalPerBenefit() {
 }
 
 
-
 export function getTotalPerOneCoBenefit(cobenefit: CoBenefit) {
     return `SELECT total, Lookup_Value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
             FROM ${DB_TABLE_NAME}
-            WHERE co_benefit_type='${cobenefit}'`
+            WHERE co_benefit_type = '${cobenefit}'`
 }
 
 
 export function getTotalForOneZone(datazone: string) {
     return `SELECT total, Lookup_Value, scenario
             FROM ${DB_TABLE_NAME}
-            WHERE Lookup_Value='${datazone}'`
+            WHERE Lookup_Value = '${datazone}'`
 }
-
 
 
 // Co-benefit=total to get only one row per datazone
@@ -204,8 +221,8 @@ export function getTotalCBAllDatazones() {
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
     let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
-        FROM ${DB_TABLE_NAME}
-        WHERE co_benefit_type='Total'`
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type = 'Total'`
 
 
     console.log(22, query);
@@ -218,17 +235,17 @@ export function getAllCBAllDatazones() {
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${roundedSEF.join(", ")  }
     return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
-        FROM ${DB_TABLE_NAME}
-        WHERE co_benefit_type!='Total'`
+            FROM ${DB_TABLE_NAME}
+            WHERE co_benefit_type!='Total'`
 }
 
 
 // Co-benefit=total to get only one row per datazone. We can use this for the SEF data too.
 export function getTotalCBForOneLAD(LAD: string) {
-    let q= `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => `"${d}"`).join(", ")} ,  ${SEF.join(", ") }
-        FROM ${DB_TABLE_NAME}
-        WHERE LAD = '${LAD}'
-        AND co_benefit_type='Total'`
+    let q = `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => `"${d}"`).join(", ")}, ${SEF.join(", ")}
+             FROM ${DB_TABLE_NAME}
+             WHERE LAD = '${LAD}'
+               AND co_benefit_type = 'Total'`
 
     // let q= `SELECT ${TIMES.map(d => d).join(" , ")}
     //     FROM ${DB_TABLE_NAME}
@@ -240,21 +257,20 @@ export function getTotalCBForOneLAD(LAD: string) {
 }
 
 export function getAllCBForOneLAD(LAD: string) {
-    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario,  ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
-        FROM ${DB_TABLE_NAME}
-        WHERE LAD = '${LAD}'
-        AND co_benefit_type!='Total'
-        `
+    return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+            FROM ${DB_TABLE_NAME}
+            WHERE LAD = '${LAD}'
+              AND co_benefit_type!='Total'
+    `
 }
 
 export function getTotalCBForOneLADTimed(LAD: string) {
     return `SELECT total, Lookup_value, co_benefit_type, LAD, scenario
-        FROM ${DB_TABLE_NAME}
-        WHERE LAD = '${LAD}'
-        AND co_benefit_type!='Total'
-        `
+            FROM ${DB_TABLE_NAME}
+            WHERE LAD = '${LAD}'
+              AND co_benefit_type!='Total'
+    `
 }
-
 
 
 // Useful for facetted charts, but not for individual charts.
@@ -262,8 +278,8 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
 
     const oneQuery = (SE: SEFactor) => {
         return `SELECT total, Lookup_value, LAD, ${SE} AS SE, '${SE}' AS SEFMAME
-        FROM ${DB_TABLE_NAME}
-        WHERE co_benefit_type='${cobenefit}'`
+                FROM ${DB_TABLE_NAME}
+                WHERE co_benefit_type = '${cobenefit}'`
     }
 
     // let SEF = ['Under_35', 'Over_65'];
@@ -272,14 +288,10 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
 }
 
 
-
-
 export function getAllLAD() {
     return `SELECT DISTINCT LAD
-    FROM ${DB_TABLE_NAME}`;
+            FROM ${DB_TABLE_NAME}`;
 }
-
-
 
 
 export {initDB, getTableData}; // so we can import this elsewhere
