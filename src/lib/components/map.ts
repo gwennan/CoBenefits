@@ -15,14 +15,16 @@ import {Legend} from "$lib/utils";
 import {load} from "../../routes/+layout";
 
 
-const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
+// const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
+const LSOAzonesPath = 'maps/LSOA.json';
 // const LADzonesPath = 'maps/LAD.json';
 const LADzonesPath = 'maps/LAD2.json';
 
 
 // let datazones = await load().then(data => data.datazones);
 let datazones = await d3.json(LSOAzonesPath)
-datazones = topojson.feature(datazones, datazones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+// datazones = topojson.feature(datazones, datazones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+datazones = topojson.feature(datazones, datazones.objects["LSOA"]);
 
 let LADZones = await d3.json(LADzonesPath)
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
@@ -92,6 +94,24 @@ export class Map {
         this.loaded = false;
     }
 
+    removeLayers() {
+        // Remove all layers from the map
+        const layers = this.map.getStyle().layers; // Get all layers in the current map style
+        if (layers) {
+            layers.forEach(layer => {
+                this.map.removeLayer(layer.id); // Remove each layer by its id
+            });
+        }
+    }
+
+    removeSources() {
+        // Remove all sources from the map
+        const sources = this.map.getStyle().sources;
+        for (const sourceId in sources) {
+            this.map.removeSource(sourceId); // Remove each source by its id
+        }
+    }
+
     loadData(data) {
         this.data = data;
 
@@ -131,6 +151,7 @@ export class Map {
                     zone.properties.value = this.dataZoneToValue[zoneId]
                 }
             } else {
+                console.log("LOAD LSOA JSON")
                 this.geojson = datazones;
 
                 data.forEach((d) => {
@@ -169,22 +190,23 @@ export class Map {
             //     .interpolator(d3.interpolateBrBG)
 
             // Remove outlier values from the scale otherwise we dont see anything
-            if (this.granularity == "LSOA") {
-                domain[0] = 0;
-                domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
-            }
+            // if (this.granularity == "LSOA") {
+            //     domain[0] = 0;
+            //     domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
+            // }
+
 
             this.colorScale = d3.scaleSequential()
                 .domain(domain)
-                .interpolator(d3.interpolateCividis)
-                // .interpolator(d3.interpolateYlGnBu)
-                // .range(d3.interpolatePuBuGn)
+                .interpolator(d3.interpolateYlGnBu)
+            // .interpolator(d3.interpolateYlGnBu)
+            // .range(d3.interpolatePuBuGn)
 
 
             // console.log(d3.mean(data.map(d => d.val)))
             // console.log(d3.min(data.map(d => d.val)))
             // console.log(d3.max(data.map(d => d.val)))
-            // console.log("DOMAIN ", domain, this.dataKey)
+            console.log("DOMAIN ", domain)
         }
 
     }
@@ -213,7 +235,7 @@ export class Map {
 
         // Optional: Add border
         if (this.border) {
-        // if (true) {
+            // if (true) {
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
@@ -279,8 +301,7 @@ export class Map {
         // Put cobenef values inside the geojson for maplibre rendering
         for (let zone of this.geojson.features) {
 
-            // let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
-            let zoneId = this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.lad11cd;
+            let zoneId = this.zoneName(zone)
 
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
@@ -289,6 +310,14 @@ export class Map {
         this.map.getSource('datazones').setData(
             this.geojson
         );
+
+        this.map.setPaintProperty("fill", "fill-color", [
+                'interpolate',
+                ['linear'],
+                ['get', 'value'], // Replace with your data property
+                ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
+            ]
+        )
     }
 
     legend() {
@@ -300,6 +329,27 @@ export class Map {
 
     zoneName(zone) {
         // return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.LAD24CD;
-        return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.lad11cd;
+        // return this.granularity == "LSOA" ? zone.properties.LSOA21CD : zone.properties.lad11cd;
+        // return this.granularity == "LSOA" ? zone.properties.DZ2021_cd : zone.properties.lad11cd;
+
+        let zoneName;
+        if (this.granularity == "LSOA") {
+            zoneName = zone.properties.DZ2021_cd;
+            console.log(zoneName)
+            if (!zoneName) {
+                zoneName = zone.properties.DataZone;
+            }
+            if (!zoneName) {
+                zoneName = zone.properties.LSOA21CD;
+            }
+
+
+
+        } else {
+            zoneName = zone.properties.lad11cd;
+        }
+
+        // return this.granularity == "LSOA" ? (zone.properties.DZ2021_cd ?? zone.properties.DataZone) : zone.properties.lad11cd;
+        return zoneName
     }
 }

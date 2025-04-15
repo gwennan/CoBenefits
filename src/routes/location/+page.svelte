@@ -29,10 +29,11 @@
     import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
     import modeledDataBadge from '$lib/badges/Contains modeled data.png';
     import binningBadge from '$lib/badges/Binning applied.png';
+    import NavigationBar from "$lib/components/NavigationBar.svelte";
 
 
     let element: HTMLElement
-    let plot: HTMLElement
+    let plotDist: HTMLElement
     let plotPerCb: HTMLElement
     let heatmapPlot: HTMLElement
     let CBOverTimePLot: HTMLElement
@@ -83,7 +84,7 @@
 
     function renderPlot() {
         if (chartType == "boxplot") {
-            plot?.append(
+            plotDist?.append(
                 Plot.plot({
                     height: height / 1.4,
                     ...MARGINS,
@@ -111,8 +112,8 @@
                     ]
                 }))
         } else if (chartType == "barchart") {
-            plot?.append(
-                Plot.plot({
+            // plot?.append(
+                let pl = Plot.plot({
                     height: height / 1.4,
                     ...MARGINS,
                     x: {type: "band"},
@@ -150,10 +151,43 @@
 
                     ]
                 })
-            );
+            // );
+
+            plotDist?.append(pl);
+
+
+            setTimeout(() => {
+
+                console.log(23, d3.select(plotDist))
+                const rects = d3.select(pl)
+            .selectAll("g[aria-label='bar']")
+            // .selectAll("g")
+
+            const rects1 = d3.select(rects.nodes()[0])
+            const rects2 = d3.select(rects.nodes()[1])
+
+            console.log(2323232323, rects1.node())
+            // console.log(groupA._groups[0][1])
+
+            // const groupB = d3.select("#groupB");
+            //
+            // // Move all children of groupB into groupA
+            rects2.selectAll("rect").each(function() {
+                console.log(2, this)
+              // rects1.node().appendChild(this);
+            });
+            //
+            rects2.remove();
+
+            }, 1000)
+
+
+
+
+
 
         } else if (chartType == "distribution") {
-            plot?.append(
+            plotDist?.append(
                 Plot.plot({
                     height: height / 1.4,
                     ...MARGINS,
@@ -517,9 +551,6 @@
         })
         let data = dataLAD.concat(dataAllZones)
 
-        console.log(data[20])
-
-
         let plot = Plot.plot({
             height: height,
             width: 800,
@@ -576,14 +607,15 @@
                 const rects = d3.select(this).selectAll("rect");
 
                 // if (first < second) {
-                rects.each(function (d, i2) {
-                    if (i2 == 0) {
-                        // console.log(333, this)
-                        d3.select(this).raise()
-                    }
+                // rects.each(function (d, i2) {
+                //     if (i2 == 0) {
+                //         // console.log(333, this)
+                //         d3.select(this).raise()
+                //     }
+                //
+                //     //Do stuff with first and last child
+                // });
 
-                    //Do stuff with first and last child
-                });
             });
 
 
@@ -670,9 +702,8 @@
         // CBOverTimePerCBPLot?.firstChild?.remove();
 
          // remove old chart, if any
-        if (plot) {
-            console.log("REM")
-            removeChart(plot)
+        if (plotDist) {
+            removeChart(plotDist)
         }
 
         if (plotPerCb) removeChart(plotPerCb) // remove old chart, if any
@@ -724,6 +755,10 @@
         chartType = event.currentTarget.value;
     }
 </script>
+
+
+
+<NavigationBar></NavigationBar>
 
 
 <div class="page-container" bind:this={element}>
