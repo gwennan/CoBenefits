@@ -15,7 +15,6 @@ export let data;
 let isLoading = true;
 
 $: {
-    console.log(12121, data)
     isLoading = !data;
 }
 

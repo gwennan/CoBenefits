@@ -16,6 +16,7 @@
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
     import {legend} from "@observablehq/plot";
+    import NavigationBar from "$lib/components/NavigationBar.svelte";
 
 
     export let data;
@@ -37,6 +38,7 @@
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
     let granularity: "LSOA" | "LAD" = "LAD";
+    // let granularity: "LSOA" | "LAD" = "LSOA";
 
     let selectedSef: SEF = "EPC";
 
@@ -74,12 +76,17 @@
                 }
             }
 
+
             fullData.then((data) => {
-                // console.log(99, data)
+
+                // Load layers again when changing granularity
+                if (map.map.getStyle().layers.length == 0) {
+                    map.loadLayers();
+                }
+
                 map.update(data);
+
                 updateLegend();
-
-
             })
 
         }
@@ -201,13 +208,25 @@
     }
 
     function changeMap(e, selectedMapType) {
-        console.log(e, selectedMapType)
         mapType = e.currentTarget.value;
-        console.log(mapType, 3)
+    }
+
+    const onChangeSEF = (e) => {
+        selectedSef = e.currentTarget.value;
+    }
+
+    const onChangeGranularity = (e) => {
+        map.removeLayers();
+        map.removeSources();
+
+        granularity = e.currentTarget.value;
+        map.granularity = granularity;
     }
 
 </script>
 
+
+<NavigationBar></NavigationBar>
 
 <div class="page-container" bind:this={element}>
 
@@ -238,7 +257,17 @@
             </div>
 
 
+            <div class="component">
+                <input type="radio" name="granularity" on:change={onChangeGranularity} value="LAD" checked>
+                <label for="LAD">LAD</label>
+                <input type="radio" name="granularity" on:change={onChangeGranularity} value="LSOA">
+                <label for="LSOA">LSOA</label>
+            </div>
+
+
             {#if mapType == "Cobenefit"}
+
+
 
                 <div class="tabcontent">
                     <!--                <h2> Scenario </h2>-->
@@ -247,6 +276,7 @@
                     <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
                     <!--                <label for="css">Test</label><br>-->
 
+                    <div class="component">
                     <h2> Co Benefits </h2>
                     {#each COBENEFS as coBenef}
                         <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
@@ -254,6 +284,9 @@
                         <label for="css">{coBenef}</label><br>
                     {/each}
 
+                    </div>
+
+                    <div class="component">
                     <h2> Time </h2>
                     <div id="time">
                         <label class="time-radio"><input type="radio" name="toggle" value="total"
@@ -270,6 +303,7 @@
                         <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
                                                          on:change={onChangeTime}><span>2045-2049</span></label>
                     </div>
+                        </div>
                 </div>
 
             {:else if mapType == "SEF"}
@@ -279,7 +313,7 @@
                     <h2> Social Economic Factor </h2>
                     <div id="time">
                         {#each SEF as sef}
-                            <input type="radio" id="html" name="fav_language" value="HTML" checked={sef == selectedSef}>
+                            <input type="radio" id="html" name="fav_language" value={sef} on:change={onChangeSEF} checked={sef == selectedSef}>
                             <label for="html">{sef}</label><br>
                         {/each}
                     </div>

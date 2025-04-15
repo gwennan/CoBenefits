@@ -2,7 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
 
-    import MapCanvas from "$lib/components/MapCanvas.svelte";
+    import MapCanvas from "$lib/components/old/MapCanvas.svelte";
 
     let element: HTMLElement
     let plot: HTMLElement
