@@ -12,11 +12,13 @@
         getTotalPerPathway,
         getAverageSEFGroupedByLAD, getSEFData
     } from "$lib/duckdb";
-    import {type CoBenefit, COBENEFS, type Scenario, SEF} from "../../globals";
+    import {type CoBenefit, COBENEFS, type Scenario, SEF, getIconFromCobenef} from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
     import {legend} from "@observablehq/plot";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
+
+
 
 
     export let data;
@@ -266,9 +268,6 @@
 
 
             {#if mapType == "Cobenefit"}
-
-
-
                 <div class="tabcontent">
                     <!--                <h2> Scenario </h2>-->
                     <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
@@ -279,9 +278,13 @@
                     <div class="component">
                     <h2> Co Benefits </h2>
                     {#each COBENEFS as coBenef}
+                        <div class="checkbox-div">
+                        <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef)}/>
                         <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
                         <!--                <input type="checkbox" id="scales" name="scales" checked />-->
-                        <label for="css">{coBenef}</label><br>
+                        <label for="css">{coBenef}</label>
+                            <br>
+                        </div>
                     {/each}
 
                     </div>
@@ -317,9 +320,6 @@
                             <label for="html">{sef}</label><br>
                         {/each}
                     </div>
-
-
-
                 </div>
 
             {/if}
@@ -451,5 +451,13 @@
         padding: 6px 12px;
         border: 1px solid #ccc;
         border-top: none;
+    }
+
+    .checkbox-div {
+        display: inline;
+    }
+
+    .icon {
+        height: 2em;
     }
 </style>

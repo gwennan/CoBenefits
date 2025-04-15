@@ -158,7 +158,6 @@
 
             setTimeout(() => {
 
-                console.log(23, d3.select(plotDist))
                 const rects = d3.select(pl)
             .selectAll("g[aria-label='bar']")
             // .selectAll("g")

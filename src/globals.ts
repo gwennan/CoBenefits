@@ -1,5 +1,17 @@
 import * as d3 from "d3"
 
+import airQualityIcon from '$lib/icons/AirQuality.jpg';
+import congestionIcon from '$lib/icons/Congestion.jpg';
+import dampnessIcon from '$lib/icons/Dampness.jpg';
+import dietChangeIcon from '$lib/icons/DietChange.jpg';
+import excessColdIcon from '$lib/icons/ExcessCold.jpg';
+import excessHeatIcon from '$lib/icons/ExcessHeat.jpg';
+import hassleCostIcon from '$lib/icons/HassleCosts.jpg';
+import noiseIcon from '$lib/icons/Noise.jpg';
+import roadRepairsIcon from '$lib/icons/RoadRepairs.jpg';
+import roadSafetyIcon from '$lib/icons/RoadSafety.jpg';
+import physicalActivityIcon from '$lib/icons/PhysicalActivity.jpg';
+
 export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
 // export const SCENARIOS = ["BNZ", "test"]
 export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
@@ -45,3 +57,30 @@ export const AVERAGE_DX = 20;
 export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#F36D25', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#FDB713', '#48773E', '#183668'];
 export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
 
+
+
+export function getIconFromCobenef(cobenefit: CoBenefit) {
+    if (cobenefit == "Air quality") {
+        return airQualityIcon;
+    } else if (cobenefit == "Noise") {
+        return noiseIcon;
+    } else if (cobenefit == "Excess cold") {
+        return excessColdIcon;
+    } else if (cobenefit == "Excess heat") {
+        return excessHeatIcon;
+    } else if (cobenefit == "Dampness") {
+        return dampnessIcon;
+    } else if (cobenefit == "Congestion") {
+        return congestionIcon;
+    } else if (cobenefit == "Hassle costs") {
+        return hassleCostIcon;
+    } else if (cobenefit == "Road repairs") {
+        return roadRepairsIcon;
+    } else if (cobenefit == "Road safety") {
+        return roadSafetyIcon;
+    } else if (cobenefit == "Physical activity") {
+        return physicalActivityIcon;
+    } else if (cobenefit == "Diet change") {
+        return dietChangeIcon;
+    }
+}
