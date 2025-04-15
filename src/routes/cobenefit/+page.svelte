@@ -4,7 +4,9 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor} from "../../globals";
+    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES} from "../../globals";
+
+    import AirqualityIcon from '$lib/icons/AirQuality.jpg';
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -19,72 +21,75 @@
     const fullData = data.data;
     const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
+    const LAD = data.LAD;
+    
     let map: Map;
 
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
+
+    let chartColor: string = "steelblue"; // Default color
 
     onMount(() => {
         map = new Map(fullData, "LSOA", mapDiv, "total");
         map.initMap();
 
         let legendSvg = map.legend();
-        // mapLegendDiv.innerHTML = "";
         mapLegendDiv.append(legendSvg)
     })
 
-    function renderPlot() {
-        if (chartType == "barchart") {
-            plot?.append(
-                Plot.plot({
-                    height: height / 1.4,
-                    ...MARGINS,
-                    y: {type: "band"},
-                    style: {fontSize: "18px"},
-                    marks: [
-                        Plot.barX(fullData, Plot.groupY({x: "mean"}, {
-                            x: "total",
-                            y: "scenario"
-                        })),
-                        Plot.link(
-                            fullData,
-                            Plot.groupY(
-                                {
-                                    x1: (data) => d3.mean(data) - d3.deviation(data),
-                                    x2: (data) => d3.mean(data) + d3.deviation(data)
-                                },
-                                {
-                                    x: "total",
-                                    y: "scenario",
-                                    stroke: "gray",
-                                    strokeWidth: 3
-                                }
-                            )
-                        ),
-                    ]
+function renderPlot() {
+    
+    let pivotedData = fullData.flatMap(d => {
+        return TIMES.map(t => {
+            return {time: t, value: d[t], total: d.total, scenario: d.scenario}
+        })
+    })
+    
+    if (chartType == "barchart") {
+        plot?.append(
+            Plot.plot({
+                height: height / 1.4,
+                ...MARGINS,
+                style: {fontSize: "18px"},
+                x: {type: "band"},
+                marks: [
+                    Plot.barY(pivotedData, Plot.groupX({y: "mean"}, {
+                        x: "time",
+                        y: "value",
+                        fill: "#71C35D",
+                        tip: true,
+                        fillOpacity: 0.8,
+                        ry1:5,
+                        insetLeft: 15,
+                        insetRight:15
+                    })),
+                ]
+            })
+        );
+    } else if (chartType == "distribution") {
+        plot?.append(
+            Plot.plot({
+                height: height / 1.4,
+                marginLeft: 60,
+                marginRight: 60,
+                y: {label: "Datazones Frequency"},
+                style: {fontSize: "18px"},
+                marks: [
+                    Plot.areaY(pivotedData, Plot.binX({y: "count"}, {
+                        x: "total",
+                        fill:"#71C35D",
+                        tip: true,
+                        fillOpacity: 0.5,
+                        stroke: "#71C35D",
+                        strokeWidth: 3
+                    }))                    
+                ]
                 })
             );
-        } else if (chartType == "distribution") {
-            // distrib
-            plot?.append(
-                Plot.plot({
-                    height: height / 1.4,
-                    marginLeft: 60,
-                    marginRight: 60,
-                    y: {label: "Datazones Frequency"},
-                    style: {fontSize: "18px"},
-                    facet: {data: fullData, y: "scenario"},
-                    marks: [
-                        Plot.areaY(fullData, Plot.binX({y: "count"}, {
-                            x: "total",
-                            tip: true
-                        }))                    ]
-                })
-            );
-        } else if (chartType == "violin") {
-            // Violin
         }
     }
+
 
     function renderSEFPlot() {
         // FACETED CHART
@@ -109,8 +114,8 @@
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
-                    height: height / 2,
-                    width: 330,
+                    height: height,
+                    width: height,
                     marginLeft: 80,
                     marginBottom: 60,
                     marginRight: 30,
@@ -121,16 +126,18 @@
                     style: {fontSize: "18px"},
                     color: {legend: true},
                     marks: [
-                        Plot.barY(SEFData.filter(d => d["SEFMAME"] == sef), Plot.binX({y: "mean"}, {
-                            x: d => Math.floor(d["SE"]).toString(),
-                            y: "total"
-                        })),
-                    ]
+                        Plot.dot(SEFData.filter(d => d["SEFMAME"] == sef), {
+                            x: "SE",
+                            y: "total",
+                            stroke: "#71C35D",
+                            r:1,
+                            strokeOpacity: 0.2
+                        })]
                 })
             } else {
                 plot = Plot.plot({
-                    height: height / 2,
-                    width: 330,
+                    height: height,
+                    width: height,
                     marginLeft: 80,
                     marginBottom: 60,
                     marginRight: 30,
@@ -140,13 +147,13 @@
                     style: {fontSize: "18px"},
                     color: {legend: true},
                     marks: [
-                        Plot.areaY(SEFData.filter(d => d["SEFMAME"] == sef), Plot.binX({y: "mean"}, {
+                        Plot.dot(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
-                            y: "total"
-                        })),
-                        Plot.ruleX([d3.mean(SEFData.filter(d => d["SEFMAME"] == sef).map(d => d.SE))], {stroke: "red"}),
-                        Plot.ruleX([d3.median(SEFData.filter(d => d["SEFMAME"] == sef).map(d => d.SE))], {stroke: "blue"}),
-                    ]
+                            y: "total",
+                            stroke: "#71C35D",
+                            r:1,
+                            strokeOpacity: 0.2
+                        })]
                 })
             }
 
@@ -181,8 +188,12 @@
 <div class="page-container" bind:this={element}>
 
     <div class="section header">
-        <h1> {coBenefit} </h1>
-        <p> {coBenefit} is ... </p>
+        <p class="page-subtitle">Co-Benefit Report</p>
+        <h1 class="page-title"> 
+            <img src={AirqualityIcon} alt="Icon" class="heading-icon">
+            {coBenefit} 
+        </h1>
+        <p class="description"> Total cost benefit regarding {coBenefit}: [TOTAL] </p>
     </div>
 
 <!--    <div id="vis-block">-->
@@ -191,12 +202,10 @@
 
     <div id="vis-block">
         <div class="component singlevis" >
-            <h3>{coBenefit} datazone distribution</h3>
+            <h3 class="component-title">{coBenefit} Total Cost Benefit Over Time</h3>
 
             <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
             <label for="html">Barchart</label><br>
-            <!--        <input type="radio" on:change={onChange} name="visType" value="violin">-->
-            <!--        <label for="css">Violin</label><br>-->
             <input type="radio" on:change={onChange} name="visType" value="distribution">
             <label for="javascript">Distribution</label>
 
@@ -206,20 +215,18 @@
             </div>
         </div>
 
-<!--        <div class="component singlevis">-->
-<!--            <h3> Map </h3>-->
-<!--            <div class="row">-->
-<!--                <div id="map-legend" bind:this={mapLegendDiv}></div>-->
-<!--                <div id="map" bind:this={mapDiv}>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="component column">
+            <h3 class="component-title">{coBenefit} on UK Map</h3>
+            <p class="description">Scroll for zooming in and out.</p>
+            <div id="map" bind:this={mapDiv}>
+            </div>
+        </div>
     </div>
         </div>
 
 
     <div id="multiple-comp" class="component">
-        <h3> Socio Economic Factors </h3>
+        <h3 class="component-title"> {coBenefit} Cost Benefit by Socio Economic Factors </h3>
         <div id="multiple-plots">
             {#each SEF as sef}
                 <div class="plot" bind:this={SEFPlot[sef]}>
@@ -261,5 +268,15 @@
         align-items: center;
         align-content: space-between;
         justify-content: center;
+    }
+
+    .heading-icon {
+        width: 80px;
+        height: 80px;
+        margin-right: 15px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        vertical-align: middle;
+        object-fit: cover;
     }
 </style>
