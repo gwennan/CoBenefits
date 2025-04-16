@@ -4,7 +4,7 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES} from "../../globals";
+    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES, COBENEFS_RANGE, getIconFromCobenef, COBENEFS_SCALE} from "../../globals";
 
     import AirqualityIcon from '$lib/icons/AirQuality.jpg';
 
@@ -22,13 +22,14 @@
     const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
     const LAD = data.LAD;
+
+    let icon = getIconFromCobenef(coBenefit)
     
     let map: Map;
 
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
 
-    let chartColor: string = "steelblue"; // Default color
 
     onMount(() => {
         map = new Map(fullData, "LSOA", mapDiv, "total");
@@ -52,12 +53,20 @@ function renderPlot() {
                 height: height / 1.4,
                 ...MARGINS,
                 style: {fontSize: "18px"},
-                x: {type: "band"},
+                x: {
+                    type: "band", 
+                    tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
+                    label:"Year Intervals"
+                },
+                y: {
+                    label: "Total Cost Benefit (£)",
+                    grid: true
+                },
                 marks: [
-                    Plot.barY(pivotedData, Plot.groupX({y: "mean"}, {
+                    Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
                         x: "time",
                         y: "value",
-                        fill: "#71C35D",
+                        fill: COBENEFS_SCALE(coBenefit),
                         tip: true,
                         fillOpacity: 0.8,
                         ry1:5,
@@ -78,10 +87,10 @@ function renderPlot() {
                 marks: [
                     Plot.areaY(pivotedData, Plot.binX({y: "count"}, {
                         x: "total",
-                        fill:"#71C35D",
+                        fill:COBENEFS_SCALE(coBenefit),
                         tip: true,
                         fillOpacity: 0.5,
-                        stroke: "#71C35D",
+                        stroke: COBENEFS_SCALE(coBenefit),
                         strokeWidth: 3
                     }))                    
                 ]
@@ -114,45 +123,61 @@ function renderPlot() {
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
-                    height: height,
-                    width: height,
-                    marginLeft: 80,
+                    //title: sef,
+                    style: {fontSize:"18px", textAnchor: "middle", fill:'#333'},
+                    height: height/1.4,
+                    width: height/1.5,
+                    marginLeft: 30,
                     marginBottom: 60,
                     marginRight: 30,
-                    marginTop: 60,
-                    y: {grid: true, label: "mean value (£)"},
+                    marginTop: 20,
+                    // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
-                    x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
-                    style: {fontSize: "18px"},
+                    //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
+                    x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
+                    y: {label: null},
                     color: {legend: true},
                     marks: [
                         Plot.dot(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
-                            stroke: "#71C35D",
+                            stroke: COBENEFS_SCALE(coBenefit),
                             r:1,
                             strokeOpacity: 0.2
-                        })]
+                        })
+                    ]
                 })
             } else {
                 plot = Plot.plot({
-                    height: height,
-                    width: height,
-                    marginLeft: 80,
+                    //title: sef,
+                    style: {fontSize:"18px", textAnchor: "middle", fill:'#333'},
+                    height: height/1.4,
+                    width: height/1.5,
+                    marginLeft: 30,
                     marginBottom: 60,
                     marginRight: 30,
-                    marginTop: 60,
-                    y: {grid: true, label: "mean value (£)"},
-                    x: {grid: true, label: sef},
-                    style: {fontSize: "18px"},
+                    marginTop: 20,
+                    // y: {grid: true, label: "Average Cost Benefit (£)"},
+                    // x: {grid: true, label: sef},
+                    x: {grid: true, label: null},
+                    y: {grid: true, label: null},
                     color: {legend: true},
                     marks: [
                         Plot.dot(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
-                            stroke: "#71C35D",
+                            stroke: COBENEFS_SCALE(coBenefit),
                             r:1,
                             strokeOpacity: 0.2
+                        }),
+                    Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
+                            x: "SE",
+                            y: "total",
+                            stroke: '#555',
+                            strokeWidth: 2,
+                            strokeOpacity: 0.75,
+                            strokeDasharray: "5,5",
+                            clip: true
                         })]
                 })
             }
@@ -178,6 +203,9 @@ function renderPlot() {
         }
     }
 
+    $: textColor = COBENEFS_SCALE(coBenefit);
+    $: cobensStyle = `color: ${textColor}; font-weight: bold; font-size: 22px;`;
+
 
     function onChange(event) {
         chartType = event.currentTarget.value;
@@ -190,10 +218,10 @@ function renderPlot() {
     <div class="section header">
         <p class="page-subtitle">Co-Benefit Report</p>
         <h1 class="page-title"> 
-            <img src={AirqualityIcon} alt="Icon" class="heading-icon">
+            <img src={icon} alt="Icon" class="heading-icon">
             {coBenefit} 
         </h1>
-        <p class="description"> Total cost benefit regarding {coBenefit}: [TOTAL] </p>
+        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}: [TOTAL] </span> </p>
     </div>
 
 <!--    <div id="vis-block">-->
@@ -202,7 +230,7 @@ function renderPlot() {
 
     <div id="vis-block">
         <div class="component singlevis" >
-            <h3 class="component-title">{coBenefit} Total Cost Benefit Over Time</h3>
+            <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time</h3>
 
             <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
             <label for="html">Barchart</label><br>
@@ -216,7 +244,7 @@ function renderPlot() {
         </div>
 
         <div class="component column">
-            <h3 class="component-title">{coBenefit} on UK Map</h3>
+            <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
             <p class="description">Scroll for zooming in and out.</p>
             <div id="map" bind:this={mapDiv}>
             </div>
@@ -226,11 +254,13 @@ function renderPlot() {
 
 
     <div id="multiple-comp" class="component">
-        <h3 class="component-title"> {coBenefit} Cost Benefit by Socio Economic Factors </h3>
+        <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic Factors </h3>
         <div id="multiple-plots">
             {#each SEF as sef}
-                <div class="plot" bind:this={SEFPlot[sef]}>
-                </div>
+            <div class="plot-container">
+                <h3 class="component-title" style="text-align: center;"> {sef.replace('_', ' ')} </h3>
+                <div class="plot" bind:this={SEFPlot[sef]}></div>
+            </div>
             {/each}
         </div>
     </div>
