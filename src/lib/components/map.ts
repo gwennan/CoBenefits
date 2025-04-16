@@ -112,7 +112,7 @@ export class Map {
         }
     }
 
-    loadData(data) {
+    loadData(data, type: "SEF" | "Cobenefit" = "Cobenefit") {
         this.data = data;
 
         let justHighlightArea = false;
@@ -189,23 +189,27 @@ export class Map {
             //     // .interpolator(d3.interpolatePuOr)
             //     .interpolator(d3.interpolateBrBG)
 
-            // Remove outlier values from the scale otherwise we dont see anything
-            // if (this.granularity == "LSOA") {
-            //     domain[0] = 0;
-            //     domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
-            // }
+
+            if (type == "Cobenefit") {
+                // Remove outlier values from the scale otherwise we dont see anything
+                if (this.granularity == "LSOA") {
+                    // domain[0] = 0;
+                    domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
+                }
 
 
-            this.colorScale = d3.scaleSequential()
-                .domain(domain)
-                .interpolator(d3.interpolateYlGnBu)
-            // .interpolator(d3.interpolateYlGnBu)
-            // .range(d3.interpolatePuBuGn)
+                this.colorScale = d3.scaleSequential()
+                    .domain(domain)
+                    .interpolator(d3.interpolateYlGnBu)
+                // .interpolator(d3.interpolateYlGnBu)
+                // .range(d3.interpolatePuBuGn)
 
+            } else if (type == "SEF") {
+                this.colorScale = d3.scaleSequential()
+                    .domain(domain)
+                    .interpolator(d3.interpolateYlOrBr)
+            }
 
-            // console.log(d3.mean(data.map(d => d.val)))
-            // console.log(d3.min(data.map(d => d.val)))
-            // console.log(d3.max(data.map(d => d.val)))
             console.log("DOMAIN ", domain)
         }
 
@@ -293,10 +297,10 @@ export class Map {
         // });
     }
 
-    update = (newData) => {
+    update = (newData, mapType) => {
         if (!this.loaded) return;
 
-        this.loadData(newData);
+        this.loadData(newData, mapType);
 
         // Put cobenef values inside the geojson for maplibre rendering
         for (let zone of this.geojson.features) {
@@ -342,7 +346,6 @@ export class Map {
             if (!zoneName) {
                 zoneName = zone.properties.LSOA21CD;
             }
-
 
 
         } else {

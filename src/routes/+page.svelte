@@ -30,17 +30,17 @@ const getActive = (path, exact = true) => $currentPath =>
 
 const slides = [
 {
-    image: '/hero1.png',
+    image: `${base}/hero1.png`,
     value: '£100',
     source: 'from the total co-benefits.'
 },
 {
-    image: '/hero2.png',
+    image: `${base}/hero2.png`,
     value: '£10',
     source: 'from improving air quality.'
 },
 {
-    image: '/hero3.png',
+    image: `${base}/hero3.png`,
     value: '£70',
     source: 'from reducing access cold.'
 }

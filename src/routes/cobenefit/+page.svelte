@@ -35,8 +35,8 @@
         map = new Map(fullData, "LSOA", mapDiv, "total");
         map.initMap();
 
-        let legendSvg = map.legend();
-        mapLegendDiv.append(legendSvg)
+        // let legendSvg = map.legend();
+        // mapLegendDiv.append(legendSvg)
     })
 
 function renderPlot() {

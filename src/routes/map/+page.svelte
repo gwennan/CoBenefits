@@ -86,7 +86,7 @@
                     map.loadLayers();
                 }
 
-                map.update(data);
+                map.update(data, mapType);
 
                 updateLegend();
             })
