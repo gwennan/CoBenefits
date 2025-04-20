@@ -75,6 +75,10 @@ async function loadData() {
     // await conn.close();
 
     console.log("DB INFO: ", await getTableData(getInfo()));
+
+    const result = await conn.query(`PRAGMA table_info(${DB_TABLE_NAME})`);
+    console.log("Table schema:", await result.toArray());
+
 }
 
 
@@ -291,6 +295,18 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
 export function getAllLAD() {
     return `SELECT DISTINCT LAD
             FROM ${DB_TABLE_NAME}`;
+}
+
+
+// prepare for landing page waffle
+export function getAggregationPerBenefit() {
+    return `
+        SELECT co_benefit_type, SUM(total) as total
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type != 'Total'
+        GROUP BY co_benefit_type
+        ORDER BY co_benefit_type
+    `;
 }
 
 

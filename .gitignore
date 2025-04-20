@@ -44,11 +44,5 @@ staticNotDeployed/coBenefits
 staticNotDeployed/simulations_new/**/*
 
 Archive/
-
-
-
-
 .ipynb_checkpoints
-
-
-.svelte-kit
+.svelte-kit/*

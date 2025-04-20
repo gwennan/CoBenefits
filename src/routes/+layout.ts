@@ -8,6 +8,13 @@ import * as topojson from "topojson-client";
 // import {joinArrays} from "$lib/utils.ts";
 import {initDB} from "$lib/duckdb";
 
+// import data for landing page
+import {
+    getTableData,
+    getAggregationPerBenefit
+} from "$lib/duckdb";
+import {COBENEFS} from "../globals";
+
 
 // const zonesPath = '/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson';
 // topojson
@@ -44,9 +51,18 @@ export async function load() {
         }
     })
 
+    //get data for the landing page
+    // console.log("Landing page data here")
+    let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
+
+
+    console.log("Landing page data here", aggregationPerBenefit)
+
+
     return {
         datazones: UKZones,
-        LADToName
+        LADToName,
+        aggregationPerBenefit
     }
 }
 
