@@ -6,7 +6,6 @@
     import {Map} from "$lib/components/map";
     import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES, COBENEFS_RANGE, getIconFromCobenef, COBENEFS_SCALE} from "../../globals";
 
-    import AirqualityIcon from '$lib/icons/AirQuality.jpg';
 
     let element: HTMLElement
     let plot: HTMLElement
@@ -21,7 +20,6 @@
     const fullData = data.data;
     const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
-    const LAD = data.LAD;
 
     let icon = getIconFromCobenef(coBenefit)
     
