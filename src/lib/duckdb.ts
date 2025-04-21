@@ -292,6 +292,21 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
     return query;
 }
 
+export function getSefForOneCoBenefitAveragedByLAD(cobenefit: CoBenefit) {
+
+    const oneQuery = (SE: SEFactor) => {
+        return `SELECT AVG(total) as total, LAD, AVG(${SE}) AS SE, '${SE}' AS SEFMAME
+                FROM ${DB_TABLE_NAME}
+                WHERE co_benefit_type = '${cobenefit}'
+                GROUP BY LAD
+                `
+    }
+
+    // let SEF = ['Under_35', 'Over_65'];
+    let query = SEF.map(sef => oneQuery(sef)).join(" UNION ALL ");
+    return query;
+}
+
 
 export function getAllLAD() {
     return `SELECT DISTINCT LAD

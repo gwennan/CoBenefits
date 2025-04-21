@@ -28,7 +28,6 @@ const LADScotlandPath = `${base}/LAD/Scotland_DZ_LA.csv`
 
 
 export async function load() {
-    console.log("load root")
     await initDB();
     // const db = await initDB();
 
