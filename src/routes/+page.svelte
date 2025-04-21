@@ -1,6 +1,6 @@
 <script lang="ts">
 import { base } from '$app/paths';
-import {COBENEFS, COBENEFS_RANGE, HEROSLIDES} from "../globals";
+import {COBENEFS, COBENEFS_RANGE, getHeroSlides} from "../globals";
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 import { tick } from "svelte";
@@ -14,10 +14,11 @@ import { fade } from 'svelte/transition';
 // waffle chart
 export let data;
 let aggregationPerBenefit = data.aggregationPerBenefit;
-let slides = HEROSLIDES;
-console.log("slides", slides);
 
 let waffleData: [];
+let waffleOrderedTypes: string[] = [];
+
+let slides: any[] = [];
 
 let waffleEl: HTMLElement;
 let waffleBgEl: HTMLElement;
@@ -44,17 +45,20 @@ function startWaffleHighlightLoop(height: number) {
 
     // total cobenfits by default
     const totalValue = aggregationPerBenefit.reduce((sum, d) => sum + d.total, 0);
+    
     const highlightSequence = [
-        { type: null, label: "all co-benefits", value: totalValue.toFixed(1) },
-        ...orderedTypes.map(type => {
-            const match = aggregationPerBenefit.find(d => d.co_benefit_type === type);
-            return {
-                type,
-                label: type,
-                value: match ? match.total.toFixed(1) : ""
-            };
-        })
+      {
+        type: null,
+        label: 'total co-benefits',
+        value: totalValue.toFixed(1)
+      },
+      ...orderedTypes.map((type) => {
+        const label = type;
+        const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(1) ?? "";
+        return { type, label, value };
+      })
     ];
+
 
     // refresh 5s for each type
     intervalId = setInterval(() => {
@@ -119,6 +123,14 @@ function renderWaffle(height: number, highlightType?: string) {
         y: Math.floor(i / gridWidth),
         ...d
     }));
+
+    // for hero backeground sequence
+    waffleOrderedTypes = Array.from(
+        new Set(waffleData.map(d => d.type).filter(type => type !== "empty"))
+    );
+
+    slides = getHeroSlides(waffleOrderedTypes);
+
 
     // console.log("waffle height", height);
     const highlight = highlightType ?? null;
