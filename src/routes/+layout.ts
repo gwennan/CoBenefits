@@ -12,7 +12,11 @@ import {initDB} from "$lib/duckdb";
 // import data for landing page
 import {
     getTableData,
-    getAggregationPerBenefit
+    getAggregationPerBenefit,
+    getAllLAD,
+    getTotalCBForOneLAD,
+    getAggregatedTotalPerLAD,
+    getTopSeletedLADsByTotal
 } from "$lib/duckdb";
 
 
@@ -54,19 +58,24 @@ export async function load() {
         }
     })
 
-    //get data for the landing page
-    // console.log("Landing page data here")
+    // for landing page waffle and COBEN columns
     let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
-
-
-    // console.log("Landing page data here", aggregationPerBenefit)
+    console.log("aggregationPerBenefit", aggregationPerBenefit);    
+    // for landing page LAD columns
+    const topLADs = await getTableData(getTopSeletedLADsByTotal(10));
+    const topLADsData = topLADs.map((row) => ({
+        LAD: row.LAD,
+        name: LADToName[row.LAD] || row.LAD,
+        total: row.total_value
+    }));
 
     console.log("end root")
 
     return {
         datazones: UKZones,
         LADToName,
-        aggregationPerBenefit
+        aggregationPerBenefit,
+        topLADsData
     }
 }
 

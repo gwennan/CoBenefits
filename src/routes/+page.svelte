@@ -1,19 +1,23 @@
 <script lang="ts">
 import { base } from '$app/paths';
-import {COBENEFS, COBENEFS_RANGE, getHeroSlides} from "../globals";
+import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
 import { page } from '$app/stores';
-import { derived } from 'svelte/store';
-import { tick } from "svelte";
-
-import * as d3 from 'd3';
 import * as Plot from "@observablehq/plot";
 
 import { onMount, onDestroy } from 'svelte';
-import { fade } from 'svelte/transition';
+
 
 // waffle chart
 export let data;
-let aggregationPerBenefit = data.aggregationPerBenefit;
+// let aggregationPerBenefit = data.aggregationPerBenefit;
+// sort the cobenefits, but should keep the table interactive later
+let aggregationPerBenefit = [...data.aggregationPerBenefit].sort(
+  (a, b) => b.total - a.total
+);
+let topLADsData = data.topLADsData;
+const maxLADValue = Math.max(...topLADsData.map(d => d.total));
+const maxCoBenefValue = Math.max(...aggregationPerBenefit.map(d => d.total));
+const minCoBenefValue = Math.min(...aggregationPerBenefit.map(d => d.total));
 
 let waffleData: [];
 let waffleOrderedTypes: string[] = [];
@@ -58,7 +62,6 @@ function startWaffleHighlightLoop(height: number) {
         return { type, label, value };
       })
     ];
-
 
     // refresh 5s for each type
     intervalId = setInterval(() => {
@@ -131,7 +134,6 @@ function renderWaffle(height: number, highlightType?: string) {
 
     slides = getHeroSlides(waffleOrderedTypes);
 
-
     // console.log("waffle height", height);
     const highlight = highlightType ?? null;
     const plot = Plot.plot({
@@ -177,6 +179,70 @@ function renderWaffle(height: number, highlightType?: string) {
     waffleEl.append(plot);
 }
 
+// bars for LAD table
+function makeLADBarSVG(value, max) {
+  const plot = Plot.plot({
+    width: 80,
+    height: 20,
+    margin: 0,
+    x: { domain: [0, max], axis: null },
+    marks: [
+      Plot.barX([value], {
+        x: d => d,
+        y: 0,
+        // height: 20,
+        fill: "#ccc"
+      }),
+      // Plot.text([value], {
+      //   x: d => d + 1, 
+      //   // y: 0.5,
+      //   text: d => d.toFixed(0),
+      //   fill: "#333",
+      //   dy: "0.35em",
+      //   textAnchor: "start",
+      //   style: "font-size: 1rem"
+      // })
+    ]
+  });
+  return plot.outerHTML;
+}
+
+
+// bars for coben table
+function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
+  const color = COBENEFS_SCALE(coBenefType);
+
+  const plot = Plot.plot({
+    width: 100,
+    height: 20,
+    marginTop: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    x: { domain: [minAbs, maxAbs], axis: null }, //for negative values
+    marks: [
+      Plot.ruleX([0], { stroke: "#ccc" }), // baseline
+      Plot.barX([value], {
+        x: d => d,
+        y: 0,
+        // height: 20,
+        fill: color
+      }),
+      // Plot.text([value], {
+      //   x: d => d < 0 ? d - 1 : d + 1,
+      //   // y: 0.5,
+      //   text: d => d.toFixed(0),
+      //   fill: "#333",
+      //   dy: "0.35em",
+      //   textAnchor: d => d < 0 ? "end" : "start",
+      //   style: "font-size: 1rem"
+      // })
+    ]
+  });
+
+  return plot.outerHTML;
+}
+
 
 // let allLADs = data.allLAD;
 
@@ -188,29 +254,6 @@ $: {
 
 let showDropdown = false;
 
-
-
-// // hero section sslides
-// const slides = [
-//   {
-//     image: `${base}/hero3.png`,
-//     source: 'from the total co-benefits.',
-//     type: null,
-//     label: 'total co-benefits'
-//   },
-// {
-//     image: `${base}/hero1.png`,
-//     source: 'from the total co-benefits.'
-// },
-// {
-//     image: `${base}/hero2.png`,
-//     source: 'from improving air quality.'
-// },
-// {
-//     image: `${base}/hero3.png`,
-//     source: 'from reducing access cold.'
-// }
-// ];
 
 
   onMount(() => {
@@ -320,38 +363,71 @@ let showDropdown = false;
   </div>
   </section>
 
-  
-
 
   <section class="side-by-side-section">
     <div class="side-box">
       <h2>Explore by Local Authority</h2>
       <input type="text" placeholder="Search local authorities..." class="search-input" />
   
-      <div class="list">
-        <div class="list-item">Arberdeen</div>
-       <div class="list-item">City of Edinburgh</div>
-       <div class="list-item">West Highland</div>
-       <div class="list-item">Glasgow</div> 
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="max-width: 200px;">Name</th>
+            <th>Value</th>
+            <th>Per Capita</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each topLADsData as LAD, index}
+            <tr>
+              <td>
+                <a href="{base}/location?location={LAD.LAD}">{LAD.name}</a>
+              </td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeLADBarSVG(LAD.total, maxLADValue)}
+                  <span>{LAD.total.toFixed(1)}</span>
+                </div>
+              </td>
+              <td>000</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
   
     <div class="side-box">
       <h2>Explore by Co-Benefit</h2>
   
-      <div class="list">
-        {#each COBENEFS as coBenef}
-              <a class="list-item" href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a>
-        {/each}
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="max-width: 200px;">Name</th>
+            <th>Value</th>
+            <th>Per Capita</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each aggregationPerBenefit as coBenef, index}
+            <tr>
+              <td>
+                <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">{coBenef.co_benefit_type}</a>
+              </td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeCoBenefBarSVG(coBenef.total, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
+                  <span>{coBenef.total.toFixed(1)}</span>
+                </div>
+              </td>
+              <td>000</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
   </section>
   
   
-
-<!--<div>-->
-<!--        <h1> Glossary</h1>-->
-<!--</div>-->
 
 <main>
 
@@ -366,41 +442,6 @@ let showDropdown = false;
             GGGGGGGGG
         </div>
     {/if}
-
-    <!-- <div>
-        <a href="{base}/overview">Overview</a>
-    </div>
-
-    <div>
-        <a href="{base}/map">Map Application</a>
-    </div> -->
-
-    <!-- <div>
-        Report pages by Co-Benefit
-
-        <ul>
-            {#each COBENEFS as coBenef}
-
-                <li>
-                    <a href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a>
-                </li>
-
-            {/each}
-        </ul>
-    </div> -->
-
-    <!-- <div> -->
-        <!-- Report pages by Local District -->
-
-<!--        <ul>-->
-<!--            {#each allLADs as LAD}-->
-<!--                <li>-->
-<!--                    <a href="{base}/location?location={LAD}" > {LAD} </a>-->
-<!--                </li>-->
-<!--            {/each}-->
-<!--        </ul>-->
-
-    <!-- </div> -->
 </main>
 
 
@@ -701,12 +742,14 @@ let showDropdown = false;
 
 .side-box {
   flex: 1;
-  background-color: #f0f0f0;
+  background-color: #fff;
+  border: 1px solid #ddd;
   padding: 1.5rem;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
 }
+
 
 .side-box h2 {
   margin-bottom: 1rem;
@@ -722,25 +765,76 @@ let showDropdown = false;
   font-size: 1rem;
 }
 
-.list {
+
+.side-by-side-section {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-.list-item {
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.data-table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.data-table thead {
+  background-color: #f5f5f5;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  text-align: left;
+  vertical-align: middle;
   background-color: #fff;
-  padding: 0.75rem 1rem;
+}
+
+.data-table th {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  max-width: 180px;
+  width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.04); 
+}
+
+.data-table a {
+  background-color: #fff;
+  padding: 0.75rem 0rem;
   border-radius: 4px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #333;
   cursor: default;
 }
 
-.list-item:hover {
+.data-table a:hover {
   color: #0077cc;
   cursor: pointer;
 }
+
+
 
 </style>

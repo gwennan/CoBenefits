@@ -230,7 +230,7 @@ export function getTotalCBAllDatazones() {
                  WHERE co_benefit_type = 'Total'`
 
 
-    console.log(22, query);
+    // console.log(22, query);
     return query;
 }
 
@@ -257,7 +257,7 @@ export function getTotalCBForOneLAD(LAD: string) {
     //     WHERE LAD = '${LAD}'
     //     AND co_benefit_type='Total'`
 
-    console.log("Q ", q)
+    // console.log("Q ", q)
     return q;
 }
 
@@ -324,6 +324,29 @@ export function getAggregationPerBenefit() {
         ORDER BY co_benefit_type
     `;
 }
+
+// LAD total benefits for sorting the top 10 in display for landing page
+export function getAggregatedTotalPerLAD() {
+    return `
+        SELECT LAD, SUM(total) AS total_value
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type = 'Total'
+        GROUP BY LAD
+    `;
+}
+
+export function getTopSeletedLADsByTotal(n: number) {
+    return `
+        SELECT LAD, SUM(total) AS total_value
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type = 'Total'
+        GROUP BY LAD
+        ORDER BY total_value DESC
+        LIMIT ${n}
+    `;
+}
+
+
 
 
 export {initDB, getTableData}; // so we can import this elsewhere
