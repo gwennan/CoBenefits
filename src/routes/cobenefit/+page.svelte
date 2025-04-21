@@ -4,7 +4,18 @@
     import {onMount} from 'svelte';
 
     import {Map} from "$lib/components/map";
-    import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES, COBENEFS_RANGE, getIconFromCobenef, COBENEFS_SCALE} from "../../globals";
+    import {
+        MARGINS,
+        SEF,
+        SEF_CATEGORICAL,
+        type SEFactor,
+        TIMES,
+        COBENEFS_RANGE,
+        getIconFromCobenef,
+        COBENEFS_SCALE,
+        type CoBenefit
+    } from "../../globals";
+    import {getSefForOneCoBenefit, getTableData, getTotalPerOneCoBenefit, initDB} from "$lib/duckdb";
 
 
     let element: HTMLElement
@@ -17,12 +28,18 @@
     // Data from load function
     export let data;
 
-    const fullData = data.data;
-    const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
+    let fullData;
+    let SEFData;
+
+    loadData().then(data => {
+        fullData = data.fullData;
+        SEFData = data.SEFData;
+    })
+
 
     let icon = getIconFromCobenef(coBenefit)
-    
+
     let map: Map;
 
     let mapDiv: HTMLElement;
@@ -37,61 +54,72 @@
         // mapLegendDiv.append(legendSvg)
     })
 
-function renderPlot() {
-    
-    let pivotedData = fullData.flatMap(d => {
-        return TIMES.map(t => {
-            return {time: t, value: d[t], total: d.total, scenario: d.scenario}
+    async function loadData() {
+        const fullData = await getTableData(getTotalPerOneCoBenefit(coBenefit))
+
+        let SEFData = await getTableData(getSefForOneCoBenefit(coBenefit))
+        SEF.forEach(SE => {
+            SEFData[SE] = +SEFData[SE];
         })
-    })
-    
-    if (chartType == "barchart") {
-        plot?.append(
-            Plot.plot({
-                height: height / 1.4,
-                ...MARGINS,
-                style: {fontSize: "18px"},
-                x: {
-                    type: "band", 
-                    tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
-                    label:"Year Intervals"
-                },
-                y: {
-                    label: "Total Cost Benefit (£)",
-                    grid: true
-                },
-                marks: [
-                    Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
-                        x: "time",
-                        y: "value",
-                        fill: COBENEFS_SCALE(coBenefit),
-                        tip: true,
-                        fillOpacity: 0.8,
-                        ry1:5,
-                        insetLeft: 15,
-                        insetRight:15
-                    })),
-                ]
+
+        return {fullData, SEFData}
+    }
+
+    function renderPlot() {
+
+        let pivotedData = fullData.flatMap(d => {
+            return TIMES.map(t => {
+                return {time: t, value: d[t], total: d.total, scenario: d.scenario}
             })
-        );
-    } else if (chartType == "distribution") {
-        plot?.append(
-            Plot.plot({
-                height: height / 1.4,
-                marginLeft: 60,
-                marginRight: 60,
-                y: {label: "Datazones Frequency"},
-                style: {fontSize: "18px"},
-                marks: [
-                    Plot.areaY(pivotedData, Plot.binX({y: "count"}, {
-                        x: "total",
-                        fill:COBENEFS_SCALE(coBenefit),
-                        tip: true,
-                        fillOpacity: 0.5,
-                        stroke: COBENEFS_SCALE(coBenefit),
-                        strokeWidth: 3
-                    }))                    
-                ]
+        })
+
+        if (chartType == "barchart") {
+            plot?.append(
+                Plot.plot({
+                    height: height / 1.4,
+                    ...MARGINS,
+                    style: {fontSize: "18px"},
+                    x: {
+                        type: "band",
+                        tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
+                        label: "Year Intervals"
+                    },
+                    y: {
+                        label: "Total Cost Benefit (£)",
+                        grid: true
+                    },
+                    marks: [
+                        Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
+                            x: "time",
+                            y: "value",
+                            fill: COBENEFS_SCALE(coBenefit),
+                            tip: true,
+                            fillOpacity: 0.8,
+                            ry1: 5,
+                            insetLeft: 15,
+                            insetRight: 15
+                        })),
+                    ]
+                })
+            );
+        } else if (chartType == "distribution") {
+            plot?.append(
+                Plot.plot({
+                    height: height / 1.4,
+                    marginLeft: 60,
+                    marginRight: 60,
+                    y: {label: "Datazones Frequency"},
+                    style: {fontSize: "18px"},
+                    marks: [
+                        Plot.areaY(pivotedData, Plot.binX({y: "count"}, {
+                            x: "total",
+                            fill: COBENEFS_SCALE(coBenefit),
+                            tip: true,
+                            fillOpacity: 0.5,
+                            stroke: COBENEFS_SCALE(coBenefit),
+                            strokeWidth: 3
+                        }))
+                    ]
                 })
             );
         }
@@ -122,9 +150,9 @@ function renderPlot() {
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize:"18px", textAnchor: "middle", fill:'#333'},
-                    height: height/1.4,
-                    width: height/1.5,
+                    style: {fontSize: "18px", textAnchor: "middle", fill: '#333'},
+                    height: height / 1.4,
+                    width: height / 1.5,
                     marginLeft: 30,
                     marginBottom: 60,
                     marginRight: 30,
@@ -140,7 +168,7 @@ function renderPlot() {
                             x: "SE",
                             y: "total",
                             stroke: COBENEFS_SCALE(coBenefit),
-                            r:1,
+                            r: 1,
                             strokeOpacity: 0.2
                         })
                     ]
@@ -148,9 +176,9 @@ function renderPlot() {
             } else {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize:"18px", textAnchor: "middle", fill:'#333'},
-                    height: height/1.4,
-                    width: height/1.5,
+                    style: {fontSize: "18px", textAnchor: "middle", fill: '#333'},
+                    height: height / 1.4,
+                    width: height / 1.5,
                     marginLeft: 30,
                     marginBottom: 60,
                     marginRight: 30,
@@ -165,10 +193,10 @@ function renderPlot() {
                             x: "SE",
                             y: "total",
                             stroke: COBENEFS_SCALE(coBenefit),
-                            r:1,
+                            r: 1,
                             strokeOpacity: 0.2
                         }),
-                    Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
+                        Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
                             stroke: '#555',
@@ -188,14 +216,16 @@ function renderPlot() {
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
         Object.values(SEFPlot).forEach(sefPlot => {
-          sefPlot.firstChild?.remove();
+            sefPlot.firstChild?.remove();
         })
 
         //ugly hack for reactivity
         if (chartType) {
         }
 
-        if (height) {
+        loadData()
+
+        if (height && fullData) {
             renderPlot();
             renderSEFPlot();
         }
@@ -215,50 +245,52 @@ function renderPlot() {
 
     <div class="section header">
         <p class="page-subtitle">Co-Benefit Report</p>
-        <h1 class="page-title"> 
+        <h1 class="page-title">
             <img src={icon} alt="Icon" class="heading-icon">
-            {coBenefit} 
+            {coBenefit}
         </h1>
-        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}: [TOTAL] </span> </p>
+        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}: [TOTAL] </span></p>
     </div>
 
-<!--    <div id="vis-block">-->
+    <!--    <div id="vis-block">-->
     <div class="section">
 
 
-    <div id="vis-block">
-        <div class="component singlevis" >
-            <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time</h3>
+        <div id="vis-block">
+            <div class="component singlevis">
+                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
+                </h3>
 
-            <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
-            <label for="html">Barchart</label><br>
-            <input type="radio" on:change={onChange} name="visType" value="distribution">
-            <label for="javascript">Distribution</label>
+                <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
+                <label for="html">Barchart</label><br>
+                <input type="radio" on:change={onChange} name="visType" value="distribution">
+                <label for="javascript">Distribution</label>
 
-            <div class="component row">
-                <div class="plot" bind:this={plot}>
+                <div class="component row">
+                    <div class="plot" bind:this={plot}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component column">
+                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
+                <p class="description">Scroll for zooming in and out.</p>
+                <div id="map" bind:this={mapDiv}>
                 </div>
             </div>
         </div>
-
-        <div class="component column">
-            <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
-            <p class="description">Scroll for zooming in and out.</p>
-            <div id="map" bind:this={mapDiv}>
-            </div>
-        </div>
     </div>
-        </div>
 
 
     <div id="multiple-comp" class="component">
-        <h3 class="component-title"> <span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic Factors </h3>
+        <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic Factors
+        </h3>
         <div id="multiple-plots">
             {#each SEF as sef}
-            <div class="plot-container">
-                <h3 class="component-title" style="text-align: center;"> {sef.replace('_', ' ')} </h3>
-                <div class="plot" bind:this={SEFPlot[sef]}></div>
-            </div>
+                <div class="plot-container">
+                    <h3 class="component-title" style="text-align: center;"> {sef.replace('_', ' ')} </h3>
+                    <div class="plot" bind:this={SEFPlot[sef]}></div>
+                </div>
             {/each}
         </div>
     </div>

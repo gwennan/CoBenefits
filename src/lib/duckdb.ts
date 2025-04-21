@@ -79,6 +79,7 @@ async function loadData() {
     const result = await conn.query(`PRAGMA table_info(${DB_TABLE_NAME})`);
     console.log("Table schema:", await result.toArray());
 
+    await conn.close();
 }
 
 
