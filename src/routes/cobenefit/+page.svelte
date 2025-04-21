@@ -15,7 +15,13 @@
         COBENEFS_SCALE,
         type CoBenefit
     } from "../../globals";
-    import {getSefForOneCoBenefit, getTableData, getTotalPerOneCoBenefit, initDB} from "$lib/duckdb";
+    import {
+        getAverageCBGroupedByLAD,
+        getSefForOneCoBenefit, getSefForOneCoBenefitAveragedByLAD,
+        getTableData,
+        getTotalPerOneCoBenefit,
+        initDB
+    } from "$lib/duckdb";
 
 
     let element: HTMLElement
@@ -31,14 +37,12 @@
 
     const coBenefit = data.coBenefit;
     let fullData;
+    let LADAveragedData;
     let SEFData;
     let totalValue;
+    let dataLoaded = false;
 
-    loadData().then(data => {
-        fullData = data.fullData;
-        SEFData = data.SEFData;
-        totalValue = Math.round(d3.sum(fullData, d => d.total));
-    })
+    loadData();
 
 
     let icon = getIconFromCobenef(coBenefit)
@@ -59,14 +63,20 @@
 
 
     async function loadData() {
-        const fullData = await getTableData(getTotalPerOneCoBenefit(coBenefit))
+        fullData = await getTableData(getTotalPerOneCoBenefit(coBenefit))
 
-        let SEFData = await getTableData(getSefForOneCoBenefit(coBenefit))
+        SEFData = await getTableData(getSefForOneCoBenefit(coBenefit))
+
+        LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
+
+        console.log(22, LADAveragedData);
         SEF.forEach(SE => {
             SEFData[SE] = +SEFData[SE];
         })
 
-        return {fullData, SEFData}
+        totalValue = d3.sum(fullData, d => d.total);
+
+        dataLoaded = true;
     }
 
     function renderDistPlot() {
@@ -241,7 +251,7 @@
 
         // loadData()
 
-        if (height && fullData) {
+        if (height && dataLoaded) {
 
             renderDistPlot();
             renderPlot();
