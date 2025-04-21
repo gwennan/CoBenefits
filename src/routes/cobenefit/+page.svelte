@@ -19,6 +19,7 @@
 
 
     let element: HTMLElement
+    let plotDist: HTMLElement
     let plot: HTMLElement
     let SEFPlot: Record<SEFactor, HTMLElement> = {};
     let chartType: "barchart" | "violin" | "distribution" = "barchart"
@@ -31,10 +32,12 @@
     const coBenefit = data.coBenefit;
     let fullData;
     let SEFData;
+    let totalValue;
 
     loadData().then(data => {
         fullData = data.fullData;
         SEFData = data.SEFData;
+        totalValue = d3.sum(fullData, d => d.total);
     })
 
 
@@ -54,6 +57,7 @@
         // mapLegendDiv.append(legendSvg)
     })
 
+
     async function loadData() {
         const fullData = await getTableData(getTotalPerOneCoBenefit(coBenefit))
 
@@ -65,64 +69,66 @@
         return {fullData, SEFData}
     }
 
+    function renderDistPlot() {
+        plotDist?.append(
+            Plot.plot({
+                height: height / 1.2,
+                ...MARGINS,
+                marginLeft: 60,
+                marginRight: 60,
+                y: {label: "Datazones Frequency"},
+                x: {label: "Cost Per Capita (£)"},
+                style: {fontSize: "18px"},
+                marks: [
+                    Plot.areaY(fullData, Plot.binX({y: "count"}, {
+                        x: "total",
+                        fill: COBENEFS_SCALE(coBenefit),
+                        tip: true,
+                        fillOpacity: 0.5,
+                        stroke: COBENEFS_SCALE(coBenefit),
+                        strokeWidth: 3
+                    }))
+                ]
+            })
+        );
+    }
+
     function renderPlot() {
 
         let pivotedData = fullData.flatMap(d => {
             return TIMES.map(t => {
                 return {time: t, value: d[t], total: d.total, scenario: d.scenario}
-            })
-        })
+            });
+        });
 
-        if (chartType == "barchart") {
-            plot?.append(
-                Plot.plot({
-                    height: height / 1.4,
-                    ...MARGINS,
-                    style: {fontSize: "18px"},
-                    x: {
-                        type: "band",
-                        tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
-                        label: "Year Intervals"
-                    },
-                    y: {
-                        label: "Total Cost Benefit (£)",
-                        grid: true
-                    },
-                    marks: [
-                        Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
-                            x: "time",
-                            y: "value",
-                            fill: COBENEFS_SCALE(coBenefit),
-                            tip: true,
-                            fillOpacity: 0.8,
-                            ry1: 5,
-                            insetLeft: 15,
-                            insetRight: 15
-                        })),
-                    ]
-                })
-            );
-        } else if (chartType == "distribution") {
-            plot?.append(
-                Plot.plot({
-                    height: height / 1.4,
-                    marginLeft: 60,
-                    marginRight: 60,
-                    y: {label: "Datazones Frequency"},
-                    style: {fontSize: "18px"},
-                    marks: [
-                        Plot.areaY(pivotedData, Plot.binX({y: "count"}, {
-                            x: "total",
-                            fill: COBENEFS_SCALE(coBenefit),
-                            tip: true,
-                            fillOpacity: 0.5,
-                            stroke: COBENEFS_SCALE(coBenefit),
-                            strokeWidth: 3
-                        }))
-                    ]
-                })
-            );
-        }
+        plot?.append(
+            Plot.plot({
+                height: height / 1.2,
+                ...MARGINS,
+                style: {fontSize: "18px"},
+                x: {
+                    type: "band",
+                    tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
+                    label: "Year Intervals"
+                },
+                y: {
+                    label: "Cost Benefit £/Capita",
+                    grid: true
+                },
+                marks: [
+                    Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
+                        x: "time",
+                        y: "value",
+                        fill: COBENEFS_SCALE(coBenefit),
+                        tip: true,
+                        fillOpacity: 0.8,
+                        ry1: 5,
+                        insetLeft: 15,
+                        insetRight: 15
+                    }))
+                ]
+            })
+        );
     }
 
 
@@ -164,7 +170,7 @@
                     y: {label: null},
                     color: {legend: true},
                     marks: [
-                        Plot.dot(SEFData.filter(d => d["SEFMAME"] == sef), {
+                        Plot.boxY(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
                             stroke: COBENEFS_SCALE(coBenefit),
@@ -199,7 +205,7 @@
                         Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
-                            stroke: '#555',
+                            stroke: '#333',
                             strokeWidth: 2,
                             strokeOpacity: 0.75,
                             strokeDasharray: "5,5",
@@ -223,9 +229,12 @@
         if (chartType) {
         }
 
-        loadData()
+
+        // loadData()
 
         if (height && fullData) {
+
+            renderDistPlot();
             renderPlot();
             renderSEFPlot();
         }
@@ -238,6 +247,8 @@
     function onChange(event) {
         chartType = event.currentTarget.value;
     }
+
+
 </script>
 
 
@@ -245,11 +256,23 @@
 
     <div class="section header">
         <p class="page-subtitle">Co-Benefit Report</p>
-        <h1 class="page-title">
-            <img src={icon} alt="Icon" class="heading-icon">
-            {coBenefit}
-        </h1>
-        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}: [TOTAL] </span></p>
+
+        <div class="header-container">
+            <div class="title-container">
+                <h1 class="page-title">
+                    <img src={icon} alt="Icon" class="heading-icon">
+                    {coBenefit}
+                </h1>
+
+            </div>
+            <div class="total-value-container">
+                {#if totalValue}
+                <p class="total-value">£{totalValue.toLocaleString()}</p>
+                {/if}
+            </div>
+        </div>
+        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}:  </span></p>
+
     </div>
 
     <!--    <div id="vis-block">-->
@@ -260,42 +283,47 @@
             <div class="component singlevis">
                 <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
                 </h3>
-
-                <input type="radio" on:change={onChange} name="visType" value="barchart" checked>
-                <label for="html">Barchart</label><br>
-                <input type="radio" on:change={onChange} name="visType" value="distribution">
-                <label for="javascript">Distribution</label>
-
+                <p class="description"> The total? cost benefit per capita for each 5 year interval. </p>
                 <div class="component row">
                     <div class="plot" bind:this={plot}>
                     </div>
                 </div>
+
+                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
+                    Benefit by LSOA </h3>
+                <p class="description"> The total cost benefit per capita for each LSOA. </p>
+                <div class="component row">
+                    <div class="plot" bind:this={plotDist}>
+                    </div>
+                </div>
             </div>
+
 
             <div class="component column">
                 <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
                 <p class="description">Scroll for zooming in and out.</p>
-                <div id="map" bind:this={mapDiv}>
-                </div>
+                <!--<div id="map" bind:this={mapDiv}>
+                </div>-->
             </div>
         </div>
-    </div>
 
 
-    <div id="multiple-comp" class="component">
-        <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic Factors
-        </h3>
-        <div id="multiple-plots">
-            {#each SEF as sef}
-                <div class="plot-container">
-                    <h3 class="component-title" style="text-align: center;"> {sef.replace('_', ' ')} </h3>
-                    <div class="plot" bind:this={SEFPlot[sef]}></div>
-                </div>
-            {/each}
+        <div id="multiple-comp" class="component">
+
+            <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic
+                Factors </h3>
+
+            <div id="multiple-plots">
+                {#each SEF as sef}
+                    <div class="plot-container">
+                        <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
+                        <div class="plot" bind:this={SEFPlot[sef]}></div>
+                    </div>
+                {/each}
+            </div>
         </div>
+
     </div>
-
-
 </div>
 
 <style>
@@ -338,5 +366,27 @@
         margin-bottom: 8px;
         vertical-align: middle;
         object-fit: cover;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .title-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .total-value-container {
+        text-align: right;
+    }
+
+    .total-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
     }
 </style>
