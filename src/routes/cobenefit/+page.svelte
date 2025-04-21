@@ -37,7 +37,7 @@
     loadData().then(data => {
         fullData = data.fullData;
         SEFData = data.SEFData;
-        totalValue = d3.sum(fullData, d => d.total);
+        totalValue = Math.round(d3.sum(fullData, d => d.total));
     })
 
 
@@ -205,7 +205,16 @@
                         Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
-                            stroke: '#333',
+                            stroke: '#F0F0F0',
+                            strokeWidth: 4,
+                            strokeOpacity: 0.75,
+                            strokeDasharray: "5,5",
+                            clip: true
+                        }),
+                        Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
+                            x: "SE",
+                            y: "total",
+                            stroke: '#222',
                             strokeWidth: 2,
                             strokeOpacity: 0.75,
                             strokeDasharray: "5,5",
@@ -256,7 +265,6 @@
 
     <div class="section header">
         <p class="page-subtitle">Co-Benefit Report</p>
-
         <div class="header-container">
             <div class="title-container">
                 <h1 class="page-title">
@@ -267,7 +275,7 @@
             </div>
             <div class="total-value-container">
                 {#if totalValue}
-                <p class="total-value">£{totalValue.toLocaleString()}</p>
+                <p class="total-value">Total Cost Benefit: £{totalValue.toLocaleString()}</p>
                 {/if}
             </div>
         </div>
@@ -312,6 +320,7 @@
 
             <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic
                 Factors </h3>
+            <br>
 
             <div id="multiple-plots">
                 {#each SEF as sef}
@@ -377,7 +386,8 @@
 
     .title-container {
         display: flex;
-        align-items: center;
+        align-items: top;
+        font-size: 36px;
     }
 
     .total-value-container {
@@ -385,8 +395,9 @@
     }
 
     .total-value {
-        font-size: 18px;
+        font-size: 36px;
         font-weight: bold;
-        color: #333;
+        color: #555;
+        margin-right: 30px;
     }
 </style>
