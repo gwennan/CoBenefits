@@ -1,4 +1,6 @@
 import * as d3 from "d3"
+import { base } from '$app/paths';
+
 
 import airQualityIcon from '$lib/icons/AirQuality.jpg';
 import congestionIcon from '$lib/icons/Congestion.jpg';
@@ -56,6 +58,21 @@ export const AVERAGE_DX = 20;
 
 export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#F36D25', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#FDB713', '#48773E', '#183668'];
 export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
+
+export const HEROSLIDES = [
+    {
+      image: `${base}/hero/hero0.png`,
+      source: 'total co-benefits',
+      type: null,
+      label: 'total co-benefits'
+    },
+    ...COBENEFS.map((label, i) => ({
+      image: `${base}/hero/hero${i + 1}.png`, // hero1.png, hero2.png, ...
+      source: `from improving ${label.toLowerCase()}.`,
+      type: label,
+      label
+    }))
+  ];
 
 
 

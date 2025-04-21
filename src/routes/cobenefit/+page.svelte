@@ -6,6 +6,7 @@
     import {Map} from "$lib/components/map";
     import {MARGINS, SEF, SEF_CATEGORICAL, type SEFactor, TIMES, COBENEFS_RANGE, getIconFromCobenef, COBENEFS_SCALE} from "../../globals";
 
+
     let element: HTMLElement
     let plotDist: HTMLElement
     let plot: HTMLElement
@@ -20,7 +21,6 @@
     const fullData = data.data;
     const SEFData = data.SEFData;
     const coBenefit = data.coBenefit;
-    const allCBAllLAD = data.allCBAllLAD;
 
     let icon = getIconFromCobenef(coBenefit)
     

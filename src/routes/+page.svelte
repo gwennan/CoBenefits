@@ -1,14 +1,170 @@
-<script>
+<script lang="ts">
 import { base } from '$app/paths';
-import {COBENEFS} from "../globals";
+import {COBENEFS, COBENEFS_RANGE, HEROSLIDES} from "../globals";
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
+import { tick } from "svelte";
+
+import * as d3 from 'd3';
+import * as Plot from "@observablehq/plot";
 
 import { onMount, onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
 
-
+// waffle chart
 export let data;
+let aggregationPerBenefit = data.aggregationPerBenefit;
+let slides = HEROSLIDES;
+console.log("slides", slides);
+
+let waffleData: [];
+
+let waffleEl: HTMLElement;
+let waffleBgEl: HTMLElement;
+let waffleLabelEl: HTMLElement;
+let activeTypeLabel: string;
+let activeValueLabel: string;
+
+let heroEl: HTMLElement;
+let highlight: string | null = null;
+
+// for waffle animation and hero background images
+let activeType: string | null = null;
+let intervalId: any;
+let currentIndex = 0;
+let previousIndex = 0;
+let interval;
+
+function startWaffleHighlightLoop(height: number) {
+    // sort in the waffle display order
+    const visibleTypes = waffleData
+        .filter(d => d.type !== "empty")
+        .map(d => d.type);
+    const orderedTypes = Array.from(new Set(visibleTypes));
+
+    // total cobenfits by default
+    const totalValue = aggregationPerBenefit.reduce((sum, d) => sum + d.total, 0);
+    const highlightSequence = [
+        { type: null, label: "all co-benefits", value: totalValue.toFixed(1) },
+        ...orderedTypes.map(type => {
+            const match = aggregationPerBenefit.find(d => d.co_benefit_type === type);
+            return {
+                type,
+                label: type,
+                value: match ? match.total.toFixed(1) : ""
+            };
+        })
+    ];
+
+    // refresh 5s for each type
+    intervalId = setInterval(() => {
+        previousIndex = currentIndex;
+        currentIndex = (currentIndex + 1) % highlightSequence.length;
+        const { type, label, value } = highlightSequence[currentIndex];
+        activeType = type;
+        activeTypeLabel = label;
+        activeValueLabel = value;
+
+        renderWaffle(height, type);
+    }, 5000);
+
+    // On default load, show the total
+    const firstSlide = slides[0];
+    activeType = firstSlide.type;
+    activeTypeLabel = firstSlide.label;
+    activeValueLabel = totalValue.toFixed(1);
+    renderWaffle(height, firstSlide.type);
+}
+
+function renderWaffle(height: number, highlightType?: string) {
+    // waffle size
+    const unitSize = 20; // fixed size of each square in pixels 
+    const gridWidth = 15; // fixed number of columns
+    const gridHeight = Math.floor(height / unitSize); // number of rows that fit in the hero height
+    const gridSize = gridWidth * gridHeight;
+
+    const total = aggregationPerBenefit.reduce((sum, d) => sum + d.total, 0);
+    const squares = [];
+
+    // grid sizes
+    for (const item of aggregationPerBenefit) {
+      const absCount = Math.round((Math.abs(item.total) / total) * gridSize);
+      const isNegative = item.total < 0;
+      for (let i = 0; i < absCount; i++) {
+          squares.push({
+              type: item.co_benefit_type,
+              negative: isNegative
+          });
+      }
+    }
+    while (squares.length < gridSize) {
+        squares.push({ type: "empty" });
+    }
+
+    // Sort
+    squares.sort((a, b) => {
+        // Move 'empty' to the end
+        if (a.type === "empty") return 1;
+        if (b.type === "empty") return -1;
+
+        // negative values at the end
+        if (a.negative && !b.negative) return 1;
+        if (!a.negative && b.negative) return -1;
+
+        return 0;
+    });
+
+    waffleData = squares.map((d, i) => ({
+        x: i % gridWidth,
+        y: Math.floor(i / gridWidth),
+        ...d
+    }));
+
+    // console.log("waffle height", height);
+    const highlight = highlightType ?? null;
+    const plot = Plot.plot({
+        width: unitSize * gridWidth,
+        height: unitSize * gridHeight,
+        margin: 0,
+        x: { axis: null },
+        y: { axis: null },
+        color: {
+            type: "ordinal",
+            domain: COBENEFS,
+            range: COBENEFS_RANGE,
+            unknown: "#eee",
+            legend: false
+        },
+        marks: [
+        // Postive values
+        Plot.rect(waffleData.filter(d => !d.negative), {
+            x: d => d.x * unitSize,
+            y: d => d.y * unitSize,
+            fill: "type",
+            fillOpacity: d => (highlight && d.type !== highlight ? 0.15 : 1)
+        }),
+
+        // Outlined rects (negative values)
+        Plot.rect(waffleData.filter(d => d.negative), {
+            x: d => d.x * unitSize,
+            y: d => d.y * unitSize,
+            stroke: "type",
+            strokeOpacity: d => (highlight && d.type !== highlight ? 0.15 : 1),
+            strokeWidth: 1,
+            fill: "none"
+        })
+        ]
+    });
+    // white background
+    if (waffleBgEl) {
+    waffleBgEl.style.width = `${unitSize * gridWidth+20}px`;
+    waffleBgEl.style.height = `${height}px`;
+    };
+
+    waffleEl.innerHTML = "";
+    waffleEl.append(plot);
+}
+
 
 // let allLADs = data.allLAD;
 
@@ -20,41 +176,35 @@ $: {
 
 let showDropdown = false;
 
-// current path to determine active tab
-const currentPath = derived(page, ($page) => $page.url.pathname);
-
-// Helper to apply active class
-const getActive = (path, exact = true) => $currentPath =>
-  exact ? ($currentPath === path) : $currentPath.startsWith(path);
 
 
-const slides = [
-{
-    image: `${base}/hero1.png`,
-    value: '£100',
-    source: 'from the total co-benefits.'
-},
-{
-    image: `${base}/hero2.png`,
-    value: '£10',
-    source: 'from improving air quality.'
-},
-{
-    image: `${base}/hero3.png`,
-    value: '£70',
-    source: 'from reducing access cold.'
-}
-];
+// // hero section sslides
+// const slides = [
+//   {
+//     image: `${base}/hero3.png`,
+//     source: 'from the total co-benefits.',
+//     type: null,
+//     label: 'total co-benefits'
+//   },
+// {
+//     image: `${base}/hero1.png`,
+//     source: 'from the total co-benefits.'
+// },
+// {
+//     image: `${base}/hero2.png`,
+//     source: 'from improving air quality.'
+// },
+// {
+//     image: `${base}/hero3.png`,
+//     source: 'from reducing access cold.'
+// }
+// ];
 
-  let currentIndex = 0;
-  let previousIndex = 0;
-  let interval;
 
   onMount(() => {
-    interval = setInterval(() => {
-      previousIndex = currentIndex;
-      currentIndex = (currentIndex + 1) % slides.length;
-    }, 6000);
+    const heroHeight = heroEl.getBoundingClientRect().height;
+    renderWaffle(heroHeight);
+    startWaffleHighlightLoop(heroHeight);
   });
 
   onDestroy(() => {
@@ -62,15 +212,13 @@ const slides = [
   });
 </script>
 
-<!-- <h1>Welcome to the Cobenefit Atlas!</h1> -->
-
 <nav class="navbar">
     <div class="nav-left">
       <img src="{base}/logo.png" alt="Logo" class="logo" />
     </div>
   
     <div class="nav-right">
-      <a href="{base}" class:active={$page.url.pathname === `${base}`}>Home</a>
+      <a href="{base}/" class:active={$page.url.pathname === `${base}`}>Home</a>
   
       <div
         class="dropdown"
@@ -98,7 +246,7 @@ const slides = [
     </div>
   </nav>
 
-  <section class="hero-container">
+  <section class="hero-container" bind:this={heroEl}>
     {#each slides as slide, index}
       <div
         class="hero-slide"
@@ -110,20 +258,27 @@ const slides = [
   
     <div class="hero-content">
       <div class="hero-text">
-        <h1 class="hero-title">UK’s Co-Benefits towards Reaching NetZero</h1>
+        <h1 class="hero-title">The Co-Benefits of the UK’s Path to Net-Zero GHG Emissions</h1>
         <p class="hero-description">
-            CO-BENS develops methodologies and models to understand how climate action complements and conflicts with the wider set of economic, environmental and social challenges we are facing.
+          Climate actions affects more than GHG emissions. Electric cars reduce urban air pollution, retrofits prevent mould and damp, cycling improves public health. The CO-BENS project models 11 co-benefits from the climate actions in the UK Climate Change Committee’s most recent pathway to Net Zero for the UK. In each of 45,000 local communities and regions we consider our local context determine both which climate actions will be implemented and how, when and for whom those climate actions will lead to benefits (and in some cases costs).
         </p>
-        <p class="hero-stats">
+        <p class="hero-description">
+          Just as climate actions affects more than GHG emissions, climate solutions require more than climate modelling. This website provides data and visualisations to support local, regional and national stakeholders who want to understand how climate actions are closely connected with a wide range of social, economic and environmental priorities. <br>
+        </p>
+
+        <p class="hero-description">
+          If you would like bespoke analysis highlighting how co-benefits are key to the work your team or organisation is doing, please reach out!
+        </p>
+        <!-- <p class="hero-stats">
           We model <span class="big-bold">11</span> 
-          <a href="https://example.com/cobenefits" target="_blank" rel="noopener" class="link-underline">co-benefits</a> 
+          <a href="" target="_blank" rel="noopener" class="link-underline">co-benefits</a> 
           in <span class="big-bold">317</span> 
-          <a href="https://example.com/local-authorities" target="_blank" rel="noopener" class="link-underline">local authorities</a> 
+          <a href="" target="_blank" rel="noopener" class="link-underline">local authorities</a> 
           on the data zone level across the UK.
-        </p>
+        </p> -->
       </div>
   
-      <div class="hero-fact-box" transition:fade>
+      <!-- <div class="hero-fact-box" transition:fade>
         <p>
           If we reach NetZero in 2050,<br />
           average UK household will benefit<br />
@@ -131,11 +286,29 @@ const slides = [
         </p>
         <span class="big-bold">{slides[currentIndex].value}</span>
         <p>{slides[currentIndex].source}</p>
-      </div>
+      </div> -->
   
-      <a href="{base}/map" class="hero-map-button">Explore Map</a>
-    </div>
+      <!-- <a href="{base}/map" class="hero-map-button">Explore Map</a>
+    </div> -->
+
+    <!-- <div bind:this={waffleEl} class="waffle-overlay"></div> -->
+    <!-- <div class="waffle-label" bind:this={waffleLabelEl}></div> -->
+
+    <div class="waffle-overlay">
+      <div class="waffle-label" bind:this={waffleLabelEl}>
+        National gain of <br>
+        <strong style="font-size: 1.2rem">{activeTypeLabel}</strong> <br>
+        in reaching NetZero <br>
+        by 2050 is: <br>
+        <strong style="font-size: 1.2rem">{activeValueLabel}</strong>
+      </div>
+      
+      <div class="waffle-bg" bind:this={waffleBgEl}></div>
+      <div bind:this={waffleEl}></div>
+  </div>
   </section>
+
+  
 
 
   <section class="side-by-side-section">
@@ -155,10 +328,9 @@ const slides = [
       <h2>Explore by Co-Benefit</h2>
   
       <div class="list">
-        <div class="list-item">Air Quality</div>
-      <div class="list-item">Physical Activity</div>
-      <div class="list-item">Noise Reduction</div>
-      <div class="list-item">Carbon Reduction</div>
+        {#each COBENEFS as coBenef}
+              <a class="list-item" href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a>
+        {/each}
       </div>
     </div>
   </section>
@@ -359,21 +531,21 @@ const slides = [
 .hero-text {
   position: relative;
   z-index: 1;
-  max-width: 600px;
+  max-width: 700px;
 }
 
 .hero-title {
-  font-size: 3rem;
+  font-size: 2.75rem;
   font-weight: bold;
   margin-bottom: 3rem;
   line-height: 3rem;
 }
 
 .hero-description {
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.2rem;
-  max-width: 450px;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  line-height: 1rem;
+  max-width: 600px;
 }
 
 .hero-stats {
@@ -436,7 +608,7 @@ const slides = [
 
 .hero-container {
   position: relative;
-  height: 60vh;
+  height: 70vh;
   overflow: hidden;
 }
 
@@ -468,6 +640,45 @@ const slides = [
   padding: 0 2rem;
   color: #000;
 }
+
+.waffle-overlay {
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+    /* width: 150px; 
+    height: 150px; */
+    pointer-events: none;
+    z-index: 10;
+    margin: 0;
+    /* background-color: white; */
+}
+
+.waffle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: white;
+    z-index: -1;
+}
+
+
+.waffle-label {
+  position: absolute;
+  top: 50%;
+  right: 105%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+  padding: 1rem 1rem;
+  white-space: nowrap;
+  /* max-width: 400px; */
+  font-size: 0.95rem;
+  line-height: 1.4;
+  z-index: 2;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-align: left;
+}
+
 
 .side-by-side-section {
   display: flex;
@@ -513,6 +724,11 @@ const slides = [
   font-weight: 600;
   color: #333;
   cursor: default;
+}
+
+.list-item:hover {
+  color: #0077cc;
+  cursor: pointer;
 }
 
 </style>
