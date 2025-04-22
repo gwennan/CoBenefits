@@ -68,6 +68,18 @@ export const AVERAGE_DX = 20;
 
 export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
 export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
+export const COBENEFS_RANGE2 =[['#007DBC', '#004366', '#0087cc', '#33baff',  '#99dcff'],
+                                ['#E11484', '#5d0836',  '#bb106d',  '#ee43a0',  '#f6a1cf'],
+                                ['#00AED9', '#005166',  '#00a3cc',  '#33d6ff',  '#99eaff'],
+                                ['#EF402B', '#5e1007',  '#bd210e',  '#f05441',  '#f7a9a0'],
+                                ['#183668', '#132b52',  '#2656a5',  '#5989d8',  '#acc4eb'],
+                                ['#8F1838', '#570e22',  '#ae1d44',  '#e15077',  '#f0a7bb'],
+                                ['#F99D26', '#633902',  '#c67205',  '#f9a538',  '#fcd29b'],
+                                ['#C31F33', '#580d17',  '#b01b2e',  '#e34e61',  '#f1a6b0'],
+                                ['#F36D25', '#602505',  '#c14a0a',  '#f47d3d',  '#f9be9e'],
+                                ['#48773E', '#284322',  '#518645',  '#84b978',  '#c1dcbb'],
+                                ['#D3A029', '#554010',  '#aa8121',  '#ddb454',  '#eed9a9']];
+export const COBENEFS_SCALE2 =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE2);
 
 // export const HEROSLIDES = [
 //     {

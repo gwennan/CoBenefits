@@ -332,6 +332,14 @@ export function getAllLAD() {
             FROM ${DB_TABLE_NAME}`;
 }
 
+// preview database (loged in landing page layout.ts)
+export function previewTableData(limit = 10) {
+    return `
+        SELECT *
+        FROM ${DB_TABLE_NAME}
+        LIMIT ${limit}
+    `;
+}
 
 // prepare for landing page waffle
 export function getAggregationPerBenefit() {

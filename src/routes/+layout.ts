@@ -16,7 +16,8 @@ import {
     getAllLAD,
     getTotalCBForOneLAD,
     getAggregatedTotalPerLAD,
-    getTopSeletedLADsByTotal
+    getTopSeletedLADsByTotal,
+    previewTableData
 } from "$lib/duckdb";
 
 
@@ -57,6 +58,11 @@ export async function load() {
             LADToName[lad.LA_Code] = lad.LA_Name;
         }
     })
+
+    // for preview datatable
+    // const previewData = await getTableData(previewTableData());
+    // console.log("Column names:", Object.keys(previewData[0]));
+    // console.log("First 10 rows of cobenefits:", previewData);
 
     // for landing page waffle and COBEN columns
     let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
