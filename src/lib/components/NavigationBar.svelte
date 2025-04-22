@@ -10,6 +10,8 @@ import {COBENEFS} from "../../globals";
 
 let showDropdown = false;
 
+console.log("links", $page.url.pathname);
+
 </script>
 
 
@@ -19,7 +21,7 @@ let showDropdown = false;
     </div>
 
     <div class="nav-right">
-      <a href="{base}" class:active={$page.url.pathname === `${base}`}>Home</a>
+      <a href="{base}/" class:active={$page.url.pathname === `${base}`}>Home</a>
 
       <div
         class="dropdown"
@@ -35,7 +37,7 @@ let showDropdown = false;
         {#if showDropdown}
           <ul class="dropdown-menu">
             {#each COBENEFS as coBenef}
-              <li><a href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a></li>
+              <li><a href="{base}/cobenefit?cobenefit={coBenef}" data-sveltekit-reload>{coBenef}</a></li>
             {/each}
           </ul>
         {/if}

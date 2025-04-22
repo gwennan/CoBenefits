@@ -12,7 +12,7 @@
         AVERAGE_COLOR,
         MARGINS,
         AVERAGE_DX,
-        SCENARIOS, type Scenario, TIMES, COBENEFS_RANGE, COBENEFS
+        SCENARIOS, type Scenario, TIMES, COBENEFS_RANGE, COBENEFS, NATION_TO_COLOR
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -59,6 +59,7 @@
     export let data;
 
     const LAD = data.LAD;
+    let compareTo: "UK" | "England" | "Wales" | "NI" | "Scotland" = "UK"
 
     // const oneLADData = data.oneLADData;
     // const oneLADAllCbs = data.oneLADAllCBs;
@@ -104,7 +105,6 @@
     }
 
     loadData();
-
 
     const LADToName = data.LADToName;
 
@@ -153,7 +153,6 @@
                 x: {type: "band"},
                 style: {fontSize: "18px"},
                 marks: [
-
                     Plot.barY(
                         totalCBAllLAD,
                         Plot.groupX(
@@ -188,7 +187,6 @@
             // );
 
             plotDist?.append(pl);
-
 
             setTimeout(() => {
 
@@ -257,7 +255,6 @@
                 width: 811,
                 MARGINS,
                 x: {type: "band"},
-
                 marks: [
                     // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
                     //     y: "val",
@@ -278,7 +275,8 @@
                         y: "val",
                         x: "co_benefit_type",
                         dx: AVERAGE_DX,
-                        fill: AVERAGE_COLOR,
+                        // fill: AVERAGE_COLOR,
+                        fill: NATION_TO_COLOR[compareTo],
                         tip: true
                     })),
 
@@ -733,7 +731,9 @@
             removeChart(plotDist)
         }
 
-        if (plotPerCb) removeChart(plotPerCb) // remove old chart, if any
+        if (plotPerCb) {
+            removeChart(plotPerCb)
+        } // remove old chart, if any
         if (CBOverTimePLot) removeChart(CBOverTimePLot) // remove old chart, if any
         if (CBOverTimePerScenarioPLot) removeChart(CBOverTimePerScenarioPLot)
         if (CBOverTimePerCBPLot) removeChart(CBOverTimePerCBPLot)
@@ -742,7 +742,8 @@
         if (chartType) {
         }
 
-        if (dataLoaded) {
+        if (dataLoaded && allCBAllLADSUM && totalCBAllLAD) {
+            console.log("render")
             renderPlot();
             renderPerCobenefPlot();
             renderCBOverTimePlot();
@@ -787,6 +788,15 @@
     function onChange(event) {
         chartType = event.currentTarget.value;
     }
+
+    async function onChangeComparison(event) {
+        compareTo = event.currentTarget.value;
+
+        allCBAllLADSUM = await getTableData(getSUMCBGroupedByLADAndCB("total", compareTo));
+        totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([], compareTo));
+
+
+    }
 </script>
 
 
@@ -800,6 +810,19 @@
         <h1 class="page-title"> {LADToName[LAD]}</h1>
         <p class="description">Explore how this local authority will benefit from achieving Net Zero and general factors
             of their households.</p>
+
+        <div class="radio-set">
+            Compare the Local District Area with average of:
+            <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
+            <label for="html">UK</label><br>
+            <input type="radio" on:change={onChangeComparison} name="compare" value="Eng/Wales">
+            <label for="html">England/Wales</label><br>
+            <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
+            <label for="javascript">Scotland</label>
+            <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
+            <label for="javascript">Northern Ireland</label>
+        </div>
+
     </div>
 
     <div class="section">

@@ -174,28 +174,49 @@ export function getAverageCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scen
     return query
 }
 
-export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], scenario: Scenario, time = "total") {
+export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], nation="UK", time = "total") {
     let query;
+
+    let nationConstraint;
+    if (nation != "UK") {
+        nationConstraint = `AND Nation='${nation}'`
+    } else {
+        nationConstraint = " "
+    }
 
     if (cobenefits.length == 0) {
         query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'
+                 ${nationConstraint}
                  GROUP BY LAD, scenario`
     } else {
         query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
+                 ${nationConstraint}
                  GROUP BY LAD, scenario`
     }
+    console.log(query)
     return query
 }
 
-export function getSUMCBGroupedByLADAndCB(time = "total") {
+export function getSUMCBGroupedByLADAndCB(time = "total", nation="UK") {
+
+    let nationConstraint;
+    if (nation != "UK") {
+        nationConstraint = `AND Nation='${nation}'`
+    } else {
+        nationConstraint = " "
+    }
+
     let query = `SELECT SUM("${time}") as val, LAD as Lookup_Value, co_benefit_type
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type in (${COBENEFS.map(v => `'${v}'`).join(",")})
+                 ${nationConstraint}
                  GROUP BY LAD, co_benefit_type`
+
+    console.log(23, query)
     return query
 }
 
@@ -229,8 +250,6 @@ export function getTotalCBAllDatazones() {
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'`
 
-
-    // console.log(22, query);
     return query;
 }
 
@@ -313,6 +332,14 @@ export function getAllLAD() {
             FROM ${DB_TABLE_NAME}`;
 }
 
+// preview database (loged in landing page layout.ts)
+export function previewTableData(limit = 10) {
+    return `
+        SELECT *
+        FROM ${DB_TABLE_NAME}
+        LIMIT ${limit}
+    `;
+}
 
 // prepare for landing page waffle
 export function getAggregationPerBenefit() {

@@ -1,10 +1,12 @@
 <script lang="ts">
 import { base } from '$app/paths';
 import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
-import { page } from '$app/stores';
+
 import * as Plot from "@observablehq/plot";
 
 import { onMount, onDestroy } from 'svelte';
+
+import NavigationBar from "$lib/components/NavigationBar.svelte";
 
 
 // waffle chart
@@ -24,7 +26,7 @@ let waffleOrderedTypes: string[] = [];
 
 let slides: any[] = [];
 
-let waffleEl: HTMLElement;
+let waffleEl: HTMLDivElement | null = null;
 let waffleBgEl: HTMLElement;
 let waffleLabelEl: HTMLElement;
 let activeTypeLabel: string;
@@ -39,6 +41,8 @@ let intervalId: any;
 let currentIndex = 0;
 let previousIndex = 0;
 let interval;
+
+
 
 function startWaffleHighlightLoop(height: number) {
     // sort in the waffle display order
@@ -84,6 +88,11 @@ function startWaffleHighlightLoop(height: number) {
 }
 
 function renderWaffle(height: number, highlightType?: string) {
+
+    if (!waffleEl) return;
+
+    waffleEl.innerHTML = "";
+
     // waffle size
     const unitSize = 20; // fixed size of each square in pixels 
     const gridWidth = 15; // fixed number of columns
@@ -207,7 +216,6 @@ function makeLADBarSVG(value, max) {
   return plot.outerHTML;
 }
 
-
 // bars for coben table
 function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
   const color = COBENEFS_SCALE(coBenefType);
@@ -267,39 +275,7 @@ let showDropdown = false;
   });
 </script>
 
-<nav class="navbar">
-    <div class="nav-left">
-      <img src="{base}/logo.png" alt="Logo" class="logo" />
-    </div>
-  
-    <div class="nav-right">
-      <a href="{base}/" class:active={$page.url.pathname === `${base}`}>Home</a>
-  
-      <div
-        class="dropdown"
-        on:mouseenter={() => (showDropdown = true)}
-        on:mouseleave={() => (showDropdown = false)}
-      >
-        <span
-          class="dropdown-label"
-          class:active={$page.url.pathname.startsWith(`${base}/cobenefit`)}
-        >
-          Co-benefits
-        </span>
-        {#if showDropdown}
-          <ul class="dropdown-menu">
-            {#each COBENEFS as coBenef}
-              <li><a href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a></li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-  
-      <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a>
-      <a href="{base}/methods" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
-      <a href="{base}/about" class:active={$page.url.pathname === `${base}/about`}>About</a>
-    </div>
-  </nav>
+<NavigationBar></NavigationBar>
 
   <section class="hero-container" bind:this={heroEl}>
     {#each slides as slide, index}

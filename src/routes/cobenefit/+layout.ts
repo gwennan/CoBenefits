@@ -2,6 +2,7 @@ import {getSefForOneCoBenefit, getTableData, getTotalPerOneCoBenefit, initDB} fr
 import {type CoBenefit, SEF} from "../../globals";
 // import {getTableData, initDB} from "$lib/duckdb";
 
+
 // Called the page report
 export async function load({ data, url }) {
     let coBenefit  = url.searchParams.get('cobenefit');
