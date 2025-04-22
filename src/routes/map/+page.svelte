@@ -96,11 +96,17 @@
     }
 
     function updateLegend() {
-
-        legendSvg = map.legend();
+        legendSvg = map.legend(mapLegend());
         legendDiv.innerHTML = "";
         legendDiv.append(legendSvg)
+    }
 
+    function mapLegend() {
+        if (mapType == "SEF") {
+            return `${selectedSef} (Millions of £)`;
+        } else if (mapType == "Cobenefit") {
+            return "Cobenefits (Millions of £)"
+        }
     }
 
 
@@ -403,7 +409,8 @@
         right: 5%;
         padding: 10px;
 
-        background-color: #0177CC;
+        /*background-color: #0177CC;*/
+        background-color: black;
         font-size: 10px;
         color: white;
 

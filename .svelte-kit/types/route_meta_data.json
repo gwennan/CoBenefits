@@ -3,6 +3,12 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/about": [
+		"src/routes/about/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/about/+layout.ts",
+		"src/routes/+layout.ts"
+	],
 	"/cobenefit": [
 		"src/routes/cobenefit/+layout.ts",
 		"src/routes/+layout.ts",
@@ -19,6 +25,12 @@
 		"src/routes/map/+layout.ts",
 		"src/routes/+layout.ts",
 		"src/routes/map/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/methods": [
+		"src/routes/methods/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/methods/+layout.ts",
 		"src/routes/+layout.ts"
 	],
 	"/overview": [
