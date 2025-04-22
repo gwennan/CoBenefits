@@ -16,10 +16,24 @@ export let data;
 let aggregationPerBenefit = [...data.aggregationPerBenefit].sort(
   (a, b) => b.total - a.total
 );
+let aggregationPerHouseholdPerBenefit = [...data.aggregationPerHouseholdPerBenefit].sort(
+  (a, b) => b.total_value - a.total_value
+);
+
 let topLADsData = data.topLADsData;
+let topSelectedLADsPerHouseholdData = data.topSelectedLADsPerHouseholdData;
+const maxHHLADValue = Math.max(
+  ...topSelectedLADsPerHouseholdData.map(d => d.per)
+);
 const maxLADValue = Math.max(...topLADsData.map(d => d.total));
 const maxCoBenefValue = Math.max(...aggregationPerBenefit.map(d => d.total));
 const minCoBenefValue = Math.min(...aggregationPerBenefit.map(d => d.total));
+const minHHCoBenefValue = Math.min(
+  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
+);
+const maxHHCoBenefValue = Math.max(
+  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
+);
 
 let waffleData: [];
 let waffleOrderedTypes: string[] = [];
@@ -216,6 +230,23 @@ function makeLADBarSVG(value, max) {
   return plot.outerHTML;
 }
 
+function makeHHLADBarSVG(value, max) {
+  const plot = Plot.plot({
+    width: 80,
+    height: 20,
+    margin: 0,
+    x: { domain: [0, max], axis: null },
+    marks: [
+      Plot.barX([value], {
+        x: d => d,
+        y: 0,
+        fill: "#ccc"
+      })
+    ]
+  });
+  return plot.outerHTML;
+}
+
 // bars for coben table
 function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
   const color = COBENEFS_SCALE(coBenefType);
@@ -233,18 +264,8 @@ function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
       Plot.barX([value], {
         x: d => d,
         y: 0,
-        // height: 20,
         fill: color
-      }),
-      // Plot.text([value], {
-      //   x: d => d < 0 ? d - 1 : d + 1,
-      //   // y: 0.5,
-      //   text: d => d.toFixed(0),
-      //   fill: "#333",
-      //   dy: "0.35em",
-      //   textAnchor: d => d < 0 ? "end" : "start",
-      //   style: "font-size: 1rem"
-      // })
+      })
     ]
   });
 
@@ -349,12 +370,12 @@ let showDropdown = false;
         <thead>
           <tr>
             <th style="max-width: 200px;">Name</th>
-            <th>Value</th>
-            <th>Per Capita</th>
+            <th>Total £m</th>
+            <th>Per Household £k</th>
           </tr>
         </thead>
         <tbody>
-          {#each topLADsData as LAD, index}
+          {#each topSelectedLADsPerHouseholdData as LAD, index}
             <tr>
               <td>
                 <a href="{base}/location?location={LAD.LAD}">{LAD.name}</a>
@@ -365,7 +386,12 @@ let showDropdown = false;
                   <span>{LAD.total.toFixed(1)}</span>
                 </div>
               </td>
-              <td>000</td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeHHLADBarSVG(LAD.per, maxHHLADValue)}
+                  <span>{LAD.per.toFixed(1)}</span>
+                </div>
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -379,23 +405,28 @@ let showDropdown = false;
         <thead>
           <tr>
             <th style="max-width: 200px;">Name</th>
-            <th>Value</th>
-            <th>Per Capita</th>
+            <th>Total £m</th>
+            <th>Per Household £k</th>
           </tr>
         </thead>
         <tbody>
-          {#each aggregationPerBenefit as coBenef, index}
+          {#each aggregationPerHouseholdPerBenefit as coBenef}
             <tr>
               <td>
                 <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">{coBenef.co_benefit_type}</a>
               </td>
               <td>
                 <div class="bar-cell">
-                  {@html makeCoBenefBarSVG(coBenef.total, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
-                  <span>{coBenef.total.toFixed(1)}</span>
+                  {@html makeCoBenefBarSVG(coBenef.total_value, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
+                  <span>{coBenef.total_value.toFixed(1)}</span>
                 </div>
               </td>
-              <td>000</td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeCoBenefBarSVG(coBenef.value_per_household, minHHCoBenefValue, maxHHCoBenefValue, coBenef.co_benefit_type)}
+                  <span>{coBenef.value_per_household.toFixed(1)}</span>
+                </div>
+              </td>
             </tr>
           {/each}
         </tbody>

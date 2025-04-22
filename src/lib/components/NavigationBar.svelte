@@ -10,7 +10,7 @@ import {COBENEFS} from "../../globals";
 
 let showDropdown = false;
 
-console.log("links", $page.url.pathname);
+// console.log("links", $page.url.pathname);
 
 </script>
 
