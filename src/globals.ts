@@ -49,9 +49,9 @@ export const VIS_COLOR = "black";
 export const AVERAGE_COLOR = "lightblue";
 export const NATION_TO_COLOR = {
     UK: "lightblue",
-    NI: "orange",
-    Scotland: "blue",
-    "Eng/Wales": "red"
+    NI: "#DA6E1C",
+    Scotland: "#0065BD",
+    "Eng/Wales": "#C8102E"
 }
 
 

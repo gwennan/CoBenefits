@@ -27,6 +27,7 @@
     let mapDiv: HTMLElement;
     let legendSvg: SVGSVGElement | null;
     let legendDiv: HTMLElement;
+    let exportButton: HTMLElement;
     let map: Map;
     let mapType: "Cobenefit" | "SEF" = "Cobenefit";
     // let fullData;
@@ -225,6 +226,22 @@
         map.granularity = granularity;
     }
 
+    function exportMap() {
+        const canvas = document.getElementsByClassName('maplibregl-canvas')
+        console.log(canvas)
+        const img    = canvas[0].toDataURL('image/png')
+
+        var dlLink = document.createElement('a');
+        dlLink.download = "map.png";
+        dlLink.href = img;
+        dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
+
+        document.body.appendChild(dlLink);
+        dlLink.click();
+        document.body.removeChild(dlLink);
+
+    }
+
 </script>
 
 
@@ -247,6 +264,9 @@
             </div>
             <div id="map-legend" bind:this={legendDiv}>
             </div>
+            <button id="export-button" on:click={exportMap} bind:this={exportButton}>
+                Export
+            </button>
             <div id="tooltip" class="tooltip"></div>
         </div>
 
@@ -374,6 +394,19 @@
         top: 5%;
         right: 10%;
         padding: 10px;
+    }
+
+    #export-button {
+        position: absolute;
+        /*width: 10%;*/
+        top: 15%;
+        right: 5%;
+        padding: 10px;
+
+        background-color: #0177CC;
+        font-size: 10px;
+        color: white;
+
     }
 
     #control-panel {

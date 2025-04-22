@@ -197,7 +197,7 @@ export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], nation="UK", time 
                  ${nationConstraint}
                  GROUP BY LAD, scenario`
     }
-    console.log(query)
+
     return query
 }
 
@@ -243,12 +243,21 @@ export function getTotalForOneZone(datazone: string) {
 
 
 // Co-benefit=total to get only one row per datazone
-export function getTotalCBAllDatazones() {
+export function getTotalCBAllDatazones(nation="UK") {
+
+    let nationConstraint;
+    if (nation != "UK") {
+        nationConstraint = `AND Nation='${nation}'`
+    } else {
+        nationConstraint = " "
+    }
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
     let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, HHs, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
                  FROM ${DB_TABLE_NAME}
-                 WHERE co_benefit_type = 'Total'`
+                 WHERE co_benefit_type = 'Total'
+                 ${nationConstraint}
+                 `
 
     return query;
 }
