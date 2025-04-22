@@ -225,7 +225,7 @@ export function getTotalForOneZone(datazone: string) {
 export function getTotalCBAllDatazones() {
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
-    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, HHs, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'`
 
