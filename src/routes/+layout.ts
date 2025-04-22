@@ -13,11 +13,12 @@ import {initDB} from "$lib/duckdb";
 import {
     getTableData,
     getAggregationPerBenefit,
-    getAllLAD,
-    getTotalCBForOneLAD,
-    getAggregatedTotalPerLAD,
     getTopSeletedLADsByTotal,
-    previewTableData
+    // previewTableData,
+    // getDistinctHHsValues,
+    getTotalPerHouseholdByLAD,
+    getTopSelectedLADsPerHousehold,
+    getAggregationPerHouseholdPerBenefit
 } from "$lib/duckdb";
 
 
@@ -63,10 +64,13 @@ export async function load() {
     // const previewData = await getTableData(previewTableData());
     // console.log("Column names:", Object.keys(previewData[0]));
     // console.log("First 10 rows of cobenefits:", previewData);
+    // const distinctHHs = await getTableData(getDistinctHHsValues());
+    // console.log("distinctHHs", typeof distinctHHs[0]);
+
 
     // for landing page waffle and COBEN columns
     let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
-    console.log("aggregationPerBenefit", aggregationPerBenefit);    
+    // console.log("aggregationPerBenefit", aggregationPerBenefit);    
     // for landing page LAD columns
     const topLADs = await getTableData(getTopSeletedLADsByTotal(10));
     const topLADsData = topLADs.map((row) => ({
@@ -75,13 +79,29 @@ export async function load() {
         total: row.total_value
     }));
 
+    const totalPerHouseholdByLAD = await getTableData(getTotalPerHouseholdByLAD());
+    // console.log("totalPerHouseholdByLAD", totalPerHouseholdByLAD);
+
+    const topSelectedLADsPerHousehold = await getTableData(getTopSelectedLADsPerHousehold(10));
+    const topSelectedLADsPerHouseholdData = topSelectedLADsPerHousehold.map((row) => ({
+        LAD: row.LAD,
+        name: LADToName[row.LAD] || row.LAD,
+        per: row.value_per_household,
+        total: row.total_value
+    }));
+
+    let aggregationPerHouseholdPerBenefit = await getTableData(getAggregationPerHouseholdPerBenefit());
+    // console.log("aggregationPerHouseholdPerBenefit", aggregationPerHouseholdPerBenefit);
+
     console.log("end root")
 
     return {
         datazones: UKZones,
         LADToName,
         aggregationPerBenefit,
-        topLADsData
+        topLADsData,
+        topSelectedLADsPerHouseholdData,
+        aggregationPerHouseholdPerBenefit
     }
 }
 

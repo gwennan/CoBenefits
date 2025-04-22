@@ -61,11 +61,11 @@
 
 
     onMount(() => {
-        map = new Map(fullData, "LSOA", mapDiv, "total");
+        map = new Map(LADAveragedData, "LAD", mapDiv, "total");
         map.initMap();
 
-        // let legendSvg = map.legend();
-        // mapLegendDiv.append(legendSvg)
+        let legendSvg = map.legend();
+        mapLegendDiv.append(legendSvg)
     })
 
 
@@ -99,10 +99,10 @@
                 marks: [
                     Plot.areaY(fullData, Plot.binX({y: "count"}, {
                         x: "total",
-                        fill: COBENEFS_SCALE(coBenefit),
+                        fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
                         fillOpacity: 0.5,
-                        stroke: COBENEFS_SCALE(coBenefit),
+                        stroke: COBENEFS_SCALE2(coBenefit)[0],
                         strokeWidth: 3
                     }))
                 ]
@@ -137,10 +137,10 @@
                     Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
                         x: "time",
                         y: "value",
-                        fill: COBENEFS_SCALE(coBenefit),
+                        fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
                         fillOpacity: 0.8,
-                        ry1: 5,
+                        //ry1: 5,
                         insetLeft: 15,
                         insetRight: 15
                     }))
@@ -174,43 +174,47 @@
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "18px", textAnchor: "middle", fill: '#333'},
+                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
                     width: height / 1.5,
-                    marginLeft: 30,
+                    marginLeft: 60,
                     marginBottom: 60,
-                    marginRight: 30,
-                    marginTop: 20,
+                    marginRight: 10,
+                    marginTop: 10,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
                     //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
                     x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
-                    y: {label: null},
+                    //y: {label: '£/capita', labelOffset:0, labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.boxY(SEFData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: "total",
-                            stroke: COBENEFS_SCALE(coBenefit),
+                            stroke: COBENEFS_SCALE2(coBenefit)[0],
+                            fill: COBENEFS_SCALE2(coBenefit)[4],
                             r: 1,
-                            strokeOpacity: 0.2
-                        })
+                            strokeOpacity: 0.5,
+                            fillOpacity:0.3
+                        }),
+                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        Plot.ruleY([0])
                     ]
                 })
             } else {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "18px", textAnchor: "middle", fill: '#333'},
+                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
                     width: height / 1.5,
-                    marginLeft: 30,
+                    marginLeft: 60,
                     marginBottom: 60,
-                    marginRight: 30,
-                    marginTop: 20,
+                    marginRight: 10,
+                    marginTop: 10,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {grid: true, label: null},
-                    y: {grid: true, label: null},
+                    //y: {grid: true, label: '£/capita', labelOffset:0, labelArrow:'none', labelAnchor: "top"},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -224,6 +228,8 @@
                             r: 2,
                             fillOpacity: 1
                         }),
+                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        Plot.ruleY([0])
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                           //  x: "SE",
                           //  y: "total",
@@ -272,7 +278,7 @@
         }
     }
 
-    $: textColor = COBENEFS_SCALE(coBenefit);
+    $: textColor = COBENEFS_SCALE2(coBenefit)[0];
     $: cobensStyle = `color: ${textColor}; font-weight: bold; font-size: 22px;`;
 
 
@@ -334,15 +340,15 @@
             <div class="component column">
                 <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
                 <p class="description">Scroll for zooming in and out.</p>
-                <!--<div id="map" bind:this={mapDiv}>
-                </div>-->
+                <div id="map" bind:this={mapDiv}>
+                </div>
             </div>
         </div>
 
 
         <div id="multiple-comp" class="component">
 
-            <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio Economic
+            <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio-Economic
                 Factors </h3>
             <br>
 

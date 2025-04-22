@@ -382,6 +382,64 @@ export function getTopSeletedLADsByTotal(n: number) {
     `;
 }
 
+// preview the household data,  {HHs: 249n}, 249n being obj type
+export function getDistinctHHsValues() {
+    return `
+        SELECT DISTINCT HHs
+        FROM ${DB_TABLE_NAME}
+        WHERE HHs IS NOT NULL
+        LIMIT 50
+    `;
+}
+
+export function getTotalPerHouseholdByLAD() {
+    return `
+        SELECT 
+            LAD,
+            SUM(total) AS total_value,
+            SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS value_per_household
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type = 'Total'
+          AND HHs IS NOT NULL
+        GROUP BY LAD
+        ORDER BY value_per_household DESC
+    `;
+}
+
+// display the top selected LADs, but ordered by total value, change order:-- ORDER BY value_per_household DESC
+// unit 1k pounds per household
+export function getTopSelectedLADsPerHousehold(n: number) {
+    return `
+        SELECT 
+            LAD,
+            SUM(total) AS total_value,
+            SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type = 'Total'
+          AND HHs IS NOT NULL
+        GROUP BY LAD
+        ORDER BY total_value DESC
+        LIMIT ${n}
+    `;
+}
+
+// per household for aggregate co ben values
+export function getAggregationPerHouseholdPerBenefit() {
+    return `
+        SELECT 
+            co_benefit_type, 
+            SUM(total) AS total_value,
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type != 'Total'
+          AND HHs IS NOT NULL
+        GROUP BY co_benefit_type
+        ORDER BY co_benefit_type
+    `;
+}
+
 
 
 
