@@ -23,6 +23,10 @@
         initDB
     } from "$lib/duckdb";
 
+    import NavigationBar from "$lib/components/NavigationBar.svelte";
+    
+
+    import AirqualityIcon from '$lib/icons/AirQuality.jpg';
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -270,6 +274,7 @@
 
 </script>
 
+<NavigationBar></NavigationBar>
 
 <div class="page-container" bind:this={element}>
 
