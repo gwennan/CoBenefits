@@ -37,7 +37,7 @@ console.log("links", $page.url.pathname);
         {#if showDropdown}
           <ul class="dropdown-menu">
             {#each COBENEFS as coBenef}
-              <li><a href="{base}/cobenefit?cobenefit={coBenef}">{coBenef}</a></li>
+              <li><a href="{base}/cobenefit?cobenefit={coBenef}" data-sveltekit-reload>{coBenef}</a></li>
             {/each}
           </ul>
         {/if}
