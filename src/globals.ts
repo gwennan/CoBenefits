@@ -47,12 +47,22 @@ export type SEFactor = typeof COBENEFS[number]
 // DESIGN PARAMS
 export const VIS_COLOR = "black";
 export const AVERAGE_COLOR = "lightblue";
+export const NATION_TO_COLOR = {
+    UK: "lightblue",
+    NI: "orange",
+    Scotland: "blue",
+    "Eng/Wales": "red"
+}
+
+
 export const MARGINS = {
         marginLeft: 60,
         marginRight: 60,
         marginBottom: 60,
         marginTop: 60
     }
+
+
 
 export const AVERAGE_DX = 20;
 
