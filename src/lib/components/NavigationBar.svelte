@@ -10,6 +10,8 @@ import {COBENEFS} from "../../globals";
 
 let showDropdown = false;
 
+console.log("links", $page.url.pathname);
+
 </script>
 
 
@@ -19,7 +21,7 @@ let showDropdown = false;
     </div>
 
     <div class="nav-right">
-      <a href="{base}" class:active={$page.url.pathname === `${base}`}>Home</a>
+      <a href="{base}/" class:active={$page.url.pathname === `${base}`}>Home</a>
 
       <div
         class="dropdown"
