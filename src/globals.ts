@@ -56,23 +56,49 @@ export const MARGINS = {
 
 export const AVERAGE_DX = 20;
 
-export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#F36D25', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#FDB713', '#48773E', '#183668'];
+export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
 export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
 
-export const HEROSLIDES = [
-    {
-      image: `${base}/hero/hero0.png`,
-      source: 'total co-benefits',
-      type: null,
-      label: 'total co-benefits'
-    },
-    ...COBENEFS.map((label, i) => ({
-      image: `${base}/hero/hero${i + 1}.png`, // hero1.png, hero2.png, ...
-      source: `from improving ${label.toLowerCase()}.`,
-      type: label,
-      label
-    }))
-  ];
+// export const HEROSLIDES = [
+//     {
+//       image: `${base}/hero/hero0.png`,
+//       source: 'total co-benefits',
+//       type: null,
+//       label: 'total co-benefits'
+//     },
+//     ...COBENEFS.map((label, i) => ({
+//       image: `${base}/hero/hero${i + 1}.png`,
+//       source: `${label.toLowerCase()}.`,
+//       type: label,
+//       label
+//     }))
+//   ];
+
+// using waffle chart order
+
+function getImageIndex(type: string | null): number {
+    if (type === null) return 0; 
+    return COBENEFS.indexOf(type) + 1; 
+  }
+
+  
+export function getHeroSlides(waffleOrderedTypes: string[]) {
+    return [
+      {
+        image: `${base}/hero/hero0.png`,
+        source: 'total co-benefits',
+        type: null,
+        label: 'total co-benefits'
+      },
+      ...waffleOrderedTypes.map((label) => ({
+        image: `${base}/hero/hero${getImageIndex(label)}.png`, // 🔁 Here’s the fix
+        source: `${label.toLowerCase()}.`,
+        type: label,
+        label
+      }))
+    ];
+  }
+  
 
 
 
