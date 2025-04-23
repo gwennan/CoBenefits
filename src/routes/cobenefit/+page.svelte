@@ -91,10 +91,11 @@
             Plot.plot({
                 height: height / 1.2,
                 ...MARGINS,
-                marginLeft: 60,
-                marginRight: 60,
+                marginLeft: 80,
+                marginTop: 40,
+                marginRight: 40,
                 y: {label: "Datazones Frequency"},
-                x: {label: "Cost Per Capita (£)"},
+                x: {label: '£/capita',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
                     Plot.areaY(fullData, Plot.binX({y: "count"}, {
@@ -104,7 +105,9 @@
                         fillOpacity: 0.5,
                         stroke: COBENEFS_SCALE2(coBenefit)[0],
                         strokeWidth: 3
-                    }))
+                    })),
+                    Plot.axisY({anchor: "left", label: 'Datazone frequency',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.ruleX([0])
                 ]
             })
         );
@@ -121,8 +124,10 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.2,
-                ...MARGINS,
-                
+                marginLeft: 80,
+                marginRight: 40,
+                marginBottom: 60,
+                marginTop: 40,
                 style: {fontSize: "18px"},
                 x: {
                     type: "band",
@@ -143,7 +148,8 @@
                         //ry1: 5,
                         insetLeft: 15,
                         insetRight: 15
-                    }))
+                    })),
+                    Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                 ]
             })
         );
@@ -209,12 +215,12 @@
                     width: height / 1.5,
                     marginLeft: 60,
                     marginBottom: 60,
-                    marginRight: 10,
+                    marginRight: 20,
                     marginTop: 10,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {grid: true, label: null},
-                    //y: {grid: true, label: '£/capita', labelOffset:0, labelArrow:'none', labelAnchor: "top"},
+                    y: {grid: true},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -322,18 +328,19 @@
                 <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
                 </h3>
                 <p class="description"> The total? cost benefit per capita for each 5 year interval. </p>
-                <div class="component row">
+                <!--  <div class="component row">-->
                     <div class="plot" bind:this={plot}>
                     </div>
-                </div>
-
+                <!--  </div>-->
+                <br>
                 <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
                     Benefit by LSOA </h3>
                 <p class="description"> The total cost benefit per capita for each LSOA. </p>
-                <div class="component row">
+                <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
-                    </div>
+                    <!--</div>-->
                 </div>
+                <br>
             </div>
 
 
