@@ -27,9 +27,6 @@
     } from "$lib/duckdb";
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
-    
-
-    import AirqualityIcon from '$lib/icons/AirQuality.jpg';
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -49,23 +46,30 @@
     let totalValue;
     let dataLoaded = false;
 
-    loadData();
-
-
-    let icon = getIconFromCobenef(coBenefit)
-
     let map: Map;
 
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
 
-
-    onMount(() => {
-        map = new Map(LADAveragedData, "LAD", mapDiv, "total");
+    loadData().then(() => {
+        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD");
         map.initMap();
 
         let legendSvg = map.legend();
         mapLegendDiv.append(legendSvg)
+    });
+
+
+
+    let icon = getIconFromCobenef(coBenefit)
+
+
+    onMount(() => {
+        // map = new Map(LADAveragedData, "LAD", mapDiv, "total");
+        // map.initMap();
+        //
+        // let legendSvg = map.legend();
+        // mapLegendDiv.append(legendSvg)
     })
 
 

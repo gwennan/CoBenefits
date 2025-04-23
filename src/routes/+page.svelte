@@ -1,5 +1,6 @@
 <script lang="ts">
 import { base } from '$app/paths';
+import { goto } from '$app/navigation';
 import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
 
 import * as Plot from "@observablehq/plot";
@@ -7,41 +8,50 @@ import * as Plot from "@observablehq/plot";
 import { onMount, onDestroy } from 'svelte';
 
 import NavigationBar from "$lib/components/NavigationBar.svelte";
+import LADSearch from '$lib/components/LADSearch.svelte';
 
 
-// waffle chart
+// for all the data used in this page
 export let data;
-// let aggregationPerBenefit = data.aggregationPerBenefit;
-// sort the cobenefits, but should keep the table interactive later
 let aggregationPerBenefit = [...data.aggregationPerBenefit].sort(
   (a, b) => b.total - a.total
 );
+let aggregationPerHouseholdPerBenefit = [...data.aggregationPerHouseholdPerBenefit].sort(
+  (a, b) => b.total_value - a.total_value
+);
 let topLADsData = data.topLADsData;
+let topSelectedLADsPerHouseholdData = data.topSelectedLADsPerHouseholdData;
+const maxHHLADValue = Math.max(
+  ...topSelectedLADsPerHouseholdData.map(d => d.per)
+);
 const maxLADValue = Math.max(...topLADsData.map(d => d.total));
 const maxCoBenefValue = Math.max(...aggregationPerBenefit.map(d => d.total));
 const minCoBenefValue = Math.min(...aggregationPerBenefit.map(d => d.total));
+const minHHCoBenefValue = Math.min(
+  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
+);
+const maxHHCoBenefValue = Math.max(
+  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
+);
 
+// for waffle
 let waffleData: [];
 let waffleOrderedTypes: string[] = [];
-
-let slides: any[] = [];
-
 let waffleEl: HTMLDivElement | null = null;
 let waffleBgEl: HTMLElement;
 let waffleLabelEl: HTMLElement;
 let activeTypeLabel: string;
 let activeValueLabel: string;
-
+// for hero background images
+let slides: any[] = [];
 let heroEl: HTMLElement;
 let highlight: string | null = null;
-
 // for waffle animation and hero background images
 let activeType: string | null = null;
 let intervalId: any;
 let currentIndex = 0;
 let previousIndex = 0;
 let interval;
-
 
 
 function startWaffleHighlightLoop(height: number) {
@@ -180,7 +190,7 @@ function renderWaffle(height: number, highlightType?: string) {
     });
     // white background
     if (waffleBgEl) {
-    waffleBgEl.style.width = `${unitSize * gridWidth+20}px`;
+    waffleBgEl.style.width = `${unitSize * gridWidth}px`;
     waffleBgEl.style.height = `${height}px`;
     };
 
@@ -216,6 +226,23 @@ function makeLADBarSVG(value, max) {
   return plot.outerHTML;
 }
 
+function makeHHLADBarSVG(value, max) {
+  const plot = Plot.plot({
+    width: 80,
+    height: 20,
+    margin: 0,
+    x: { domain: [0, max], axis: null },
+    marks: [
+      Plot.barX([value], {
+        x: d => d,
+        y: 0,
+        fill: "#ccc"
+      })
+    ]
+  });
+  return plot.outerHTML;
+}
+
 // bars for coben table
 function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
   const color = COBENEFS_SCALE(coBenefType);
@@ -233,22 +260,17 @@ function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
       Plot.barX([value], {
         x: d => d,
         y: 0,
-        // height: 20,
         fill: color
-      }),
-      // Plot.text([value], {
-      //   x: d => d < 0 ? d - 1 : d + 1,
-      //   // y: 0.5,
-      //   text: d => d.toFixed(0),
-      //   fill: "#333",
-      //   dy: "0.35em",
-      //   textAnchor: d => d < 0 ? "end" : "start",
-      //   style: "font-size: 1rem"
-      // })
+      })
     ]
   });
 
   return plot.outerHTML;
+}
+
+let selectedLAD: string | null = null;
+function handleSearch(code: string) {
+  goto(`${base}/location?location=${code}`);
 }
 
 
@@ -339,22 +361,35 @@ let showDropdown = false;
   </div>
   </section>
 
+  <section class="search-section">
+    <h1>Find My Place</h1>
+    <LADSearch 
+  items={data.LADToName} 
+  on:search={(e) => handleSearch(e.detail)} 
+  />
+    <!-- {#if selectedLAD}
+      <h2>Total Cobenefits</h2>
+      <h2>Cobenefits Over Time</h2>
+
+    {/if} -->
+  </section>
+
 
   <section class="side-by-side-section">
     <div class="side-box">
       <h2>Explore by Local Authority</h2>
-      <input type="text" placeholder="Search local authorities..." class="search-input" />
+      <!-- <input type="text" placeholder="Search local authorities..." class="search-input" /> -->
   
       <table class="data-table">
         <thead>
           <tr>
             <th style="max-width: 200px;">Name</th>
-            <th>Value</th>
-            <th>Per Capita</th>
+            <th>Total £m</th>
+            <th>Per Household £k</th>
           </tr>
         </thead>
         <tbody>
-          {#each topLADsData as LAD, index}
+          {#each topSelectedLADsPerHouseholdData as LAD, index}
             <tr>
               <td>
                 <a href="{base}/location?location={LAD.LAD}">{LAD.name}</a>
@@ -365,7 +400,12 @@ let showDropdown = false;
                   <span>{LAD.total.toFixed(1)}</span>
                 </div>
               </td>
-              <td>000</td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeHHLADBarSVG(LAD.per, maxHHLADValue)}
+                  <span>{LAD.per.toFixed(1)}</span>
+                </div>
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -379,23 +419,28 @@ let showDropdown = false;
         <thead>
           <tr>
             <th style="max-width: 200px;">Name</th>
-            <th>Value</th>
-            <th>Per Capita</th>
+            <th>Total £m</th>
+            <th>Per Household £k</th>
           </tr>
         </thead>
         <tbody>
-          {#each aggregationPerBenefit as coBenef, index}
+          {#each aggregationPerHouseholdPerBenefit as coBenef}
             <tr>
               <td>
                 <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">{coBenef.co_benefit_type}</a>
               </td>
               <td>
                 <div class="bar-cell">
-                  {@html makeCoBenefBarSVG(coBenef.total, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
-                  <span>{coBenef.total.toFixed(1)}</span>
+                  {@html makeCoBenefBarSVG(coBenef.total_value, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
+                  <span>{coBenef.total_value.toFixed(1)}</span>
                 </div>
               </td>
-              <td>000</td>
+              <td>
+                <div class="bar-cell">
+                  {@html makeCoBenefBarSVG(coBenef.value_per_household, minHHCoBenefValue, maxHHCoBenefValue, coBenef.co_benefit_type)}
+                  <span>{coBenef.value_per_household.toFixed(1)}</span>
+                </div>
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -436,7 +481,7 @@ let showDropdown = false;
     display: flex;
     justify-content: space-between;
     /* align-items: center; */
-    height: 80px;
+    height: 60px;
     background-color: #fff;
     z-index: 1000;
     padding-bottom: 4px;
@@ -637,7 +682,7 @@ let showDropdown = false;
 
 .hero-container {
   position: relative;
-  height: 70vh;
+  height: 55vh;
   overflow: hidden;
 }
 
@@ -714,6 +759,7 @@ let showDropdown = false;
   gap: 2rem;
   padding: 2rem 3rem;
   justify-content: space-between;
+  background-color: #f9f9f9;
 }
 
 .side-box {
@@ -811,6 +857,19 @@ let showDropdown = false;
   cursor: pointer;
 }
 
+.search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
 
+.search-section h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
 
 </style>

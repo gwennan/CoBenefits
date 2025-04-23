@@ -585,7 +585,8 @@
             marginRight: 0,
             x: {tickSize: 0, label: null, ticks: []},
             // x: {tickSize: 0, label: null, ticks: [], padding: 0},
-            color: {range: [VIS_COLOR, AVERAGE_COLOR]},
+            // color: {range: [VIS_COLOR, AVERAGE_COLOR]},
+            color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
 
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
@@ -742,7 +743,7 @@
         if (chartType) {
         }
 
-        if (dataLoaded && allCBAllLADSUM && totalCBAllLAD) {
+        if (dataLoaded && allCBAllLADSUM && totalCBAllLAD && totalCBAllZones) {
             console.log("render")
             renderPlot();
             renderPerCobenefPlot();
@@ -795,6 +796,8 @@
         allCBAllLADSUM = await getTableData(getSUMCBGroupedByLADAndCB("total", compareTo));
         totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([], compareTo));
 
+        totalCBAllZones = await getTableData(getTotalCBAllDatazones(compareTo));
+
 
     }
 </script>
@@ -814,13 +817,13 @@
         <div class="radio-set">
             Compare the Local District Area with average of:
             <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
-            <label for="html">UK</label><br>
+            <label for="html" style="color:{NATION_TO_COLOR.UK}">UK</label><br>
             <input type="radio" on:change={onChangeComparison} name="compare" value="Eng/Wales">
-            <label for="html">England/Wales</label><br>
+            <label for="html" style="color:{NATION_TO_COLOR['Eng/Wales']}">England/Wales</label><br>
             <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
-            <label for="javascript">Scotland</label>
+            <label for="javascript" style="color:{NATION_TO_COLOR.Scotland}">Scotland</label>
             <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
-            <label for="javascript">Northern Ireland</label>
+            <label for="javascript" style="color:{NATION_TO_COLOR.NI}">Northern Ireland</label>
         </div>
 
     </div>
@@ -1037,6 +1040,10 @@
         padding-left: 1%;
         padding-right: 1%;
         padding-bottom: 1%;
+    }
+
+    label {
+        font-weight: bold;
     }
 
 

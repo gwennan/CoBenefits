@@ -43,15 +43,17 @@ export class Map {
     granularity;
     loaded: boolean
     dataKey: string;
+    zoneKey: string;
     border: boolean
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey="Lookup_Value") {
         // this.data = data;
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
         this.dataKey = dataKey;
+        this.zoneKey = zoneKey;
         this.loaded = false;
         this.border = border;
 
@@ -141,7 +143,7 @@ export class Map {
 
                 data.forEach((d) => {
                     // change total for time selection
-                    this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
+                    this.dataZoneToValue[d[this.zoneKey]] = d[this.dataKey];
                 })
 
                 // Put cobenef values inside the geojson for maplibre rendering
@@ -151,12 +153,11 @@ export class Map {
                     zone.properties.value = this.dataZoneToValue[zoneId]
                 }
             } else {
-                console.log("LOAD LSOA JSON")
                 this.geojson = datazones;
 
                 data.forEach((d) => {
                     // change total for time selection
-                    this.dataZoneToValue[d.Lookup_Value] = d[this.dataKey];
+                    this.dataZoneToValue[d[this.zoneKey]] = d[this.dataKey];
                 })
 
                 // Put cobenef values inside the geojson for maplibre rendering
@@ -181,7 +182,7 @@ export class Map {
             domain = d3.extent(data.map(d => d[this.dataKey]));
             // domain.splice(1, 0, 0);
             // if (domain[0] >= 0) {
-            //     domain[0] = -0.1;
+            //     domain[0] = -1;
             // }
 
             // this.colorScale = d3.scaleDiverging()
@@ -210,7 +211,15 @@ export class Map {
                     .interpolator(d3.interpolateYlOrBr)
             }
 
+            // this.colorScale = d3.scaleSequentialQuantile()
+            //         .domain(domain)
+            //         .range(["white", "black"])
+
             console.log("DOMAIN ", domain)
+
+            // this.colorScale = d3.scaleDiverging()
+            //         .domain(domain)
+                    // .range(["red", "white", "black"])
         }
 
     }
@@ -304,12 +313,10 @@ export class Map {
 
         // Put cobenef values inside the geojson for maplibre rendering
         for (let zone of this.geojson.features) {
-
             let zoneId = this.zoneName(zone)
-
             zone.properties.value = this.dataZoneToValue[zoneId]
         }
-        //
+
         // // Add data source
         this.map.getSource('datazones').setData(
             this.geojson
@@ -324,9 +331,9 @@ export class Map {
         )
     }
 
-    legend() {
+    legend(title= "Cobenefits (Millions of £)") {
         let legendSvg = Legend(this.colorScale, {
-            title: "Cobenefits (Millions of £)"
+            title: title
         })
         return legendSvg;
     }
