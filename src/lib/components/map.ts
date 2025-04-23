@@ -11,14 +11,12 @@ import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
 import {Legend} from "$lib/utils";
 
 
-// does this work??
-import {load} from "../../routes/+layout";
-
 
 // const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
 const LSOAzonesPath = 'maps/LSOA.json';
 // const LADzonesPath = 'maps/LAD.json';
-const LADzonesPath = 'maps/LAD2.json';
+// const LADzonesPath = 'maps/LAD2.json';
+const LADzonesPath = 'maps/LAD3.json';
 
 
 // let datazones = await load().then(data => data.datazones);
@@ -28,7 +26,8 @@ datazones = topojson.feature(datazones, datazones.objects["LSOA"]);
 
 let LADZones = await d3.json(LADzonesPath)
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
-LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
+// LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
+LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
 
 
 export class Map {
@@ -149,7 +148,7 @@ export class Map {
                 // Put cobenef values inside the geojson for maplibre rendering
                 for (let zone of this.geojson.features) {
                     // let zoneId = zone.properties.LAD24CD;
-                    let zoneId = zone.properties.lad11cd;
+                    let zoneId = this.zoneName(zone)
                     zone.properties.value = this.dataZoneToValue[zoneId]
                 }
             } else {
@@ -346,7 +345,6 @@ export class Map {
         let zoneName;
         if (this.granularity == "LSOA") {
             zoneName = zone.properties.DZ2021_cd;
-            console.log(zoneName)
             if (!zoneName) {
                 zoneName = zone.properties.DataZone;
             }
@@ -356,7 +354,9 @@ export class Map {
 
 
         } else {
-            zoneName = zone.properties.lad11cd;
+            // zoneName = zone.properties.lad11cd;
+            zoneName = zone.properties.LAD22CD;
+            console.log(zone)
         }
 
         // return this.granularity == "LSOA" ? (zone.properties.DZ2021_cd ?? zone.properties.DataZone) : zone.properties.lad11cd;

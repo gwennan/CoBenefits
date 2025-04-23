@@ -88,7 +88,6 @@
                 }
 
                 map.update(data, mapType);
-
                 updateLegend();
             })
 
@@ -197,20 +196,27 @@
     const onChangeScenario = (e) => {
         scenario = e.currentTarget.value;
     }
+    // const onChangeCobenef = (e) => {
+    //     const cobenef: CoBenefit = e.currentTarget.value;
+    //
+    //     if (coBenefits.size == 0) {
+    //         coBenefits = new Set(COBENEFS);
+    //     }
+    //
+    //     if (coBenefits.has(cobenef)) {
+    //         coBenefits.delete(cobenef)
+    //     } else {
+    //         coBenefits.add(cobenef)
+    //     }
+    //     coBenefits = coBenefits;
+    // }
+
+    // radio
     const onChangeCobenef = (e) => {
         const cobenef: CoBenefit = e.currentTarget.value;
-
-        if (coBenefits.size == 0) {
-            coBenefits = new Set(COBENEFS);
-        }
-
-        if (coBenefits.has(cobenef)) {
-            coBenefits.delete(cobenef)
-        } else {
-            coBenefits.add(cobenef)
-        }
-        coBenefits = coBenefits;
+        coBenefits = [cobenef];
     }
+
     const onChangeTime = (e) => {
         const time = e.currentTarget.value;
         timeSelected = time;
@@ -306,8 +312,8 @@
                     {#each COBENEFS as coBenef}
                         <div class="checkbox-div">
                         <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef)}/>
-                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
-                        <!--                <input type="checkbox" id="scales" name="scales" checked />-->
+                        <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
+<!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
                         <label for="css">{coBenef}</label>
                             <br>
                         </div>

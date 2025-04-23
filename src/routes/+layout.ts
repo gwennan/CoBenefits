@@ -70,9 +70,13 @@ export async function load() {
 
     // for landing page waffle and COBEN columns
     let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
-    // console.log("aggregationPerBenefit", aggregationPerBenefit);    
+    console.log("aggregationPerBenefit", aggregationPerBenefit);
     // for landing page LAD columns
     const topLADs = await getTableData(getTopSeletedLADsByTotal(10));
+
+    console.log("topLAD", topLADs);
+
+
     const topLADsData = topLADs.map((row) => ({
         LAD: row.LAD,
         name: LADToName[row.LAD] || row.LAD,
@@ -80,7 +84,7 @@ export async function load() {
     }));
 
     const totalPerHouseholdByLAD = await getTableData(getTotalPerHouseholdByLAD());
-    // console.log("totalPerHouseholdByLAD", totalPerHouseholdByLAD);
+    console.log("totalPerHouseholdByLAD", totalPerHouseholdByLAD);
 
     const topSelectedLADsPerHousehold = await getTableData(getTopSelectedLADsPerHousehold(10));
     const topSelectedLADsPerHouseholdData = topSelectedLADsPerHousehold.map((row) => ({

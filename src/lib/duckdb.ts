@@ -253,7 +253,7 @@ export function getTotalCBAllDatazones(nation="UK") {
     }
 
     // return `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
-    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, HHs, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
+    let query = `SELECT total, Lookup_value, scenario, co_benefit_type, LAD, Households, ${SEF.join(", ")}, ${TIMES.map(d => `"${d}"`).join(", ")}
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'
                  ${nationConstraint}
@@ -385,9 +385,9 @@ export function getTopSeletedLADsByTotal(n: number) {
 // preview the household data,  {HHs: 249n}, 249n being obj type
 export function getDistinctHHsValues() {
     return `
-        SELECT DISTINCT HHs
+        SELECT DISTINCT Households
         FROM ${DB_TABLE_NAME}
-        WHERE HHs IS NOT NULL
+        WHERE Households IS NOT NULL
         LIMIT 50
     `;
 }
@@ -397,11 +397,11 @@ export function getTotalPerHouseholdByLAD() {
         SELECT 
             LAD,
             SUM(total) AS total_value,
-            SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
-            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS value_per_household
+            SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) AS value_per_household
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type = 'Total'
-          AND HHs IS NOT NULL
+          AND Households IS NOT NULL
         GROUP BY LAD
         ORDER BY value_per_household DESC
     `;
@@ -414,11 +414,11 @@ export function getTopSelectedLADsPerHousehold(n: number) {
         SELECT 
             LAD,
             SUM(total) AS total_value,
-            SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
-            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+            SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type = 'Total'
-          AND HHs IS NOT NULL
+          AND Households IS NOT NULL
         GROUP BY LAD
         ORDER BY total_value DESC
         LIMIT ${n}
@@ -431,10 +431,10 @@ export function getAggregationPerHouseholdPerBenefit() {
         SELECT 
             co_benefit_type, 
             SUM(total) AS total_value,
-            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type != 'Total'
-          AND HHs IS NOT NULL
+          AND Households IS NOT NULL
         GROUP BY co_benefit_type
         ORDER BY co_benefit_type
     `;
