@@ -43,6 +43,7 @@ let showDropdown = false;
         {/if}
       </div>
 
+      <a href="{base}/lad" class:active={$page.url.pathname === `${base}/lad`}>Locations</a>
       <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a>
       <a href="{base}/methods" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
       <a href="{base}/about" class:active={$page.url.pathname === `${base}/about`}>About</a>

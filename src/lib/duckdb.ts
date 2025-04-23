@@ -392,6 +392,16 @@ export function getDistinctHHsValues() {
     `;
 }
 
+export function getDistinctNationValues() {
+    return `
+        SELECT DISTINCT Nation
+        FROM ${DB_TABLE_NAME}
+        WHERE Nation IS NOT NULL
+        LIMIT 50
+    `;
+}
+
+
 export function getTotalPerHouseholdByLAD() {
     return `
         SELECT 
@@ -425,12 +435,42 @@ export function getTopSelectedLADsPerHousehold(n: number) {
     `;
 }
 
+export function getTopSelectedLADs({
+    limit = 11,
+    sortBy = 'total',
+    region = 'All'
+  }: {
+    limit?: number;
+    sortBy?: 'total' | 'per_household';
+    region?: string;
+  }) {
+    const nationFilter = region && region !== 'All' ? `AND Nation = '${region}'` : '';
+
+    const orderBy = sortBy === 'per_household' ? 'value_per_household DESC' : 'total_value DESC';
+  
+    return `
+      SELECT 
+          LAD,
+          Nation,
+          SUM(total) / 1000 AS total_value,
+          SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
+          SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+      FROM cobenefits
+      WHERE co_benefit_type = 'Total'
+        AND HHs IS NOT NULL
+        ${nationFilter}
+      GROUP BY LAD, Nation
+      ORDER BY ${orderBy}
+      LIMIT ${limit};
+    `;
+  }
+  
 // per household for aggregate co ben values
 export function getAggregationPerHouseholdPerBenefit() {
     return `
         SELECT 
             co_benefit_type, 
-            SUM(total) AS total_value,
+            SUM(total) / 1000 AS total_value,
             SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type != 'Total'
