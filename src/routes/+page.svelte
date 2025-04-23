@@ -1,38 +1,52 @@
 <script lang="ts">
 import { base } from '$app/paths';
 import { goto } from '$app/navigation';
-import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
-
 import * as Plot from "@observablehq/plot";
-
 import { onMount, onDestroy } from 'svelte';
 
+import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
+
 import NavigationBar from "$lib/components/NavigationBar.svelte";
-import LADSearch from '$lib/components/LADSearch.svelte';
+import LADSearch from './LADSearch.svelte';
+import CoBenefitTable from './CoBenTable.svelte';
+import LADTable from './LADTable.svelte';
+
+// explore by lad: reactive queries
+import { getTopSelectedLADs } from '$lib/duckdb';
+import { getTableData } from '$lib/duckdb';
 
 
-// for all the data used in this page
 export let data;
-let aggregationPerBenefit = [...data.aggregationPerBenefit].sort(
-  (a, b) => b.total - a.total
-);
-let aggregationPerHouseholdPerBenefit = [...data.aggregationPerHouseholdPerBenefit].sort(
-  (a, b) => b.total_value - a.total_value
-);
-let topLADsData = data.topLADsData;
-let topSelectedLADsPerHouseholdData = data.topSelectedLADsPerHouseholdData;
-const maxHHLADValue = Math.max(
-  ...topSelectedLADsPerHouseholdData.map(d => d.per)
-);
-const maxLADValue = Math.max(...topLADsData.map(d => d.total));
-const maxCoBenefValue = Math.max(...aggregationPerBenefit.map(d => d.total));
-const minCoBenefValue = Math.min(...aggregationPerBenefit.map(d => d.total));
-const minHHCoBenefValue = Math.min(
-  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
-);
-const maxHHCoBenefValue = Math.max(
-  ...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household)
-);
+let aggregationPerBenefit = [...data.aggregationPerBenefit].sort((a, b) => b.total - a.total);
+let aggregationPerHouseholdPerBenefit = [...data.aggregationPerHouseholdPerBenefit].sort((a, b) => b.total_value - a.total_value);
+
+// explore by lad: reactive queries
+let ladData = [];
+let region = 'All';
+let sortBy = 'total';
+let maxLADValue = 0;
+let maxHHLADValue = 0;
+let LADToName = data.LADToName;
+
+async function fetchLADData() {
+    const sql = getTopSelectedLADs({ region, sortBy });
+    const rows = await getTableData(sql);
+    ladData = rows;
+
+    maxLADValue = Math.max(...rows.map(d => d.total_value));
+    maxHHLADValue = Math.max(...rows.map(d => d.value_per_household));
+  }
+
+function handleFilterChange(event) {
+    region = event.detail.region;
+    sortBy = event.detail.sortBy;
+    fetchLADData();
+  }
+
+const maxCoBenefValue = Math.max(...aggregationPerHouseholdPerBenefit.map(d => d.total_value));
+const minCoBenefValue = Math.min(...aggregationPerHouseholdPerBenefit.map(d => d.total_value));
+const minHHCoBenefValue = Math.min(...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household));
+const maxHHCoBenefValue = Math.max(...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household));
 
 // for waffle
 let waffleData: [];
@@ -198,83 +212,11 @@ function renderWaffle(height: number, highlightType?: string) {
     waffleEl.append(plot);
 }
 
-// bars for LAD table
-function makeLADBarSVG(value, max) {
-  const plot = Plot.plot({
-    width: 80,
-    height: 20,
-    margin: 0,
-    x: { domain: [0, max], axis: null },
-    marks: [
-      Plot.barX([value], {
-        x: d => d,
-        y: 0,
-        // height: 20,
-        fill: "#ccc"
-      }),
-      // Plot.text([value], {
-      //   x: d => d + 1, 
-      //   // y: 0.5,
-      //   text: d => d.toFixed(0),
-      //   fill: "#333",
-      //   dy: "0.35em",
-      //   textAnchor: "start",
-      //   style: "font-size: 1rem"
-      // })
-    ]
-  });
-  return plot.outerHTML;
-}
-
-function makeHHLADBarSVG(value, max) {
-  const plot = Plot.plot({
-    width: 80,
-    height: 20,
-    margin: 0,
-    x: { domain: [0, max], axis: null },
-    marks: [
-      Plot.barX([value], {
-        x: d => d,
-        y: 0,
-        fill: "#ccc"
-      })
-    ]
-  });
-  return plot.outerHTML;
-}
-
-// bars for coben table
-function makeCoBenefBarSVG(value, minAbs, maxAbs, coBenefType) {
-  const color = COBENEFS_SCALE(coBenefType);
-
-  const plot = Plot.plot({
-    width: 100,
-    height: 20,
-    marginTop: 0,
-    marginBottom: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    x: { domain: [minAbs, maxAbs], axis: null }, //for negative values
-    marks: [
-      Plot.ruleX([0], { stroke: "#ccc" }), // baseline
-      Plot.barX([value], {
-        x: d => d,
-        y: 0,
-        fill: color
-      })
-    ]
-  });
-
-  return plot.outerHTML;
-}
 
 let selectedLAD: string | null = null;
 function handleSearch(code: string) {
   goto(`${base}/location?location=${code}`);
 }
-
-
-// let allLADs = data.allLAD;
 
 let isLoading = true;
 
@@ -284,9 +226,8 @@ $: {
 
 let showDropdown = false;
 
-
-
   onMount(() => {
+    fetchLADData();
     const heroHeight = heroEl.getBoundingClientRect().height;
     renderWaffle(heroHeight);
     startWaffleHighlightLoop(heroHeight);
@@ -322,38 +263,16 @@ let showDropdown = false;
         <p class="hero-description">
           If you would like bespoke analysis highlighting how co-benefits are key to the work your team or organisation is doing, please reach out!
         </p>
-        <!-- <p class="hero-stats">
-          We model <span class="big-bold">11</span> 
-          <a href="" target="_blank" rel="noopener" class="link-underline">co-benefits</a> 
-          in <span class="big-bold">317</span> 
-          <a href="" target="_blank" rel="noopener" class="link-underline">local authorities</a> 
-          on the data zone level across the UK.
-        </p> -->
       </div>
-  
-      <!-- <div class="hero-fact-box" transition:fade>
-        <p>
-          If we reach NetZero in 2050,<br />
-          average UK household will benefit<br />
-          about an equivalent of
-        </p>
-        <span class="big-bold">{slides[currentIndex].value}</span>
-        <p>{slides[currentIndex].source}</p>
-      </div> -->
-  
-      <!-- <a href="{base}/map" class="hero-map-button">Explore Map</a>
-    </div> -->
-
-    <!-- <div bind:this={waffleEl} class="waffle-overlay"></div> -->
-    <!-- <div class="waffle-label" bind:this={waffleLabelEl}></div> -->
 
     <div class="waffle-overlay">
       <div class="waffle-label" bind:this={waffleLabelEl}>
         National gain of <br>
-        <strong style="font-size: 1.2rem">{activeTypeLabel}</strong> <br>
+        <strong style="font-size: 1.5rem">{activeTypeLabel}</strong> <br>
         in reaching NetZero <br>
         by 2050 is: <br>
         <strong style="font-size: 1.2rem">{activeValueLabel}</strong>
+        £billion
       </div>
       
       <div class="waffle-bg" bind:this={waffleBgEl}></div>
@@ -364,7 +283,7 @@ let showDropdown = false;
   <section class="search-section">
     <h1>Find My Place</h1>
     <LADSearch 
-  items={data.LADToName} 
+  items={LADToName} 
   on:search={(e) => handleSearch(e.detail)} 
   />
     <!-- {#if selectedLAD}
@@ -378,88 +297,37 @@ let showDropdown = false;
   <section class="side-by-side-section">
     <div class="side-box">
       <h2>Explore by Local Authority</h2>
-      <!-- <input type="text" placeholder="Search local authorities..." class="search-input" /> -->
-  
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="max-width: 200px;">Name</th>
-            <th>Total £m</th>
-            <th>Per Household £k</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each topSelectedLADsPerHouseholdData as LAD, index}
-            <tr>
-              <td>
-                <a href="{base}/location?location={LAD.LAD}">{LAD.name}</a>
-              </td>
-              <td>
-                <div class="bar-cell">
-                  {@html makeLADBarSVG(LAD.total, maxLADValue)}
-                  <span>{LAD.total.toFixed(1)}</span>
-                </div>
-              </td>
-              <td>
-                <div class="bar-cell">
-                  {@html makeHHLADBarSVG(LAD.per, maxHHLADValue)}
-                  <span>{LAD.per.toFixed(1)}</span>
-                </div>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+      <LADTable
+        {ladData}
+        {region}
+        {sortBy}
+        {maxLADValue}
+        {maxHHLADValue}
+        {LADToName}
+        on:filterChange={handleFilterChange}
+      />
     </div>
-  
+
     <div class="side-box">
       <h2>Explore by Co-Benefit</h2>
-  
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="max-width: 200px;">Name</th>
-            <th>Total £m</th>
-            <th>Per Household £k</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each aggregationPerHouseholdPerBenefit as coBenef}
-            <tr>
-              <td>
-                <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">{coBenef.co_benefit_type}</a>
-              </td>
-              <td>
-                <div class="bar-cell">
-                  {@html makeCoBenefBarSVG(coBenef.total_value, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type)}
-                  <span>{coBenef.total_value.toFixed(1)}</span>
-                </div>
-              </td>
-              <td>
-                <div class="bar-cell">
-                  {@html makeCoBenefBarSVG(coBenef.value_per_household, minHHCoBenefValue, maxHHCoBenefValue, coBenef.co_benefit_type)}
-                  <span>{coBenef.value_per_household.toFixed(1)}</span>
-                </div>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+      <CoBenefitTable
+        {aggregationPerHouseholdPerBenefit}
+        {minCoBenefValue}
+        {maxCoBenefValue}
+        {minHHCoBenefValue}
+        {maxHHCoBenefValue}
+        {COBENEFS_SCALE}
+      />
     </div>
+
   </section>
-  
-  
+
 
 <main>
 
     <!-- Spinner -->
     {#if isLoading}
         <div class="spinner">
-            GGGGGGGGG
-            GGGGGGGGG
-            GGGGGGGGG
-            GGGGGGGGG
-            GGGGGGGGG
             GGGGGGGGG
         </div>
     {/if}
@@ -468,139 +336,12 @@ let showDropdown = false;
 
 
 <style>
-    main {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 60%;
-    }
-
-    .navbar {
-    position: sticky;
-    top: 0;
+main {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    /* align-items: center; */
-    height: 60px;
-    background-color: #fff;
-    z-index: 1000;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .nav-left {
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .logo {
-    height: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-
-  .nav-right {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-end; 
-    padding-bottom: 0.4rem; 
-    margin-right: 2rem;
-  }
-
-  .dropdown {
-    position: relative;
-    display: inline-flex; 
-    align-items: flex-end; 
-    height: 100%;
-    }
-
-  .nav-right a,
-  .dropdown-label {
-    display: inline-block;
-    text-decoration: none;
-    color: #333;
-    cursor: pointer;
-    font-weight: 500;
-    position: relative;
-    padding-bottom: 4px;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s ease;
-  }
-
-  .nav-right a:hover{
-    color: #0077cc;
-    border-bottom: 3px solid #0077cc;
-  }
-
-  .nav-right a.active {
-    color: #0077cc;
-    border-bottom: 3px solid #0077cc;
-  }
-
-
-  .dropdown-label:hover {
-    color: #0077cc;
-    /* border-bottom: 3px solid #0077cc; */
-  }
-
-  .dropdown-label.active {
-    color: #0077cc;
-    /* border-bottom: 3px solid #0077cc; */
-  }
-
-  .dropdown {
-    position: relative;
-  }
-
-  .dropdown-menu {
-    min-width: 180px;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: 220px;
-    background: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    list-style: none;
-    padding: 0.5rem 0;
-    margin: 0;
-    z-index: 1001;
-  }
-
-  .dropdown-menu li {
-    padding: 0.25rem 1rem;
-  }
-
-  .dropdown-menu li a {
-    color: #333;
-    text-decoration: none;
-  }
-
-  .dropdown-menu li a:hover {
-    color: #0077cc;
-  }
-
-  @media (max-width: 768px) {
-    .navbar {
-      flex-direction: column;
-      align-items: stretch;
-      height: auto;
-    }
-
-    .nav-right {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 0.5rem 0;
-    }
-
-    .dropdown-menu {
-      position: static;
-      box-shadow: none;
-      border: none;
-    }
-  }
+    width: 60%;
+}
 
 .hero-text {
   position: relative;
@@ -622,62 +363,6 @@ let showDropdown = false;
   max-width: 600px;
 }
 
-.hero-stats {
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.big-bold {
-  font-size: 1.5rem;
-  font-weight: 700;
-  /* color: #fff; */
-}
-
-.link-underline {
-  text-decoration: underline;
-  color: black;
-  font-weight: 500;
-}
-
-.link-underline:hover {
-  color: #0077cc;
-}
-
-
-.hero-fact-box {
-  position: absolute;
-  top: 5rem;
-  right: 3rem;
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #000;
-  padding: 1rem 1.25rem;
-  /* border-radius: 8px; */
-  max-width: 260px;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  z-index: 2;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.hero-map-button {
-  position: absolute;
-  bottom: 2rem;
-  right: 3rem;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #000;
-  padding: 0.75rem 1.25rem;
-  /* border-radius: 6px; */
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  z-index: 2;
-}
-
-.hero-map-button:hover {
-  text-decoration: underline;
-}
 
 
 .hero-container {
@@ -779,82 +464,12 @@ let showDropdown = false;
   color: #333;
 }
 
-.search-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-}
 
 
 .side-by-side-section {
   display: flex;
   gap: 2rem;
   margin-top: 2rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-}
-
-.data-table {
-  table-layout: fixed;
-  width: 100%;
-  border-collapse: collapse;
-  font-family: "Roboto", sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.data-table thead {
-  background-color: #f5f5f5;
-}
-
-.data-table th,
-.data-table td {
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(224, 224, 224, 1);
-  text-align: left;
-  vertical-align: middle;
-  background-color: #fff;
-}
-
-.data-table th {
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.data-table th:first-child,
-.data-table td:first-child {
-  max-width: 180px;
-  width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.data-table tr:hover {
-  background-color: rgba(0, 0, 0, 0.04); 
-}
-
-.data-table a {
-  background-color: #fff;
-  padding: 0.75rem 0rem;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  cursor: default;
-}
-
-.data-table a:hover {
-  color: #0077cc;
-  cursor: pointer;
 }
 
 .search-section {

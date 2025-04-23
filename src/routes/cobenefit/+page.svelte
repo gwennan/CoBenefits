@@ -10,6 +10,7 @@
         SEF_CATEGORICAL,
         type SEFactor,
         TIMES,
+        COBENEFS,
         COBENEFS_RANGE,
         getIconFromCobenef,
         COBENEFS_SCALE,
@@ -23,6 +24,7 @@
         getSefForOneCoBenefit, getSefForOneCoBenefitAveragedByLAD,
         getTableData,
         getTotalPerOneCoBenefit,
+        getAggregationPerBenefit,
         initDB
     } from "$lib/duckdb";
 
@@ -44,6 +46,7 @@
     let LADAveragedData;
     let SEFData;
     let totalValue;
+    let aggregationPerBenefit;
     let dataLoaded = false;
 
     let map: Map;
@@ -77,6 +80,12 @@
         fullData = await getTableData(getTotalPerOneCoBenefit(coBenefit))
 
         SEFData = await getTableData(getSefForOneCoBenefit(coBenefit))
+        aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
+        aggregationPerBenefit = aggregationPerBenefit.sort((a, b) => b.total - a.total);
+
+        console.log("coben waffle data",aggregationPerBenefit);
+        console.log("coben type", coBenefit);
+
 
         LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
 
@@ -90,15 +99,102 @@
         dataLoaded = true;
     }
 
+    let waffleData = [];
+    let waffleEl: HTMLElement;
+    let waffleBgEl: HTMLElement;
+
+    function renderWaffle(height: number, highlightType?: string) {
+        if (!waffleEl) return;
+
+        const unitSize = 20;
+        const gridWidth = 15;
+        const gridHeight = Math.floor(height / unitSize);
+        const gridSize = gridWidth * gridHeight;
+
+        const total = aggregationPerBenefit.reduce((sum, d) => sum + d.total, 0);
+        const squares = [];
+
+        for (const item of aggregationPerBenefit) {
+        const absCount = Math.round((Math.abs(item.total) / total) * gridSize);
+        const isNegative = item.total < 0;
+        for (let i = 0; i < absCount; i++) {
+            squares.push({
+            type: item.co_benefit_type,
+            negative: isNegative
+            });
+        }
+        }
+
+        while (squares.length < gridSize) {
+        squares.push({ type: "empty" });
+        }
+
+        squares.sort((a, b) => {
+        if (a.type === "empty") return 1;
+        if (b.type === "empty") return -1;
+        if (a.negative && !b.negative) return 1;
+        if (!a.negative && b.negative) return -1;
+        return 0;
+        });
+
+        const waffleData = squares.map((d, i) => ({
+        x: i % gridWidth,
+        y: Math.floor(i / gridWidth),
+        ...d
+        }));
+
+        const plot = Plot.plot({
+        width: unitSize * gridWidth,
+        height: unitSize * gridHeight,
+        margin: 0,
+        x: { axis: null },
+        y: { axis: null },
+        color: {
+            type: "ordinal",
+            domain: COBENEFS,
+            range: COBENEFS_RANGE,
+            unknown: "#eee",
+            legend: false
+        },
+        marks: [
+            Plot.rect(waffleData.filter(d => !d.negative), {
+            x: d => d.x * unitSize,
+            y: d => d.y * unitSize,
+            fill: "type",
+            fillOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1)
+            }),
+            Plot.rect(waffleData.filter(d => d.negative), {
+            x: d => d.x * unitSize,
+            y: d => d.y * unitSize,
+            stroke: "type",
+            strokeOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1),
+            strokeWidth: 1,
+            fill: "none"
+            })
+        ]
+        });
+
+        if (waffleBgEl) {
+        waffleBgEl.style.width = `${unitSize * gridWidth}px`;
+        waffleBgEl.style.height = `${height}px`;
+        };
+
+        waffleEl.innerHTML = "";
+        waffleEl.append(plot);
+    }
+
+
+
     function renderDistPlot() {
         plotDist?.append(
             Plot.plot({
                 height: height / 1.2,
                 ...MARGINS,
-                marginLeft: 60,
-                marginRight: 60,
+                marginLeft: 80,
+                marginTop: 40,
+                marginRight: 40,
                 y: {label: "Datazones Frequency"},
-                x: {label: "Cost Per Capita (£)"},
+                x: {label: '£/capita',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
                     Plot.areaY(fullData, Plot.binX({y: "count"}, {
@@ -108,7 +204,9 @@
                         fillOpacity: 0.5,
                         stroke: COBENEFS_SCALE2(coBenefit)[0],
                         strokeWidth: 3
-                    }))
+                    })),
+                    Plot.axisY({anchor: "left", label: 'Datazone frequency',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.ruleX([0])
                 ]
             })
         );
@@ -125,8 +223,10 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.2,
-                ...MARGINS,
-                
+                marginLeft: 80,
+                marginRight: 40,
+                marginBottom: 60,
+                marginTop: 40,
                 style: {fontSize: "18px"},
                 x: {
                     type: "band",
@@ -147,7 +247,8 @@
                         //ry1: 5,
                         insetLeft: 15,
                         insetRight: 15
-                    }))
+                    })),
+                    Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                 ]
             })
         );
@@ -213,12 +314,12 @@
                     width: height / 1.5,
                     marginLeft: 60,
                     marginBottom: 60,
-                    marginRight: 10,
+                    marginRight: 20,
                     marginTop: 10,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {grid: true, label: null},
-                    //y: {grid: true, label: '£/capita', labelOffset:0, labelArrow:'none', labelAnchor: "top"},
+                    y: {grid: true},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -279,6 +380,7 @@
             renderDistPlot();
             renderPlot();
             renderSEFPlot();
+            renderWaffle(300, coBenefit);
         }
     }
 
@@ -298,24 +400,38 @@
 <div class="page-container" bind:this={element}>
 
     <div class="section header">
-        <p class="page-subtitle">Co-Benefit Report</p>
-        <div class="header-container">
+        <div class="header-content">
+          <div class="header-text">
+            <p class="page-subtitle">Co-Benefit Report</p>
             <div class="title-container">
-                <h1 class="page-title">
-                    <img src={icon} alt="Icon" class="heading-icon">
-                    {coBenefit}
-                </h1>
+              <h1 class="page-title">
+                <img src={icon} alt="Icon" class="heading-icon" />
+                {coBenefit}
+              </h1>
+              <!-- {#if totalValue}
+                <p class="description">Total Cost Benefit: £{totalValue.toLocaleString()} million</p>
+              {/if} -->
+            </div>
 
+          </div>
+          <div class="header-waffle-wrapper">
+            <div class="waffle-label">
+              National gain of <br />
+              <strong style="font-size: 1.2rem">{coBenefit}</strong> <br />
+              in reaching NetZero <br />
+              by 2050 is: <br />
+              {#if totalValue}
+              <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} million</strong>
+              {/if}
             </div>
-            <div class="total-value-container">
-                {#if totalValue}
-                <p class="total-value">Total Cost Benefit: £{totalValue.toLocaleString()} million</p>
-                {/if}
-            </div>
+            
+
+            <div class="waffle-el" bind:this={waffleEl}></div>
+            <div class="waffle-bg" bind:this={waffleBgEl}></div>
+          </div>
         </div>
-        <p class="description"> Total cost benefit regarding <span style={cobensStyle}> {coBenefit}:  </span></p>
-
-    </div>
+      </div>
+      
 
     <!--    <div id="vis-block">-->
     <div class="section">
@@ -326,18 +442,19 @@
                 <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
                 </h3>
                 <p class="description"> The total? cost benefit per capita for each 5 year interval. </p>
-                <div class="component row">
+                <!--  <div class="component row">-->
                     <div class="plot" bind:this={plot}>
                     </div>
-                </div>
-
+                <!--  </div>-->
+                <br>
                 <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
                     Benefit by LSOA </h3>
                 <p class="description"> The total cost benefit per capita for each LSOA. </p>
-                <div class="component row">
+                <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
-                    </div>
+                    <!--</div>-->
                 </div>
+                <br>
             </div>
 
 
@@ -401,7 +518,7 @@
         justify-content: center;
     }
 
-    .heading-icon {
+    /* .heading-icon {
         width: 80px;
         height: 80px;
         margin-right: 15px;
@@ -433,5 +550,95 @@
         font-weight: bold;
         color: #555;
         margin-right: 30px;
+    } */
+
+    .heading-icon {
+    width: 5rem;
+    height: 5rem;
     }
+
+
+    .section.header {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    }
+
+    .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    }
+
+    .header-text {
+    max-width: 60%;
+    }
+
+    .page-subtitle {
+    font-size: 1.1rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+    }
+
+    .page-title {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    }
+
+  
+    .total-value {
+    font-weight: bold;
+    margin-top: 0.5rem;
+    }
+
+    .description {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #333;
+    }
+
+    .header-waffle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+    min-width: 320px;
+    }
+
+    .header-waffle-wrapper {
+    position: relative;
+    min-width: 320px;
+    height: 320px;
+    }
+
+    .waffle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: white;
+    z-index: -1;
+}
+
+
+    .waffle-label {
+        position: absolute;
+        top: 50%;
+        right: 105%;
+        transform: translateY(-50%);
+        width: 170px;
+
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        color: #333;
+        text-align: left;
+        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
+        }
+
 </style>
