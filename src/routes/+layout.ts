@@ -17,7 +17,7 @@ import {
     previewTableData,
     getTotalPerHouseholdByLAD,
     getTopSelectedLADsPerHousehold,
-    getAggregationPerHouseholdPerBenefit,
+    getAggregationPerCapitaPerBenefit,
     getDistinctNationValues
 } from "$lib/duckdb";
 
@@ -66,55 +66,15 @@ export async function load() {
     // console.log("First 10 rows of cobenefits:", previewData);
     // const distinctNations = await getTableData(getDistinctNationValues());
     // console.log("distinctNations", distinctNations);
-    // const distinctHHs = await getTableData(getDistinctHHsValues());
-    // console.log("distinctHHs", typeof distinctHHs[0]);
 
 
     // for landing page waffle and COBEN columns
     let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
-    console.log("aggregationPerBenefit", aggregationPerBenefit);
+    // console.log("aggregationPerBenefit", aggregationPerBenefit);
     // for landing page LAD columns
 
-//     Delete?
-// <<<<<<< HEAD
-//     const topLADs = await getTableData(getTopSeletedLADsByTotal(10));
-//
-//     console.log("topLAD", topLADs);
-//
-//
-//     const topLADsData = topLADs.map((row) => ({
-//         LAD: row.LAD,
-//         name: LADToName[row.LAD] || row.LAD,
-//         total: row.total_value
-//     }));
-//
-//     const totalPerHouseholdByLAD = await getTableData(getTotalPerHouseholdByLAD());
-//     console.log("totalPerHouseholdByLAD", totalPerHouseholdByLAD);
-// =======
 
-    // const topLADs = await getTableData(getTopSeletedLADsByTotal(10));
-    // const topLADsData = topLADs.map((row) => ({
-    //     LAD: row.LAD,
-    //     name: LADToName[row.LAD] || row.LAD,
-    //     total: row.total_value
-    // }));
-
-    // const totalPerHouseholdByLAD = await getTableData(getTotalPerHouseholdByLAD());
-    // console.log("totalPerHouseholdByLAD", totalPerHouseholdByLAD);
-
-    // const topSelectedLADsPerHousehold = await getTableData(getTopSelectedLADsPerHousehold(10));
-    // const topSelectedLADsPerHouseholdData = topSelectedLADsPerHousehold.map((row) => ({
-    //     LAD: row.LAD,
-    //     name: LADToName[row.LAD] || row.LAD,
-    //     per: row.value_per_household,
-    //     total: row.total_value
-    // }));
-
-    let aggregationPerHouseholdPerBenefit = await getTableData(getAggregationPerHouseholdPerBenefit());
-    // console.log("aggregationPerHouseholdPerBenefit", aggregationPerHouseholdPerBenefit);
-
-    // let topSelectedLADs = await getTableData(getTopSelectedLADs(10));
-
+    let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
     
 
     console.log("end root")
@@ -123,7 +83,7 @@ export async function load() {
         datazones: UKZones,
         LADToName,
         aggregationPerBenefit,
-        aggregationPerHouseholdPerBenefit
+        aggregationPerCapitaPerBenefit
     }
 }
 

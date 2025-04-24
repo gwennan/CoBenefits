@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import * as Plot from "@observablehq/plot";
 
-    export let aggregationPerHouseholdPerBenefit;
+    export let aggregationPerCapitaPerBenefit;
     export let minCoBenefValue;
     export let maxCoBenefValue;
     export let minHHCoBenefValue;
@@ -47,9 +47,9 @@
         </button>
       
         <button
-          class:selected={viewMode === 'per_household'}
-          on:click={() => viewMode = 'per_household'}>
-          Per Household
+          class:selected={viewMode === 'per_capita'}
+          on:click={() => viewMode = 'per_capita'}>
+          Per Capita
         </button>
     </div>
 </div>
@@ -58,12 +58,12 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th style="width: 150px;">{viewMode === 'total' ? 'Total' : 'Per Household'}</th>
+            <th style="width: 150px;">{viewMode === 'total' ? 'Total' : 'Per Capita'}</th>
             <th style="width: 80px;">{viewMode === 'total' ? '£billion' : '£thousand'}</th>
         </tr>
     </thead>
     <tbody>
-    {#each aggregationPerHouseholdPerBenefit as coBenef}
+    {#each aggregationPerCapitaPerBenefit as coBenef}
         <tr>
         <td>
             <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">
@@ -74,7 +74,7 @@
               {#key viewMode}
                 {@html viewMode === 'total'
                   ? makeCoBenefBarSVG(coBenef.total_value, minCoBenefValue, maxCoBenefValue, coBenef.co_benefit_type, COBENEFS_SCALE)
-                  : makeCoBenefBarSVG(coBenef.value_per_household, minHHCoBenefValue, maxHHCoBenefValue, coBenef.co_benefit_type, COBENEFS_SCALE)
+                  : makeCoBenefBarSVG(coBenef.value_per_capita, minHHCoBenefValue, maxHHCoBenefValue, coBenef.co_benefit_type, COBENEFS_SCALE)
                 }
               {/key}
             </div>
@@ -83,7 +83,7 @@
             {#if viewMode === 'total'}
                 <span>{coBenef.total_value.toFixed(1)}</span>
             {:else}
-                <span>{coBenef.value_per_household.toFixed(1)}</span>
+                <span>{coBenef.value_per_capita.toFixed(1)}</span>
             {/if}
         </td>
         </tr>

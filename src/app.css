@@ -311,3 +311,16 @@ button:focus {
   .button-group button:not(.selected):hover {
     background-color: #e0e0e0;
   }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    height: 60px;
+    background-color: #fff;
+    z-index: 1000;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ddd;
+  }

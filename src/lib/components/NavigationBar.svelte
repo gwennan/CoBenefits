@@ -59,7 +59,7 @@ let showDropdown = false;
     display: flex;
     justify-content: space-between;
     /* align-items: center; */
-    height: 80px;
+    height: 60px;
     background-color: #fff;
     z-index: 1000;
     padding-bottom: 4px;
