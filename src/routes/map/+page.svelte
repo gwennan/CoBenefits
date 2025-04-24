@@ -132,11 +132,9 @@
             fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
 
-        console.log(1, fullData)
 
         map = new Map(fullData, granularity, mapDiv);
         map.initMap();
-        console.log("map initiated")
 
         legendSvg = map.legend();
         legendDiv.append(legendSvg)
@@ -383,6 +381,7 @@
 
     #mapComp {
         position: relative;
+        background: #daf4ff;
     }
 
     .page-container {

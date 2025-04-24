@@ -149,3 +149,77 @@ export function getIconFromCobenef(cobenefit: CoBenefit) {
         return dietChangeIcon;
     }
 }
+
+
+
+let spinnerElement: HTMLElement | null = null;
+let overlayElement: HTMLElement | null = null;
+
+export function addSpinner(selection: HTMLElement): void {
+  // Prevent multiple spinners
+  if (spinnerElement || overlayElement) return;
+
+  // Create gray overlay to block interaction
+  overlayElement = document.createElement('div');
+  overlayElement.style.position = 'absolute';
+  overlayElement.style.top = '0';
+  overlayElement.style.left = '0';
+  overlayElement.style.width = '100%';
+  overlayElement.style.height = '100%';
+  overlayElement.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+  overlayElement.style.pointerEvents = 'auto';
+  overlayElement.style.zIndex = '9998';
+
+  // Ensure the selection is relatively positioned
+  const computedStyle = window.getComputedStyle(selection);
+  if (computedStyle.position === 'static') {
+    selection.style.position = 'relative';
+  }
+
+  selection.appendChild(overlayElement);
+
+  // Create spinner at the center of the viewport
+  spinnerElement = document.createElement('div');
+  spinnerElement.style.position = 'fixed';
+  spinnerElement.style.top = '50%';
+  spinnerElement.style.left = '50%';
+  spinnerElement.style.transform = 'translate(-50%, -50%)';
+  spinnerElement.style.zIndex = '9999';
+
+  spinnerElement.innerHTML = `
+    <div style="
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    "></div>
+  `;
+
+  // Add spin keyframes if not already present
+  if (!document.getElementById('spinner-keyframes')) {
+    const styleSheet = document.createElement('style');
+    styleSheet.id = 'spinner-keyframes';
+    styleSheet.innerHTML = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+  }
+
+  document.body.appendChild(spinnerElement);
+}
+
+export function removeSpinner(selection: HTMLElement): void {
+  if (overlayElement && selection.contains(overlayElement)) {
+    selection.removeChild(overlayElement);
+    overlayElement = null;
+  }
+  if (spinnerElement && document.body.contains(spinnerElement)) {
+    document.body.removeChild(spinnerElement);
+    spinnerElement = null;
+  }
+}

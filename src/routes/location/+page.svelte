@@ -12,23 +12,33 @@
         AVERAGE_COLOR,
         MARGINS,
         AVERAGE_DX,
-        SCENARIOS, type Scenario, TIMES, COBENEFS_RANGE, COBENEFS, NATION_TO_COLOR
+        SCENARIOS,
+        type Scenario,
+        TIMES,
+        COBENEFS_RANGE,
+        COBENEFS,
+        NATION_TO_COLOR,
+        COBENEFS_SCALE,
+        removeSpinner,
+        addSpinner
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
 
     // BADGES
-    import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
-    import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
-    import mouseOverBadge from '$lib/badges/Mouse Over.png';
-    import roundingBadge from '$lib/badges/Rounding.png';
-    import aggregationBadge from '$lib/badges/Aggregated data.png';
-    import zoomBadge from '$lib/badges/Zoom.png';
-    import normalizedBadge from '$lib/badges/Data normalized.png';
-    import predictionsBadge from '$lib/badges/Contains predictions.png';
-    import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
-    import modeledDataBadge from '$lib/badges/Contains modeled data.png';
-    import binningBadge from '$lib/badges/Binning applied.png';
+    // import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
+    // import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
+    // import mouseOverBadge from '$lib/badges/Mouse Over.png';
+    // import roundingBadge from '$lib/badges/Rounding.png';
+    // import aggregationBadge from '$lib/badges/Aggregated data.png';
+    // import zoomBadge from '$lib/badges/Zoom.png';
+    // import normalizedBadge from '$lib/badges/Data normalized.png';
+    // import predictionsBadge from '$lib/badges/Contains predictions.png';
+    // import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
+    // import modeledDataBadge from '$lib/badges/Contains modeled data.png';
+    // import binningBadge from '$lib/badges/Binning applied.png';
+
+
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {
         getAllCBAllDatazones, getAllCBForOneLAD,
@@ -102,6 +112,7 @@
         oneLADAllCbs = await getTableData(getAllCBForOneLAD(LAD));
 
         dataLoaded = true;
+        removeSpinner(element)
     }
 
     loadData();
@@ -112,6 +123,7 @@
     let mapDiv: HTMLElement;
 
     onMount(() => {
+        addSpinner(element)
         map = new Map(LAD, "LAD", mapDiv, "val", true);
         map.initMap();
     })
@@ -276,13 +288,17 @@
                         x: "co_benefit_type",
                         dx: AVERAGE_DX,
                         // fill: AVERAGE_COLOR,
-                        fill: NATION_TO_COLOR[compareTo],
+                        // fill: NATION_TO_COLOR[compareTo],
+                        fill: AVERAGE_COLOR,
+                        sort: {x: "y", reverse: true},
                         tip: true
                     })),
 
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
+                        // inset: 50,
+                         fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
                         tip: true
                     }))
 
@@ -585,8 +601,8 @@
             marginRight: 0,
             x: {tickSize: 0, label: null, ticks: []},
             // x: {tickSize: 0, label: null, ticks: [], padding: 0},
-            // color: {range: [VIS_COLOR, AVERAGE_COLOR]},
-            color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
+            color: {range: [VIS_COLOR, AVERAGE_COLOR]},
+            // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
 
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
@@ -797,8 +813,6 @@
         totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([], compareTo));
 
         totalCBAllZones = await getTableData(getTotalCBAllDatazones(compareTo));
-
-
     }
 </script>
 
@@ -816,14 +830,24 @@
 
         <div class="radio-set">
             Compare the Local District Area with average of:
+<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>-->
+<!--            <label for="html" style="color:{NATION_TO_COLOR.UK}">UK</label><br>-->
+<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="Eng/Wales">-->
+<!--            <label for="html" style="color:{NATION_TO_COLOR['Eng/Wales']}">England/Wales</label><br>-->
+<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">-->
+<!--            <label for="javascript" style="color:{NATION_TO_COLOR.Scotland}">Scotland</label>-->
+<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="NI">-->
+<!--            <label for="javascript" style="color:{NATION_TO_COLOR.NI}">Northern Ireland</label>-->
             <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
-            <label for="html" style="color:{NATION_TO_COLOR.UK}">UK</label><br>
-            <input type="radio" on:change={onChangeComparison} name="compare" value="Eng/Wales">
-            <label for="html" style="color:{NATION_TO_COLOR['Eng/Wales']}">England/Wales</label><br>
+            <label class="nation-label" for="html">UK</label><br>
+            <input type="radio" on:change={onChangeComparison} name="compare" value="England">
+            <label class="nation-label" for="html">England</label><br>
+            <input type="radio" on:change={onChangeComparison} name="compare" value="Wales">
+            <label class="nation-label" for="html">Wales</label><br>
             <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
-            <label for="javascript" style="color:{NATION_TO_COLOR.Scotland}">Scotland</label>
+            <label class="nation-label" for="javascript" >Scotland</label>
             <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
-            <label for="javascript" style="color:{NATION_TO_COLOR.NI}">Northern Ireland</label>
+            <label class="nation-label" for="javascript">Northern Ireland</label>
         </div>
 
     </div>
@@ -860,9 +884,9 @@
             <!--            </div>-->
 
             <div class="component column">
-                <h3 class="component-title">11 Types of Co-Benefits Values (vs. UK Average)</h3>
+                <h3 class="component-title">11 Types of Co-Benefits Values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefits values in {LADToName[LAD]} verus average value across all local
-                    authorities in UK.</p>
+                    authorities in <span class="nation-label">{compareTo}</span> </p>
                 <div class="plot" bind:this={plotPerCb}>
                     <!--                    <div class="badge-container">-->
                     <!--                        <img class="badge" src={aggregationBadge} />-->
@@ -920,7 +944,7 @@
         </div>
 
         <div class="component singlevis">
-            <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. UK Average)</h3>
+            <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePLot}>
                     <!--                    <div class="badge-container">-->
@@ -984,7 +1008,7 @@
                             </div>
                         {:else}
                             <div class="component">
-                                <h3 class="component-title">Data Zones Distribution (vs. UK average)</h3>
+                                <h3 class="component-title">Data Zones Distribution (vs. <span class="nation-label">{compareTo}</span> average)</h3>
                                 <p class="description short">Histogram shows the number of data zones distributed across
                                     different household social economic factors.</p>
                                 <div class="plot" bind:this={SEFPlotLAD[sef]}>
@@ -1062,6 +1086,10 @@
     .inside-row {
         display: flex;
         flex-direction: row;
+    }
+
+    .nation-label {
+        color: #90bcca;
     }
 
 </style>

@@ -118,7 +118,6 @@ export class Map {
 
         let justHighlightArea = false;
         if (!Array.isArray(this.data)) {
-            // console.log(2323232323, this.data)
             justHighlightArea = true;
         }
 
@@ -179,10 +178,10 @@ export class Map {
 
         } else {
             domain = d3.extent(data.map(d => d[this.dataKey]));
-            // domain.splice(1, 0, 0);
-            // if (domain[0] >= 0) {
-            //     domain[0] = -1;
-            // }
+            domain.splice(1, 0, 0);
+            if (domain[0] >= 0) {
+                domain[0] = -1;
+            }
 
             // this.colorScale = d3.scaleDiverging()
             //     .domain(domain)
@@ -214,7 +213,12 @@ export class Map {
             //         .domain(domain)
             //         .range(["white", "black"])
 
+            this.colorScale = d3.scaleLinear()
+              .domain(domain)
+              .range(["red", "black", "white"]); // You can use any colors you want
+
             console.log("DOMAIN ", domain)
+            console.log(this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)]))
 
             // this.colorScale = d3.scaleDiverging()
             //         .domain(domain)
@@ -356,7 +360,6 @@ export class Map {
         } else {
             // zoneName = zone.properties.lad11cd;
             zoneName = zone.properties.LAD22CD;
-            console.log(zone)
         }
 
         // return this.granularity == "LSOA" ? (zone.properties.DZ2021_cd ?? zone.properties.DataZone) : zone.properties.lad11cd;
