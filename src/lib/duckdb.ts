@@ -74,10 +74,10 @@ async function loadData() {
     // // Close the connection to release memory
     // await conn.close();
 
-    console.log("DB INFO: ", await getTableData(getInfo()));
+    // console.log("DB INFO: ", await getTableData(getInfo()));
 
     const result = await conn.query(`PRAGMA table_info(${DB_TABLE_NAME})`);
-    console.log("Table schema:", await result.toArray());
+    // console.log("Table schema:", await result.toArray());
 
     await conn.close();
 }
@@ -353,7 +353,7 @@ export function previewTableData(limit = 10) {
 // prepare for landing page waffle
 export function getAggregationPerBenefit() {
     return `
-        SELECT co_benefit_type, SUM(total) as total
+        SELECT co_benefit_type, SUM(total)/1000 as total
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type != 'Total'
         GROUP BY co_benefit_type
@@ -441,23 +441,23 @@ export function getTopSelectedLADs({
     region = 'All'
   }: {
     limit?: number;
-    sortBy?: 'total' | 'per_household';
+    sortBy?: 'total' | 'per_capita';
     region?: string;
   }) {
     const nationFilter = region && region !== 'All' ? `AND Nation = '${region}'` : '';
 
-    const orderBy = sortBy === 'per_household' ? 'value_per_household DESC' : 'total_value DESC';
+    const orderBy = sortBy === 'per_capita' ? 'value_per_capita DESC' : 'total_value DESC';
   
     return `
       SELECT 
           LAD,
           Nation,
           SUM(total) / 1000 AS total_value,
-          SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) AS total_HHs,
-          SUM(total) / SUM(TRY_CAST(REPLACE(CAST(HHs AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+          SUM(Population) AS total_Population,
+          SUM(total) / SUM(Population) * 1000 AS value_per_capita
       FROM cobenefits
       WHERE co_benefit_type = 'Total'
-        AND HHs IS NOT NULL
+        AND Population IS NOT NULL
         ${nationFilter}
       GROUP BY LAD, Nation
       ORDER BY ${orderBy}
@@ -466,15 +466,15 @@ export function getTopSelectedLADs({
   }
   
 // per household for aggregate co ben values
-export function getAggregationPerHouseholdPerBenefit() {
+export function getAggregationPerCapitaPerBenefit() {
     return `
         SELECT 
             co_benefit_type, 
             SUM(total) / 1000 AS total_value,
-            SUM(total) / SUM(TRY_CAST(REPLACE(CAST(Households AS TEXT), 'n', '') AS DOUBLE)) * 1000 AS value_per_household
+            SUM(total) / SUM(Population) * 1000 AS value_per_capita
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type != 'Total'
-          AND Households IS NOT NULL
+          AND Population IS NOT NULL
         GROUP BY co_benefit_type
         ORDER BY co_benefit_type
     `;

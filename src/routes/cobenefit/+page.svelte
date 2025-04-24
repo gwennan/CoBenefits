@@ -94,7 +94,8 @@
             SEFData[SE] = +SEFData[SE];
         })
 
-        totalValue = Math.round(d3.sum(fullData, d => d.total));
+        totalValue = (d3.sum(fullData, d => d.total / 1000)).toFixed(1);
+
 
         dataLoaded = true;
     }
@@ -421,7 +422,7 @@
               in reaching NetZero <br />
               by 2050 is: <br />
               {#if totalValue}
-              <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} million</strong>
+              <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} billion</strong>
               {/if}
             </div>
             

@@ -18,7 +18,8 @@ import { getTableData } from '$lib/duckdb';
 
 export let data;
 let aggregationPerBenefit = [...data.aggregationPerBenefit].sort((a, b) => b.total - a.total);
-let aggregationPerHouseholdPerBenefit = [...data.aggregationPerHouseholdPerBenefit].sort((a, b) => b.total_value - a.total_value);
+let aggregationPerCapitaPerBenefit = [...data.aggregationPerCapitaPerBenefit].sort((a, b) => b.total_value - a.total_value);
+// console.log("aggregationPerCapitaPerBenefit", aggregationPerCapitaPerBenefit);
 
 // explore by lad: reactive queries
 let ladData = [];
@@ -32,9 +33,10 @@ async function fetchLADData() {
     const sql = getTopSelectedLADs({ region, sortBy });
     const rows = await getTableData(sql);
     ladData = rows;
+    // console.log("ladData", ladData);
 
     maxLADValue = Math.max(...rows.map(d => d.total_value));
-    maxHHLADValue = Math.max(...rows.map(d => d.value_per_household));
+    maxHHLADValue = Math.max(...rows.map(d => d.value_per_capita));
   }
 
 function handleFilterChange(event) {
@@ -43,10 +45,10 @@ function handleFilterChange(event) {
     fetchLADData();
   }
 
-const maxCoBenefValue = Math.max(...aggregationPerHouseholdPerBenefit.map(d => d.total_value));
-const minCoBenefValue = Math.min(...aggregationPerHouseholdPerBenefit.map(d => d.total_value));
-const minHHCoBenefValue = Math.min(...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household));
-const maxHHCoBenefValue = Math.max(...aggregationPerHouseholdPerBenefit.map(d => d.value_per_household));
+const maxCoBenefValue = Math.max(...aggregationPerCapitaPerBenefit.map(d => d.total_value));
+const minCoBenefValue = Math.min(...aggregationPerCapitaPerBenefit.map(d => d.total_value));
+const minHHCoBenefValue = Math.min(...aggregationPerCapitaPerBenefit.map(d => d.value_per_capita));
+const maxHHCoBenefValue = Math.max(...aggregationPerCapitaPerBenefit.map(d => d.value_per_capita));
 
 // for waffle
 let waffleData: [];
@@ -283,9 +285,9 @@ let showDropdown = false;
   <section class="search-section">
     <h1>Find My Place</h1>
     <LADSearch 
-  items={LADToName} 
-  on:search={(e) => handleSearch(e.detail)} 
-  />
+      items={LADToName} 
+      on:search={(e) => handleSearch(e.detail)} 
+      />
     <!-- {#if selectedLAD}
       <h2>Total Cobenefits</h2>
       <h2>Cobenefits Over Time</h2>
@@ -311,7 +313,7 @@ let showDropdown = false;
     <div class="side-box">
       <h2>Explore by Co-Benefit</h2>
       <CoBenefitTable
-        {aggregationPerHouseholdPerBenefit}
+        {aggregationPerCapitaPerBenefit}
         {minCoBenefValue}
         {maxCoBenefValue}
         {minHHCoBenefValue}

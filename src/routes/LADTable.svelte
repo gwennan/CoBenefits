@@ -82,9 +82,9 @@
       </button>
     
       <button
-        class:selected={sortBy === 'per_household'}
-        on:click={() =>dispatch('filterChange', { region, sortBy: 'per_household' })}>
-        Per Household
+        class:selected={sortBy === 'per_capita'}
+        on:click={() =>dispatch('filterChange', { region, sortBy: 'per_capita' })}>
+        Per Capita
       </button>
     </div>
     
@@ -94,7 +94,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th style="width: 120px;">{sortBy === 'total' ? 'Total' : 'Per Household'}</th>
+        <th style="width: 120px;">{sortBy === 'total' ? 'Total' : 'Per Capita'}</th>
         <th style="width: 80px;">{sortBy === 'total' ? '£billion' : '£thousand'}</th>
       </tr>
     </thead>
@@ -106,7 +106,7 @@
             <div class="bar-cell">
               {@html sortBy === 'total'
                 ? makeLADBarSVG(LAD.total_value, maxLADValue)
-                : makeHHLADBarSVG(LAD.value_per_household, maxHHLADValue)
+                : makeHHLADBarSVG(LAD.value_per_capita, maxHHLADValue)
               }
             </div>
           </td>
@@ -114,7 +114,7 @@
             {#if sortBy === 'total'}
               <span>{LAD.total_value.toFixed(1)}</span>
             {:else}
-              <span>{LAD.value_per_household.toFixed(1)}</span>
+              <span>{LAD.value_per_capita.toFixed(1)}</span>
             {/if}
           </td> 
         </tr>
