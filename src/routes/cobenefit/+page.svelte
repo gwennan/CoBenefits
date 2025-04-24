@@ -280,13 +280,13 @@
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
-                    height: height / 1.4,
+                    style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
+                    height: height / 1.2,
                     width: height ,
-                    marginLeft: 60,
+                    marginLeft: 80,
                     marginBottom: 60,
                     marginRight: 10,
-                    marginTop: 10,
+                    marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
                     //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
@@ -305,23 +305,23 @@
                                 : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
                                 : COBENEFS_SCALE2(coBenefit)[4],})),
                         Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
-                        Plot.ruleY([0])
+                        Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
                 })
             } else {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
+                    style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height / 1.5,
-                    marginLeft: 60,
+                    width: height / 1.2,
+                    marginLeft: 80,
                     marginBottom: 60,
                     marginRight: 20,
-                    marginTop: 10,
+                    marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
-                    x: {grid: true, label: null},
-                    y: {grid: true},
+                    x: {label: null},
+                    y: {},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -336,7 +336,8 @@
                             fillOpacity: 1
                         }),
                         Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
-                        Plot.ruleY([0])
+                        Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
+                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                           //  x: "SE",
                           //  y: "total",
@@ -502,7 +503,7 @@
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 400px;
+        height: 800px;
         /*flex: 1; !* take the remaining height *!*/
     }
 
