@@ -469,24 +469,46 @@
             </div>
         </div>
 
+        <div id="se-block" class="component" style="margin-left: 1rem;">
+            <div id="se-title">
+                <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefit}</span> across UK local authorities acorrding to socio-economic factors</h3>
+                <br>
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <strong>Disclaimer:</strong> This map represents modeled associations and should not be interpreted as direct causal relationships.
+                </div>
 
-        <div id="multiple-comp" class="component">
+                <!-- Legend -->
+                <div id="se-legend" class="legend-box">
+                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                    <span>The scatter plots are shaded by nations.</span>
 
-            <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio-Economic
-                Factors </h3>
-            <br>
+                    <ul class="legend-list">
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>
+                            Scotland</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>
+                            Northern Ireland</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England/Wales</li>
+                    </ul>
+                    
+                </div>
+            </div>
 
-            <div id="multiple-plots">
-                {#each SEF as sef}
-                    <div class="plot-container">
-                        <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
-                        <div class="plot" bind:this={SEFPlot[sef]}></div>
-                    </div>
-                {/each}
+        
+
+            <div id="multiple-comp">
+
+                <div id="multiple-plots">
+                    {#each SEF as sef}
+                        <div class="plot-container">
+                            <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
+                            <div class="plot" bind:this={SEFPlot[sef]}></div>
+                        </div>
+                    {/each}
+                </div>
             </div>
         </div>
-
-    </div>
+</div>
 </div>
 
 <style>
@@ -496,6 +518,23 @@
         flex-wrap: wrap;
         gap: 1%;
         width: 100%;
+    }
+
+    #se-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    #se-title {
+        min-width: 25vw;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        position: sticky;
+        top: 80px;
+        align-self: flex-start;
+        height: fit-content;
     }
 
 
@@ -643,5 +682,42 @@
         text-align: left;
         /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
         }
+
+        .disclaimer-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.legend-box {
+    margin-bottom: 2rem;
+    padding: 0.75rem;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.legend-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 2px;
+}
 
 </style>

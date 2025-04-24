@@ -425,6 +425,14 @@ export function getDistinctNationValues() {
     `;
 }
 
+export function getLADRegion(){
+    return `
+        SELECT DISTINCT LAD, Nation
+        FROM ${DB_TABLE_NAME}
+        WHERE "LAD" IS NOT NULL AND "Region" IS NOT NULL
+    `;
+}
+
 
 export function getTotalPerHouseholdByLAD() {
     return `

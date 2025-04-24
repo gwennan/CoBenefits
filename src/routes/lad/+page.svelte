@@ -1,46 +1,94 @@
 <script lang="ts">
     import { base } from "$app/paths";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
+    import {getTableData, getLADRegion} from '$lib/duckdb'
+    import { csv } from "d3";
+    import { onMount } from "svelte";
 
-    export let data;
-    const { LADToName, LADToNation } = data;
 
-    let entries = Object.entries(LADToName).map(([code, name]) => ({
-        code,
-        name,
-        nation: LADToNation[code]
-    }));
+    const LADEngPath = `${base}/LAD/Eng_Wales_LSOA_LADs.csv`
+    const LADNIPath = `${base}/LAD/NI_DZ_LAD.csv`
+    const LADScotlandPath = `${base}/LAD/Scotland_DZ_LA.csv`
 
-    // Group by nation
-    let nations = ["England/Wales", "Northern Ireland", "Scotland"];
+    let LADToName = {};
+    let LADToNation = {};
+    let entries = [];
     let grouped = {};
+    let nations = ["England","Wales", "Northern Ireland", "Scotland"];
 
-    for (let nation of nations) {
-        grouped[nation] = entries
-            .filter(entry => entry.nation === nation)
-            .sort((a, b) => a.name.localeCompare(b.name));
+    const nationMap = {
+        "NI": "Northern Ireland",
+        "England": "England",
+        "Wales": "Wales",
+        "Scotland": "Scotland"
+    };
+
+    async function loadData() {
+        const eng = await csv(LADEngPath);
+        for (let lad of eng) {
+            LADToName[lad.LAD22CD] = lad.LAD22NM;
+        }
+
+        const ni = await csv(LADNIPath);
+        for (let lad of ni) {
+            LADToName[lad.LGD2014_code] = lad.LGD2014_name;
+        }
+
+        const sco = await csv(LADScotlandPath);
+        for (let lad of sco) {
+            LADToName[lad.LA_Code] = lad.LA_Name;
+        }
+
+        const LADRegion = await getTableData(getLADRegion());
+
+        for (let row of LADRegion) {
+            const nation = nationMap[row.Nation] || row.Nation;
+            LADToNation[row.LAD] = nation;
+        }
+
+        entries = Object.entries(LADToName).map(([code, name]) => ({
+            code,
+            name,
+            nation: LADToNation[code]
+        }));
+
+        grouped = {};
+        for (let nation of nations) {
+            grouped[nation] = entries
+                .filter(entry => entry.nation === nation)
+                .sort((a, b) => a.name.localeCompare(b.name));
+        }
     }
+
+    onMount(async () => {
+        await loadData();
+    });
 
 </script>
 
 <NavigationBar />
 
-<main>
-    <h1>List of Local Authorities across UK</h1>
-    <p>Click on a local authority for detailed reports.</p>
-    {#each nations as nation}
-    <details>
-        <summary>
-            {nation} ({grouped[nation].length})
-        </summary>
-        <div class="lad-grid">
-            {#each grouped[nation] as lad}
-                <a class="lad-link" href="{base}/location?location={lad.code}">{lad.name}</a>
-            {/each}
-        </div>
-    </details>
-{/each}
-</main>
+{#if entries.length === 0}
+    <p>Loading local authorities…</p>
+{:else}
+    <main>
+        <h1>List of Local Authorities across UK</h1>
+        <p>Click on a local authority for detailed reports.</p>
+        {#each nations as nation}
+        <details>
+            <summary>
+                {nation} ({grouped[nation].length})
+            </summary>
+            <div class="lad-grid">
+                {#each grouped[nation] as lad}
+                    <a class="lad-link" href="{base}/location?location={lad.code}">{lad.name}</a>
+                {/each}
+            </div>
+        </details>
+        {/each}
+    </main>
+{/if}
+
 
 
 <style>

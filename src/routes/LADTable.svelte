@@ -16,7 +16,8 @@
     export let selectedRegion = 'All';
     const regions = [
         { label: 'All', value: 'All' },
-        { label: 'England & Wales', value: 'Eng/Wales' },
+        { label: 'England', value: 'England' },
+        { label: 'Wales', value: 'Wales' },
         { label: 'Scotland', value: 'Scotland' },
         { label: 'Northern Ireland', value: 'NI' }
       ];
