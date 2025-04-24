@@ -3,7 +3,8 @@ import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?
 import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
 import type {AsyncDuckDB} from '@duckdb/duckdb-wasm';
 
-import {type CoBenefit, COBENEFS, type Scenario, SEF, type SEFactor, TIMES} from "../globals";
+import {type CoBenefit, COBENEFS, type Scenario, SEF, type SEFactor, TIMES, 
+    SEF_CATEGORICAL} from "../globals";
 import {browser} from '$app/environment';
 
 let db: AsyncDuckDB;
@@ -320,20 +321,43 @@ export function getSefForOneCoBenefit(cobenefit: CoBenefit) {
     return query;
 }
 
+//export function getSefForOneCoBenefitAveragedByLAD(cobenefit: CoBenefit) {
+//
+//    const oneQuery = (SE: SEFactor) => {
+//        return `SELECT AVG(total) as total, LAD, AVG(${SE}) AS SE, '${SE}' AS SEFMAME
+//                FROM ${DB_TABLE_NAME}
+//                WHERE co_benefit_type = '${cobenefit}'
+//                GROUP BY LAD
+//                `
+//    }
+
+//    // let SEF = ['Under_35', 'Over_65'];
+//    let query = SEF.map(sef => oneQuery(sef)).join(" UNION ALL ");
+//    return query;
+//}
+
 export function getSefForOneCoBenefitAveragedByLAD(cobenefit: CoBenefit) {
-
     const oneQuery = (SE: SEFactor) => {
-        return `SELECT AVG(total) as total, LAD, AVG(${SE}) AS SE, '${SE}' AS SEFMAME
-                FROM ${DB_TABLE_NAME}
-                WHERE co_benefit_type = '${cobenefit}'
-                GROUP BY LAD
-                `
-    }
-
-    // let SEF = ['Under_35', 'Over_65'];
-    let query = SEF.map(sef => oneQuery(sef)).join(" UNION ALL ");
+      const isCategorical = SEF_CATEGORICAL.includes(SE);
+      const aggregation = isCategorical
+        ? `MODE() WITHIN GROUP (ORDER BY ${SE})` 
+        : `AVG(${SE})`;
+  
+      return `
+        SELECT 
+          AVG(total) AS total, 
+          LAD, 
+          ${aggregation} AS SE, 
+          '${SE}' AS SEFMAME
+        FROM ${DB_TABLE_NAME}
+        WHERE co_benefit_type = '${cobenefit}'
+        GROUP BY LAD
+      `;
+    };
+  
+    const query = SEF.map(oneQuery).join(" UNION ALL ");
     return query;
-}
+  }
 
 
 export function getAllLAD() {

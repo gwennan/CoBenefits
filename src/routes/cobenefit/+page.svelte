@@ -198,7 +198,7 @@
                 x: {label: '£/capita',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
-                    Plot.areaY(fullData, Plot.binX({y: "count"}, {
+                    Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
                         x: "total",
                         fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
@@ -282,7 +282,7 @@
                     //title: sef,
                     style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height / 1.5,
+                    width: height ,
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
@@ -290,19 +290,20 @@
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
                     //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
-                    x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
+                    //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
                     //y: {label: '£/capita', labelOffset:0, labelArrow:'none'},
                     color: {legend: true},
                     marks: [
-                        Plot.boxY(SEFData.filter(d => d["SEFMAME"] == sef), {
-                            x: "SE",
+                        Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
+                        Plot.dodgeX("middle",{
+                            fx: "SE",
                             y: "total",
-                            stroke: COBENEFS_SCALE2(coBenefit)[0],
-                            fill: COBENEFS_SCALE2(coBenefit)[4],
-                            r: 1,
-                            strokeOpacity: 0.5,
-                            fillOpacity:0.3
-                        }),
+                            r: 1.5,
+                            padding: -2,
+                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
+                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
+                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
+                                : COBENEFS_SCALE2(coBenefit)[4],})),
                         Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0])
                     ]

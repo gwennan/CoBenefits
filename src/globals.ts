@@ -26,7 +26,7 @@ export let SEF = ['Under_35',
        'Floor_area', 'Gas_flag', 'Number_cars', 'Urban_trips', 'Total_vkm',
        'Urban_vkm']
 
-export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Rurality", "Fuel_Type", "Gas_flag", "Number_cars"]
+export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars"]
 
 SEF.sort((a,b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
 
