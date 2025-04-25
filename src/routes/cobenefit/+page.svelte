@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
-    import {onMount} from 'svelte';
+    import {onMount, onDestroy} from 'svelte';
 
     import {Map} from "$lib/components/map";
     import {
@@ -66,6 +66,12 @@
 
     let icon = getIconFromCobenef(coBenefit)
 
+    let scrolledPastHeader = false;
+
+    function handleScroll() {
+        const scrollY = window.scrollY;
+        scrolledPastHeader = scrollY > 250;
+    }
 
     onMount(() => {
         // map = new Map(LADAveragedData, "LAD", mapDiv, "total");
@@ -73,6 +79,11 @@
         //
         // let legendSvg = map.legend();
         // mapLegendDiv.append(legendSvg)
+        window.addEventListener('scroll', handleScroll); // header scroll listener
+    })
+
+    onDestroy(() => {
+        window.removeEventListener('scroll', handleScroll); // remove listener
     })
 
 
@@ -94,7 +105,7 @@
             SEFData[SE] = +SEFData[SE];
         })
 
-        totalValue = (d3.sum(fullData, d => d.total / 1000)).toFixed(1);
+        totalValue = (d3.sum(fullData, d => d.total / 1000)).toFixed(3);
 
 
         dataLoaded = true;
@@ -253,7 +264,6 @@
         );
     }
 
-
     function renderSEFPlot() {
         // FACETED CHART
         // SEFPlotLAD?.append(
@@ -397,6 +407,8 @@
 
     $: textColor = COBENEFS_SCALE2(coBenefit)[0];
     $: cobensStyle = `color: ${textColor}; font-weight: bold; font-size: 22px;`;
+    // $: cobensNavStyle = `color: ${textColor}; font-weight: bold; font-size: 14px;`;
+
 
 
     function onChange(event) {
@@ -419,9 +431,6 @@
                 <img src={icon} alt="Icon" class="heading-icon" />
                 {coBenefitLabel}
               </h1>
-              <!-- {#if totalValue}
-                <p class="description">Total Cost Benefit: £{totalValue.toLocaleString()} million</p>
-              {/if} -->
             </div>
 
           </div>
@@ -435,19 +444,28 @@
               <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} billion</strong>
               {/if}
             </div>
-            
 
             <div class="waffle-el" bind:this={waffleEl}></div>
             <div class="waffle-bg" bind:this={waffleBgEl}></div>
           </div>
         </div>
       </div>
+    
+    {#if scrolledPastHeader}
+      <div class="mini-header">
+        <div class="mini-header-content">
+          <img src={icon} alt="Icon" class="mini-heading-icon" />
+          <span class="mini-header-text">{coBenefitLabel}</span>
+          {#if totalValue}
+            <span class="mini-header-value">UK total: £{totalValue.toLocaleString()} billion</span>
+          {/if}
+        </div>
+      </div>
+    {/if}
       
 
     <!--    <div id="vis-block">-->
     <div class="section">
-
-
         <div id="vis-block">
             <div class="component singlevis">
                 <h3 class="component-title">Total <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> (£k) to 2050
@@ -551,7 +569,7 @@
         margin-left: 1rem;
         margin-right: 2rem;
         position: sticky;
-        top: 80px;
+        top: 120px;
         align-self: flex-start;
         height: fit-content;
     }
@@ -702,7 +720,7 @@
         /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
         }
 
-        .disclaimer-box {
+    .disclaimer-box {
     margin-bottom: 1rem;
     padding: 0.75rem;
     background-color: #f9f9f9;
@@ -738,5 +756,45 @@
     margin-right: 6px;
     border-radius: 2px;
 }
+
+.mini-header {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px; /* mini header height */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mini-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mini-heading-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.mini-header-text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.mini-header-value {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-left: auto;
+  color: #555;
+}
+
 
 </style>

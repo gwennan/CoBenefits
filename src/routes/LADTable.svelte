@@ -113,9 +113,9 @@
           </td>
           <td>
             {#if sortBy === 'total'}
-              <span>{LAD.total_value.toFixed(1)}</span>
+              <span>{LAD.total_value.toFixed(3)}</span>
             {:else}
-              <span>{LAD.value_per_capita.toFixed(1)}</span>
+              <span>{LAD.value_per_capita.toFixed(3)}</span>
             {/if}
           </td> 
         </tr>

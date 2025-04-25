@@ -90,7 +90,7 @@ function startWaffleHighlightLoop(height: number) {
         const match = COBENEFS.find(d => d.id === type);
         // const label = type;
         const label = match?.label ?? type;
-        const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(1) ?? "";
+        const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(3) ?? "";
         return { type, label, value };
       })
     ];
@@ -258,7 +258,7 @@ let showDropdown = false;
   
     <div class="hero-content">
       <div class="hero-text">
-        <h1 class="hero-title">The Co-Benefits of Reaching Net Zero in the UK</h1>
+        <h1 class="hero-title">The Co-Benefits of Reaching <br> Net Zero in the UK</h1>
         <p class="hero-description">
           Climate actions lower greenhouse gas (GHG) emissions but the gains for society reach further. The CO-BENS project models 11 additional benefits based on actions recommended by the Climate Change Committee (CCC) in its Seventh Carbon Budget (2025) across 45,000 communities and regions within the UK.<br>
         </p>

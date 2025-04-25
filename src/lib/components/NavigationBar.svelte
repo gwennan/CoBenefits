@@ -138,7 +138,7 @@ let showDropdown = false;
     right: 0;
     min-width: 220px;
     background: white;
-    border: 1px solid #ddd;
+    border: 1px solid #636363;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     list-style: none;
     padding: 0.5rem 0;

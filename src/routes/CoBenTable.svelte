@@ -86,9 +86,9 @@
         </td>
         <td>
             {#if viewMode === 'total'}
-                <span>{coBenef.total_value.toFixed(1)}</span>
+                <span>{coBenef.total_value.toFixed(3)}</span>
             {:else}
-                <span>{coBenef.value_per_capita.toFixed(1)}</span>
+                <span>{coBenef.value_per_capita.toFixed(3)}</span>
             {/if}
         </td>
         </tr>
