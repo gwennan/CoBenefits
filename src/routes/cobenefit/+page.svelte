@@ -15,7 +15,6 @@
         getIconFromCobenef,
         COBENEFS_SCALE,
         type CoBenefit,
-
 		COBENEFS_SCALE2
 
     } from "../../globals";
@@ -42,6 +41,7 @@
     export let data;
 
     const coBenefit = data.coBenefit;
+    const coBenefitLabel = COBENEFS.find(d => d.id === coBenefit)?.label ?? coBenefit;
     let fullData;
     let LADAveragedData;
     let SEFData;
@@ -152,7 +152,7 @@
         y: { axis: null },
         color: {
             type: "ordinal",
-            domain: COBENEFS,
+            domain: COBENEFS.map(d => d.id),
             range: COBENEFS_RANGE,
             unknown: "#eee",
             legend: false
@@ -184,8 +184,6 @@
         waffleEl.append(plot);
     }
 
-
-
     function renderDistPlot() {
         plotDist?.append(
             Plot.plot({
@@ -198,7 +196,7 @@
                 x: {label: '£/capita',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
-                    Plot.areaY(fullData, Plot.binX({y: "count"}, {
+                    Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
                         x: "total",
                         fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
@@ -224,7 +222,7 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.2,
-                marginLeft: 80,
+                marginLeft: 90,
                 marginRight: 40,
                 marginBottom: 60,
                 marginTop: 40,
@@ -280,47 +278,58 @@
             if (SEF_CATEGORICAL.includes(sef)) {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
-                    height: height / 1.4,
-                    width: height / 1.5,
+                    style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
+                    height: height / 1.2,
+                    width: height ,
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
-                    marginTop: 10,
+                    marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
                     //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
-                    x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
-                    //y: {label: '£/capita', labelOffset:0, labelArrow:'none'},
+                    //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
+                    y: {label: '£/capita',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
-                        Plot.boxY(SEFData.filter(d => d["SEFMAME"] == sef), {
-                            x: "SE",
+                        Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
+                        Plot.dodgeX("middle",{
+                            fx: "SE",
+                            y: "total",
+                            r: 1,
+                            padding: -2,
+                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
+                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
+                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
+                                : COBENEFS_SCALE2(coBenefit)[4],})),
+                        
+                        Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
+                            fx: "SE",
                             y: "total",
                             stroke: COBENEFS_SCALE2(coBenefit)[0],
                             fill: COBENEFS_SCALE2(coBenefit)[4],
-                            r: 1,
-                            strokeOpacity: 0.5,
+                            r: 0,
+                            //strokeOpacity: 0.5,
                             fillOpacity:0.3
                         }),
-                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
-                        Plot.ruleY([0])
+                        //Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
                 })
             } else {
                 plot = Plot.plot({
                     //title: sef,
-                    style: {fontSize: "16px", textAnchor: "middle", fill: '#333'},
+                    style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height / 1.5,
+                    width: height / 1.2,
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 20,
-                    marginTop: 10,
+                    marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
-                    x: {grid: true, label: null},
-                    y: {grid: true},
+                    x: {label: null},
+                    y: {label: '£/capita',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -334,8 +343,9 @@
                             r: 2,
                             fillOpacity: 1
                         }),
-                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
-                        Plot.ruleY([0])
+                        //Plot.axisY({grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
+                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                           //  x: "SE",
                           //  y: "total",
@@ -407,7 +417,7 @@
             <div class="title-container">
               <h1 class="page-title">
                 <img src={icon} alt="Icon" class="heading-icon" />
-                {coBenefit}
+                {coBenefitLabel}
               </h1>
               <!-- {#if totalValue}
                 <p class="description">Total Cost Benefit: £{totalValue.toLocaleString()} million</p>
@@ -418,7 +428,7 @@
           <div class="header-waffle-wrapper">
             <div class="waffle-label">
               National gain of <br />
-              <strong style="font-size: 1.2rem">{coBenefit}</strong> <br />
+              <strong style="font-size: 1.2rem">{coBenefitLabel}</strong> <br />
               in reaching NetZero <br />
               by 2050 is: <br />
               {#if totalValue}
@@ -440,17 +450,25 @@
 
         <div id="vis-block">
             <div class="component singlevis">
-                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
+                <h3 class="component-title">Total <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> (£k) to 2050
                 </h3>
-                <p class="description"> The total? cost benefit per capita for each 5 year interval. </p>
+                {#if totalValue>0}
+                    <p class="description">The benefit per capita for each 5 year interval towards 2050. </p>
+                {:else}
+                    <p class="description">The cost per capita for each 5 year interval towards 2050. </p>
+                {/if}
                 <!--  <div class="component row">-->
                     <div class="plot" bind:this={plot}>
                     </div>
                 <!--  </div>-->
                 <br>
-                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
-                    Benefit by LSOA </h3>
-                <p class="description"> The total cost benefit per capita for each LSOA. </p>
+                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK data zones.</h3>
+                {#if totalValue>0}
+                    <p class="description"> The total benefit per capita for each data zone. </p>
+                {:else}
+                    <p class="description"> The total cost per capita for each data zone. </p>
+                {/if}
+                <!-- <p class="description"> The total cost benefit per capita for each LSOA. </p> -->
                 <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
                     <!--</div>-->
@@ -460,31 +478,56 @@
 
 
             <div class="component column">
-                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
+                <h3 class="component-title"><span style={cobensStyle}>{coBenefitLabel}</span> on a map of the UK</h3>
                 <p class="description">Scroll for zooming in and out.</p>
                 <div id="map" bind:this={mapDiv}>
                 </div>
             </div>
         </div>
 
+        <div id="se-block" class="component" style="margin-left: 1rem;">
+            <div id="se-title">
+                <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
+                <br>
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represents modeled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where x-axis is non-liner:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
 
-        <div id="multiple-comp" class="component">
+                </div>
 
-            <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Cost Benefit by Socio-Economic
-                Factors </h3>
-            <br>
+                <!-- Legend -->
+                <div id="se-legend" class="legend-box">
+                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                    <span>The scatter plots are shaded by nation.</span>
 
-            <div id="multiple-plots">
-                {#each SEF as sef}
-                    <div class="plot-container">
-                        <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
-                        <div class="plot" bind:this={SEFPlot[sef]}></div>
-                    </div>
-                {/each}
+                    <ul class="legend-list">
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>
+                            Scotland</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>
+                            Northern Ireland</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[4]}"></span>Wales</li>
+                    </ul>
+                    
+                </div>
+            </div>
+
+        
+
+            <div id="multiple-comp">
+
+                <div id="multiple-plots">
+                    {#each SEF as sef}
+                        <div class="plot-container">
+                            <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
+                            <div class="plot" bind:this={SEFPlot[sef]}></div>
+                        </div>
+                    {/each}
+                </div>
             </div>
         </div>
-
-    </div>
+</div>
 </div>
 
 <style>
@@ -496,12 +539,29 @@
         width: 100%;
     }
 
+    #se-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    #se-title {
+        min-width: 25vw;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        position: sticky;
+        top: 80px;
+        align-self: flex-start;
+        height: fit-content;
+    }
+
 
     #map {
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 400px;
+        height: 800px;
         /*flex: 1; !* take the remaining height *!*/
     }
 
@@ -641,5 +701,42 @@
         text-align: left;
         /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
         }
+
+        .disclaimer-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.legend-box {
+    margin-bottom: 2rem;
+    padding: 0.75rem;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.legend-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 2px;
+}
 
 </style>
