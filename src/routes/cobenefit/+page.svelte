@@ -224,7 +224,7 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.2,
-                marginLeft: 80,
+                marginLeft: 90,
                 marginRight: 40,
                 marginBottom: 60,
                 marginTop: 40,
@@ -283,7 +283,7 @@
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.2,
                     width: height ,
-                    marginLeft: 80,
+                    marginLeft: 90,
                     marginBottom: 60,
                     marginRight: 10,
                     marginTop: 20,
@@ -298,12 +298,22 @@
                         Plot.dodgeX("middle",{
                             fx: "SE",
                             y: "total",
-                            r: 1.5,
+                            r: 1,
                             padding: -2,
                             fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
                                 : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
                                 : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
                                 : COBENEFS_SCALE2(coBenefit)[4],})),
+                        
+                        Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
+                            fx: "SE",
+                            y: "total",
+                            stroke: COBENEFS_SCALE2(coBenefit)[0],
+                            fill: COBENEFS_SCALE2(coBenefit)[4],
+                            r: 0,
+                            //strokeOpacity: 0.5,
+                            fillOpacity:0.3
+                        }),
                         Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
@@ -314,7 +324,7 @@
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
                     width: height / 1.2,
-                    marginLeft: 80,
+                    marginLeft: 90,
                     marginBottom: 60,
                     marginRight: 20,
                     marginTop: 20,
@@ -451,8 +461,8 @@
                 <!--  </div>-->
                 <br>
                 <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
-                    Benefit by LSOA </h3>
-                <p class="description"> The total cost benefit per capita for each LSOA. </p>
+                    Benefit by LAD </h3>
+                <p class="description"> The total cost benefit per capita for each LAD. </p>
                 <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
                     <!--</div>-->
@@ -481,14 +491,15 @@
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter plots are shaded by nations.</span>
+                    <span>The scatter plots are shaded by nation.</span>
 
                     <ul class="legend-list">
                         <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>
                             Scotland</li>
                         <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>
                             Northern Ireland</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England/Wales</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[4]}"></span>Wales</li>
                     </ul>
                     
                 </div>
