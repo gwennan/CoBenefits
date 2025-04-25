@@ -283,7 +283,7 @@
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.2,
                     width: height ,
-                    marginLeft: 90,
+                    marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
                     marginTop: 20,
@@ -291,7 +291,7 @@
                     // Very weird it's needed!
                     //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
                     //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
-                    //y: {label: '£/capita', labelOffset:0, labelArrow:'none'},
+                    y: {label: '£/capita',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
@@ -314,7 +314,7 @@
                             //strokeOpacity: 0.5,
                             fillOpacity:0.3
                         }),
-                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        //Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
                 })
@@ -324,14 +324,14 @@
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
                     width: height / 1.2,
-                    marginLeft: 90,
+                    marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 20,
                     marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {label: null},
-                    y: {},
+                    y: {label: '£/capita',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -345,7 +345,7 @@
                             r: 2,
                             fillOpacity: 1
                         }),
-                        Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        //Plot.axisY({grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
                         Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
@@ -462,7 +462,7 @@
                 <br>
                 <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
                     Benefit by LAD </h3>
-                <p class="description"> The total cost benefit per capita for each LAD. </p>
+                <p class="description"> The total cost benefit per capita for each LAD (local authority district). </p>
                 <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
                     <!--</div>-->
