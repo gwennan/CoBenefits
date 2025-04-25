@@ -9,7 +9,7 @@ import * as topojson from "topojson-client";
 import {getCustomCBData, getTableData, getTotalPerPathway} from "$lib/duckdb";
 import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
 import {Legend} from "$lib/utils";
-
+import {polygonToLine} from '@turf/polygon-to-line';
 
 
 // const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
@@ -25,9 +25,12 @@ let datazones = await d3.json(LSOAzonesPath)
 datazones = topojson.feature(datazones, datazones.objects["LSOA"]);
 
 let LADZones = await d3.json(LADzonesPath)
+
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
 LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
+
+
 
 
 export class Map {
@@ -46,8 +49,7 @@ export class Map {
     border: boolean
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey="Lookup_Value") {
-        // this.data = data;
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value") {
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
@@ -66,19 +68,41 @@ export class Map {
         this.map = new maplibregl.Map({
             container: 'map', // container id
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
-            style: {version: 8, sources: {}, layers: []},
+            // style: {version: 8, sources: {}, layers: []},
+            style: {
+            'version': 8,
+            'sources': {
+                'raster-tiles': {
+                    'type': 'raster',
+                    'tiles': [
+                        // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
+                        // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
+                        // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+                        // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+                    ],
+                    'tileSize': 256,
+                    'attribution':
+                        'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+                }
+            },
+            'layers': [
+                {
+                    'id': 'simple-tiles',
+                    'type': 'raster',
+                    'source': 'raster-tiles',
+                    paint: {
+                        "raster-opacity": 0.5
+                    },
+                    'minzoom': 0,
+                    'maxzoom': 10
+                }
+            ]
+        },
             center: this.center, // starting position [lng, lat]
             zoom: 5, // starting zoom
             preserveDrawingBuffer: true,
         });
-
-        // console.log("MAP ", datazones)
-
-        // legendSvg = Legend(colorScale, {
-        //     title: "Cobenefits (Millions of £)"
-        // })
-        // legendDiv.append(legendSvg)
-        // document.querySelector("#legend").append(leg)
 
         this.tooltip = document.createElement('div');
         this.tooltip.style.position = "absolute";
@@ -214,15 +238,15 @@ export class Map {
             //         .range(["white", "black"])
 
             this.colorScale = d3.scaleLinear()
-              .domain(domain)
-              .range(["red", "black", "white"]); // You can use any colors you want
+                .domain(domain)
+                .range(["red", "white", "black"]); // You can use any colors you want
 
-            console.log("DOMAIN ", domain)
-            console.log(this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)]))
+            // console.log("DOMAIN ", domain)
+            // console.log(this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)]))
 
             // this.colorScale = d3.scaleDiverging()
             //         .domain(domain)
-                    // .range(["red", "white", "black"])
+            // .range(["red", "white", "black"])
         }
 
     }
@@ -245,23 +269,37 @@ export class Map {
                     ['get', 'value'], // Replace with your data property
                     ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
                 ],
-                'fill-opacity': 0.9
+                'fill-opacity': 0.7
             }
         });
 
         // Optional: Add border
-        if (this.border) {
-            // if (true) {
+        // if (this.border) {
+            if (true) {
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
                 source: 'datazones',
                 paint: {
                     'line-color': '#000000',
-                    'line-width': 0.4
+                    'line-width': 0.2
                 }
             });
         }
+
+        // this.map.addSource('outerLines', {
+        //     type: 'geojson',
+        //     data: outerLines
+        // });
+        // this.map.addLayer({
+        //     id: 'outer-stroke',
+        //     type: 'line',
+        //     source: 'outerLines',
+        //     paint: {
+        //         'line-color': '#000',
+        //         'line-width': 3
+        //     }
+        // });
 
         this.loaded = true;
     }
@@ -334,7 +372,7 @@ export class Map {
         )
     }
 
-    legend(title= "Cobenefits (Millions of £)") {
+    legend(title = "Cobenefits (Millions of £)") {
         let legendSvg = Legend(this.colorScale, {
             title: title
         })

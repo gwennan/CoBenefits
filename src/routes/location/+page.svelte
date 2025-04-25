@@ -624,7 +624,6 @@
         })
         CBOverTimePLot?.append(plot);
 
-
         // Make the bars overlay and one on top of the other depending of values
         // TODO: finish
         d3.select(CBOverTimePLot)
@@ -822,6 +821,9 @@
 
 <div class="page-container" bind:this={element}>
 
+    <!--Define css variable -->
+    <div style="--color: {AVERAGE_COLOR}"></div>
+
     <div class="section header">
         <p class="page-subtitle">Data Report</p>
         <h1 class="page-title"> {LADToName[LAD]}</h1>
@@ -830,14 +832,6 @@
 
         <div class="radio-set">
             Compare the Local District Area with average of:
-<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>-->
-<!--            <label for="html" style="color:{NATION_TO_COLOR.UK}">UK</label><br>-->
-<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="Eng/Wales">-->
-<!--            <label for="html" style="color:{NATION_TO_COLOR['Eng/Wales']}">England/Wales</label><br>-->
-<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">-->
-<!--            <label for="javascript" style="color:{NATION_TO_COLOR.Scotland}">Scotland</label>-->
-<!--            <input type="radio" on:change={onChangeComparison} name="compare" value="NI">-->
-<!--            <label for="javascript" style="color:{NATION_TO_COLOR.NI}">Northern Ireland</label>-->
             <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
             <label class="nation-label" for="html">UK</label><br>
             <input type="radio" on:change={onChangeComparison} name="compare" value="England">
@@ -1054,6 +1048,9 @@
 </div>
 
 
+
+
+
 <style>
     #vis-block {
         display: flex;
@@ -1089,7 +1086,8 @@
     }
 
     .nation-label {
-        color: #90bcca;
+        /*color: #90bcca;*/
+        color: var(--compareColor);
     }
 
 </style>

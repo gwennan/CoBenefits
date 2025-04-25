@@ -307,6 +307,7 @@
 
                     <div class="component">
                     <h2> Co Benefits </h2>
+                    <!--{#each COBENEFS.concat(["Total"]) as coBenef}-->
                     {#each COBENEFS as coBenef}
                         <div class="checkbox-div">
                         <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef)}/>
@@ -381,7 +382,7 @@
 
     #mapComp {
         position: relative;
-        background: #daf4ff;
+        /*background: #daf4ff;*/
     }
 
     .page-container {
