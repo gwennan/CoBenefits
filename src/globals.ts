@@ -66,9 +66,9 @@ export const MARGINS = {
 
 export const AVERAGE_DX = 20;
 
-export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
+export const COBENEFS_RANGE = ['#71C35D', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
 export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
-export const COBENEFS_RANGE2 =[['#007DBC', '#004366', '#0087cc', '#33baff',  '#99dcff'],
+export const COBENEFS_RANGE2 =[['#71C35D',  '#244a1b',  '#499437',  '#7cc76a',  '#bde3b4'],
                                 ['#E11484', '#5d0836',  '#bb106d',  '#ee43a0',  '#f6a1cf'],
                                 ['#00AED9', '#005166',  '#00a3cc',  '#33d6ff',  '#99eaff'],
                                 ['#EF402B', '#5e1007',  '#bd210e',  '#f05441',  '#f7a9a0'],
