@@ -87,7 +87,9 @@ function startWaffleHighlightLoop(height: number) {
         value: totalValue.toFixed(1)
       },
       ...orderedTypes.map((type) => {
-        const label = type;
+        const match = COBENEFS.find(d => d.id === type);
+        // const label = type;
+        const label = match?.label ?? type;
         const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(1) ?? "";
         return { type, label, value };
       })
@@ -111,6 +113,8 @@ function startWaffleHighlightLoop(height: number) {
     activeTypeLabel = firstSlide.label;
     activeValueLabel = totalValue.toFixed(1);
     renderWaffle(height, firstSlide.type);
+
+    console.log("update display", slides)
 }
 
 function renderWaffle(height: number, highlightType?: string) {
@@ -179,7 +183,7 @@ function renderWaffle(height: number, highlightType?: string) {
         y: { axis: null },
         color: {
             type: "ordinal",
-            domain: COBENEFS,
+            domain: COBENEFS.map(d => d.id),
             range: COBENEFS_RANGE,
             unknown: "#eee",
             legend: false
@@ -254,27 +258,29 @@ let showDropdown = false;
   
     <div class="hero-content">
       <div class="hero-text">
-        <h1 class="hero-title">The Co-Benefits of the UK’s Path to Net-Zero GHG Emissions</h1>
+        <h1 class="hero-title">The Co-Benefits of Reaching Net Zero in the UK</h1>
         <p class="hero-description">
-          Climate actions affects more than GHG emissions. Electric cars reduce urban air pollution, retrofits prevent mould and damp, cycling improves public health. The CO-BENS project models 11 co-benefits from the climate actions in the UK Climate Change Committee’s most recent pathway to Net Zero for the UK. In each of 45,000 local communities and regions we consider our local context determine both which climate actions will be implemented and how, when and for whom those climate actions will lead to benefits (and in some cases costs).
+          Climate actions lower greenhouse gas (GHG) emissions but the gains for society reach further. The CO-BENS project models 11 additional benefits based on actions recommended by the Climate Change Committee (CCC) in its Seventh Carbon Budget (2025) across 45,000 communities and regions within the UK.<br>
         </p>
         <p class="hero-description">
-          Just as climate actions affects more than GHG emissions, climate solutions require more than climate modelling. This website provides data and visualisations to support local, regional and national stakeholders who want to understand how climate actions are closely connected with a wide range of social, economic and environmental priorities. <br>
-        </p>
-
-        <p class="hero-description">
-          If you would like bespoke analysis highlighting how co-benefits are key to the work your team or organisation is doing, please reach out!
+          Explore how, when and for whom benefits emerge to further understand connections between a wide range of social, economic and environmental priorities, and drive more effective decision-making. 
         </p>
       </div>
 
     <div class="waffle-overlay">
       <div class="waffle-label" bind:this={waffleLabelEl}>
-        National gain of <br>
+        <!-- National gain of <br>
         <strong style="font-size: 1.5rem">{activeTypeLabel}</strong> <br>
         in reaching NetZero <br>
         by 2050 is: <br>
         <strong style="font-size: 1.2rem">{activeValueLabel}</strong>
         £billion
+      </div> -->
+
+      <strong style="font-size: 1.2rem">£{activeValueLabel} billion</strong> <br>
+      is saved nationally from <br>
+      <strong style="font-size: 1.5rem">{activeTypeLabel}</strong> <br>
+
       </div>
       
       <div class="waffle-bg" bind:this={waffleBgEl}></div>
@@ -362,7 +368,7 @@ main {
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
   line-height: 1rem;
-  max-width: 600px;
+  max-width: 620px;
 }
 
 

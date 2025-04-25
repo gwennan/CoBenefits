@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { base } from '$app/paths';
     import * as Plot from "@observablehq/plot";
 
@@ -8,6 +8,11 @@
     export let minHHCoBenefValue;
     export let maxHHCoBenefValue;
     export let COBENEFS_SCALE;
+    import { COBENEFS } from "../globals";
+
+    function getCoBenefLabel(id: string): string {
+        return COBENEFS.find(d => d.id === id)?.label ?? id;
+        }
 
   
     let viewMode = 'total';
@@ -67,7 +72,7 @@
         <tr>
         <td>
             <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">
-            {coBenef.co_benefit_type}</a>
+                {getCoBenefLabel(coBenef.co_benefit_type)}</a>
         </td>
         <td>
             <div class="bar-cell">

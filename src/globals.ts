@@ -14,7 +14,21 @@ import roadRepairsIcon from '$lib/icons/RoadRepairs.jpg';
 import roadSafetyIcon from '$lib/icons/RoadSafety.jpg';
 import physicalActivityIcon from '$lib/icons/PhysicalActivity.jpg';
 
-export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
+// export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
+export const COBENEFS = [
+  { id: "Air quality", label: "Air quality improvements" },
+  { id: "Noise", label: "Noise reduction" },
+  { id: "Excess cold", label: "Excess cold reduction" },
+  { id: "Excess heat", label: "Excess heat reduction" },
+  { id: "Dampness", label: "Dampness reduction" },
+  { id: "Congestion", label: "Congestion reduction" },
+  { id: "Hassle costs", label: "Hassle cost" },
+  { id: "Road repairs", label: "Road repairs reduction" },
+  { id: "Road safety", label: "Road safety increase" },
+  { id: "Physical activity", label: "Physical activity increase" },
+  { id: "Diet change", label: "Dietary improvements" },
+];
+
 // export const SCENARIOS = ["BNZ", "test"]
 export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
 
@@ -67,8 +81,12 @@ export const MARGINS = {
 export const AVERAGE_DX = 20;
 
 export const COBENEFS_RANGE = ['#71C35D', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
-export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
+// export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
+export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE);
 export const COBENEFS_RANGE2 =[['#71C35D',  '#244a1b',  '#499437',  '#7cc76a',  '#bde3b4'],
+// export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
+
+// export const COBENEFS_RANGE2 =[['#007DBC', '#004366', '#0087cc', '#33baff',  '#99dcff'],
                                 ['#E11484', '#5d0836',  '#bb106d',  '#ee43a0',  '#f6a1cf'],
                                 ['#00AED9', '#005166',  '#00a3cc',  '#33d6ff',  '#99eaff'],
                                 ['#EF402B', '#5e1007',  '#bd210e',  '#f05441',  '#f7a9a0'],
@@ -79,7 +97,7 @@ export const COBENEFS_RANGE2 =[['#71C35D',  '#244a1b',  '#499437',  '#7cc76a',  
                                 ['#F36D25', '#602505',  '#c14a0a',  '#f47d3d',  '#f9be9e'],
                                 ['#48773E', '#284322',  '#518645',  '#84b978',  '#c1dcbb'],
                                 ['#D3A029', '#554010',  '#aa8121',  '#ddb454',  '#eed9a9']];
-export const COBENEFS_SCALE2 =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE2);
+export const COBENEFS_SCALE2 =  d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE2);
 
 // export const HEROSLIDES = [
 //     {
@@ -98,31 +116,38 @@ export const COBENEFS_SCALE2 =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE2);
 
 // using waffle chart order
 
+// function getImageIndex(type: string | null): number {
+//     if (type === null) return 0; 
+//     return COBENEFS.indexOf(type) + 1; 
+//   }
+
 function getImageIndex(type: string | null): number {
-    if (type === null) return 0; 
-    return COBENEFS.indexOf(type) + 1; 
-  }
+  if (type === null) return 0;
+  const index = COBENEFS.findIndex(d => d.id === type);
+  return index >= 0 ? index + 1 : 0; 
+}
+
 
   
 export function getHeroSlides(waffleOrderedTypes: string[]) {
-    return [
-      {
-        image: `${base}/hero/hero0.png`,
-        source: 'total co-benefits',
-        type: null,
-        label: 'total co-benefits'
-      },
-      ...waffleOrderedTypes.map((label) => ({
-        image: `${base}/hero/hero${getImageIndex(label)}.png`, // 🔁 Here’s the fix
-        source: `${label.toLowerCase()}.`,
-        type: label,
-        label
-      }))
-    ];
-  }
-  
-
-
+  return [
+    {
+      image: `${base}/hero/hero0.png`,
+      source: 'total co-benefits',
+      type: null,
+      label: 'total co-benefits'
+    },
+    ...waffleOrderedTypes.map((id) => {
+      const match = COBENEFS.find(d => d.id === id);
+      return {
+        image: `${base}/hero/hero${getImageIndex(id)}.png`,
+        source: `${id.toLowerCase()}.`,
+        type: id,
+        label: match?.label ?? id
+      };
+    })
+  ];
+}
 
 export function getIconFromCobenef(cobenefit: CoBenefit) {
     if (cobenefit == "Air quality") {

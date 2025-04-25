@@ -15,7 +15,6 @@
         getIconFromCobenef,
         COBENEFS_SCALE,
         type CoBenefit,
-
 		COBENEFS_SCALE2
 
     } from "../../globals";
@@ -42,6 +41,7 @@
     export let data;
 
     const coBenefit = data.coBenefit;
+    const coBenefitLabel = COBENEFS.find(d => d.id === coBenefit)?.label ?? coBenefit;
     let fullData;
     let LADAveragedData;
     let SEFData;
@@ -152,7 +152,7 @@
         y: { axis: null },
         color: {
             type: "ordinal",
-            domain: COBENEFS,
+            domain: COBENEFS.map(d => d.id),
             range: COBENEFS_RANGE,
             unknown: "#eee",
             legend: false
@@ -183,8 +183,6 @@
         waffleEl.innerHTML = "";
         waffleEl.append(plot);
     }
-
-
 
     function renderDistPlot() {
         plotDist?.append(
@@ -419,7 +417,7 @@
             <div class="title-container">
               <h1 class="page-title">
                 <img src={icon} alt="Icon" class="heading-icon" />
-                {coBenefit}
+                {coBenefitLabel}
               </h1>
               <!-- {#if totalValue}
                 <p class="description">Total Cost Benefit: £{totalValue.toLocaleString()} million</p>
@@ -430,7 +428,7 @@
           <div class="header-waffle-wrapper">
             <div class="waffle-label">
               National gain of <br />
-              <strong style="font-size: 1.2rem">{coBenefit}</strong> <br />
+              <strong style="font-size: 1.2rem">{coBenefitLabel}</strong> <br />
               in reaching NetZero <br />
               by 2050 is: <br />
               {#if totalValue}
@@ -452,17 +450,25 @@
 
         <div id="vis-block">
             <div class="component singlevis">
-                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> Total Cost Benefit Over Time
+                <h3 class="component-title">Total <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> (£k) to 2050
                 </h3>
-                <p class="description"> The total? cost benefit per capita for each 5 year interval. </p>
+                {#if totalValue>0}
+                    <p class="description">The benefit per capita for each 5 year interval towards 2050. </p>
+                {:else}
+                    <p class="description">The cost per capita for each 5 year interval towards 2050. </p>
+                {/if}
                 <!--  <div class="component row">-->
                     <div class="plot" bind:this={plot}>
                     </div>
                 <!--  </div>-->
                 <br>
-                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefit}</span> Total Cost
-                    Benefit by LAD </h3>
-                <p class="description"> The total cost benefit per capita for each LAD (local authority district). </p>
+                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK data zones.</h3>
+                {#if totalValue>0}
+                    <p class="description"> The total benefit per capita for each data zone. </p>
+                {:else}
+                    <p class="description"> The total cost per capita for each data zone. </p>
+                {/if}
+                <!-- <p class="description"> The total cost benefit per capita for each LSOA. </p> -->
                 <!--<div class="component row">-->
                     <div class="plot" bind:this={plotDist}>
                     <!--</div>-->
@@ -472,7 +478,7 @@
 
 
             <div class="component column">
-                <h3 class="component-title"><span style={cobensStyle}>{coBenefit}</span> on UK Map</h3>
+                <h3 class="component-title"><span style={cobensStyle}>{coBenefitLabel}</span> on a map of the UK</h3>
                 <p class="description">Scroll for zooming in and out.</p>
                 <div id="map" bind:this={mapDiv}>
                 </div>
@@ -481,11 +487,13 @@
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
-                <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefit}</span> across UK local authorities acorrding to socio-economic factors</h3>
+                <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
                 <br>
                 <!-- Disclaimer -->
                 <div id="se-disclaimer" class="disclaimer-box">
-                    <strong>Disclaimer:</strong> This map represents modeled associations and should not be interpreted as direct causal relationships.
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represents modeled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where x-axis is non-liner:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
+
                 </div>
 
                 <!-- Legend -->

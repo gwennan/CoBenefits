@@ -37,7 +37,9 @@
     let cobenefData: Array<Record<any, any>>;
 
     let scenario: Scenario = "BNZ";
-    let coBenefits: Set<CoBenefit> = new Set(COBENEFS);
+    // let coBenefits: Set<CoBenefit> = new Set(COBENEFS);
+    let coBenefits: Set<string> = new Set(COBENEFS.map(d => d.id));
+
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
     let granularity: "LSOA" | "LAD" = "LAD";
@@ -291,9 +293,9 @@
 
             <div class="component">
                 <input type="radio" name="granularity" on:change={onChangeGranularity} value="LAD" checked>
-                <label for="LAD">LAD</label>
+                <label for="LAD">Local Authorities</label>
                 <input type="radio" name="granularity" on:change={onChangeGranularity} value="LSOA">
-                <label for="LSOA">LSOA</label>
+                <label for="LSOA">Data Zones</label>
             </div>
 
 
@@ -306,13 +308,13 @@
                     <!--                <label for="css">Test</label><br>-->
 
                     <div class="component">
-                    <h2> Co Benefits </h2>
+                    <h2> Co-Benefits </h2>
                     {#each COBENEFS as coBenef}
                         <div class="checkbox-div">
-                        <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef)}/>
-                        <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>
+                        <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef.id)}/>
+                        <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef.id} checked>
 <!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
-                        <label for="css">{coBenef}</label>
+                        <label for="css">{coBenef.label}</label>
                             <br>
                         </div>
                     {/each}
@@ -324,7 +326,7 @@
                     <div id="time">
                         <label class="time-radio"><input type="radio" name="toggle" value="total"
                                                          on:change={onChangeTime}
-                                                         checked><span>total</span></label>
+                                                         checked><span>Total</span></label>
                         <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
                                                          on:change={onChangeTime}><span>2025-2029</span></label>
                         <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"

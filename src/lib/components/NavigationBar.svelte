@@ -32,12 +32,12 @@ let showDropdown = false;
           class="dropdown-label"
           class:active={$page.url.pathname.startsWith(`${base}/cobenefit`)}
         >
-          Co-benefits
+          Co-Benefits
         </span>
         {#if showDropdown}
           <ul class="dropdown-menu">
             {#each COBENEFS as coBenef}
-              <li><a href="{base}/cobenefit?cobenefit={coBenef}" data-sveltekit-reload>{coBenef}</a></li>
+              <li><a href="{base}/cobenefit?cobenefit={coBenef.id}" data-sveltekit-reload>{coBenef.label}</a></li>
             {/each}
           </ul>
         {/if}
