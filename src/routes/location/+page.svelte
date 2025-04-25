@@ -104,7 +104,7 @@
 
         totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([]));
 
-        allCBAllLAD = await getTableData(getAverageCBGroupedByLAD(COBENEFS));
+        allCBAllLAD = await getTableData(getAverageCBGroupedByLAD(COBENEFS.map(d => d.id)));
 
         allCBAllLADSUM = await getTableData(getSUMCBGroupedByLADAndCB());
 
@@ -197,6 +197,7 @@
                 ]
             })
             // );
+            // console.log("debug", pl)
 
             plotDist?.append(pl);
 
@@ -509,6 +510,7 @@
                     Plot.axisX({anchor: "bottom"})
                 ]
             })
+            // console.log("debug", cbplot)
 
             SEFPlotPerCB[sef]?.append(cbplot)
         })
@@ -687,6 +689,7 @@
                 return {time: t, value: d[t], cobenefit: d.co_benefit_type}
             })
         })
+        console.log("debug", dataCBs);
 
         let plotPerCB = Plot.plot({
             height: height,
@@ -701,7 +704,7 @@
             y: {tickFormat: ".2f", label: 'Value (£)'},
             x: {label: 'Year'},
             // x: {tickSize: 0, label: null, ticks: []},
-            color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS},
+            color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
                     x: "time",
@@ -715,6 +718,8 @@
 
             ]
         })
+
+        
         CBOverTimePerCBPLot?.append(plotPerCB);
 
     }
