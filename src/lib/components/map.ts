@@ -31,8 +31,6 @@ let LADZones = await d3.json(LADzonesPath)
 LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
 
 
-
-
 export class Map {
     colorScale: d3.ScaleDiverging<any>;
     map: maplibregl.Map;
@@ -49,7 +47,7 @@ export class Map {
     border: boolean
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value") {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false) {
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
@@ -65,40 +63,47 @@ export class Map {
         // this.center = [-0.12574, 51.50853] // London
         this.center = [-1.54785, 53.79648] // Leeds
 
+
+        let style;
+        if (tiles) {
+            style = {
+                'version': 8,
+                'sources': {
+                    'raster-tiles': {
+                        'type': 'raster',
+                        'tiles': [
+                            // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
+                            // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
+                            // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+                            // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+                        ],
+                        'tileSize': 256,
+                        'attribution':
+                            'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+                    }
+                },
+                'layers': [
+                    {
+                        'id': 'simple-tiles',
+                        'type': 'raster',
+                        'source': 'raster-tiles',
+                        paint: {
+                            "raster-opacity": 0.5
+                        },
+                        'minzoom': 0,
+                        'maxzoom': 10
+                    }
+                ]
+            }
+        } else {
+            style = {version: 8, sources: {}, layers: []};
+        }
+
         this.map = new maplibregl.Map({
             container: 'map', // container id
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
-            // style: {version: 8, sources: {}, layers: []},
-            style: {
-            'version': 8,
-            'sources': {
-                'raster-tiles': {
-                    'type': 'raster',
-                    'tiles': [
-                        // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
-                        // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
-                        // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-                        // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
-                    ],
-                    'tileSize': 256,
-                    'attribution':
-                        'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-                }
-            },
-            'layers': [
-                {
-                    'id': 'simple-tiles',
-                    'type': 'raster',
-                    'source': 'raster-tiles',
-                    paint: {
-                        "raster-opacity": 0.5
-                    },
-                    'minzoom': 0,
-                    'maxzoom': 10
-                }
-            ]
-        },
+            style: style,
             center: this.center, // starting position [lng, lat]
             zoom: 5, // starting zoom
             preserveDrawingBuffer: true,
@@ -275,7 +280,7 @@ export class Map {
 
         // Optional: Add border
         // if (this.border) {
-            if (true) {
+        if (true) {
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
@@ -316,13 +321,16 @@ export class Map {
             });
 
             let zone = zones[0];
+            console.log(zones)
+
+            let name = zone.properties.LAD22NM;
 
             if (zone) {
                 let cobenefValue = zone.properties.value;
                 this.tooltip.innerHTML = `
-                 Zone: ${this.zoneName(zone)}
+                 <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
                  <br>
-                 Value: ${cobenefValue}
+                 <strong>Value</strong>: ${cobenefValue}
                  `;
                 this.tooltip.style.left = event.point.x + 10 + 'px';
                 this.tooltip.style.top = event.point.y + 10 + 'px';

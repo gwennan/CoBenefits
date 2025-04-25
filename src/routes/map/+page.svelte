@@ -135,7 +135,7 @@
         }
 
 
-        map = new Map(fullData, granularity, mapDiv);
+        map = new Map(fullData, granularity, mapDiv, "val", false, "Lookup_Value", true);
         map.initMap();
 
         legendSvg = map.legend();
@@ -264,10 +264,13 @@
     <div class="component" id="heaser">
         <h2> Map </h2>
 
-        <p>
-            This interactive map shows the co-benefit of each datazone. The pathway and time window can be selected,
-            along a given set of co-benefits.
-        </p>
+        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factor at the local authorities and datazones levels.</p>
+
+<!--        <p>-->
+<!--            This interactive map shows the average co-benefit value (in million of £) for each Local Authority (or datazone) of the UK.-->
+<!--            The pathway and time window can be selected,-->
+<!--            along a given set of co-benefits.-->
+<!--        </p>-->
     </div>
 
     <div id="map-row" class="row">

@@ -55,7 +55,7 @@
     let mapLegendDiv: HTMLElement;
 
     loadData().then(() => {
-        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD");
+        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false);
         map.initMap();
 
         let legendSvg = map.legend();
