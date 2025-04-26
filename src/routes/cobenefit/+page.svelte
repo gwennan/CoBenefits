@@ -15,7 +15,9 @@
         getIconFromCobenef,
         COBENEFS_SCALE,
         type CoBenefit,
-		COBENEFS_SCALE2
+		COBENEFS_SCALE2,
+        SEF_UNITS,
+        SEF_SCALE
 
     } from "../../globals";
     import {
@@ -290,14 +292,13 @@
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.2,
-                    width: height ,
+                    width: height/1.1 ,
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
                     marginTop: 20,
-                    // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // Very weird it's needed!
-                    //x: {grid: true, label: sef, type: "band", tickFormat: d => Math.floor(d)},
+                    //x: {label: SEF_SCALE(sef)},
                     //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
                     y: {label: '£/capita',  labelArrow:'none'},
                     color: {legend: true},
@@ -331,15 +332,15 @@
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height / 1.2,
+                    width: height / 1.4,
                     marginLeft: 60,
-                    marginBottom: 60,
-                    marginRight: 20,
+                    marginBottom: 40,
+                    marginRight: 40,
                     marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
-                    x: {label: null},
-                    y: {label: '£/capita',  labelArrow:'none'},
+                    x: {label: SEF_SCALE(sef)},
+                    y: {label: '£/capita'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -353,7 +354,7 @@
                             r: 2,
                             fillOpacity: 1
                         }),
-                        //Plot.axisY({grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                        //Plot.axisX({label: sef,  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
                         Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
