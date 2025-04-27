@@ -690,30 +690,59 @@
         })
         console.log("debug", dataCBs);
 
+        let desiredOrder = [
+            "Road safety",
+            "Congestion",
+            "Air quality", 
+            "Noise", 
+            "Excess cold", 
+            "Excess heat", 
+            "Dampness", 
+            "Road repairs",
+            "Physical activity", 
+            "Diet change",
+            "Hassle costs"
+            
+            ];
+
         let plotPerCB = Plot.plot({
-            height: height,
+            height: height*1.5,
             width: 1000,
-            ...MARGINS,
-            paddingLeft: 200,
             marginRight: 0,
-            insetLeft: 10,
-            insetRight: 10,
-            insetBottom: 30,
-            style: {fontSize: "10px"},
+            marginTop:20,
+            marginLeft: 60,
+            marginBottom:60,
+            style: {fontSize: "18px"},
             y: {tickFormat: ".2f", label: 'Value (£)'},
-            x: {label: 'Year'},
+            x: {label: 'Years', 
+                tickFormat: d => d.replace(/^Y/, '').split("_")[1],
+            },
             // x: {tickSize: 0, label: null, ticks: []},
             color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
-                Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
+                Plot.areaY(dataCBs, Plot.groupX({y: "mean"},
+                {
                     x: "time",
                     y: "value",
                     tip: true,
-                    fill: "cobenefit"
-                    // fill: "scenario",
+                    fill: "cobenefit",
+                    curve: "basis",
+                    order: [
+                            "Road safety",
+                            "Congestion",
+                            "Air quality", 
+                            "Noise", 
+                            "Excess cold", 
+                            "Excess heat", 
+                            "Dampness", 
+                            "Road repairs",
+                            "Physical activity", 
+                            "Diet change",
+                            "Hassle costs"],
+                    // offset: 
                 })),
-                Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
-                Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 1, strokeLinecap: 'round'}),
+                //Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
+                Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 0.5, strokeLinecap: 'round'}),
 
             ]
         })
