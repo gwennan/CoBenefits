@@ -17,7 +17,8 @@
         type CoBenefit,
 		COBENEFS_SCALE2,
         SEF_UNITS,
-        SEF_SCALE
+        SEF_SCALE,
+        DEFINITIONS
 
     } from "../../globals";
     import {
@@ -46,6 +47,7 @@
 
     const coBenefit = data.coBenefit;
     const coBenefitLabel = COBENEFS.find(d => d.id === coBenefit)?.label ?? coBenefit;
+    const coBenefitDef = DEFINITIONS.find(d => d.id === coBenefit)?.def ?? coBenefit;
     let fullData;
     let LADAveragedData;
     let SEFData;
@@ -443,8 +445,11 @@
             <div class="title-container">
               <h1 class="page-title">
                 <img src={icon} alt="Icon" class="heading-icon" />
+                <div style="margin-top: 10px;"></div>
                 {coBenefitLabel}
               </h1>
+              <div style="margin-top: 14px;"></div>
+              <p class='definition'> {coBenefitDef} </p>
             </div>
 
           </div>

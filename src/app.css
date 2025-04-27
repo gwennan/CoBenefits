@@ -160,6 +160,14 @@ button:focus {
     margin: 5px 0;
 }
 
+.definition {
+  font-size: 20px;
+  font-weight: semibold;
+  color: #555;
+  max-width: 800px;
+  margin: 0;
+}
+
 .description {
     font-size: 16px;
     color: #555;

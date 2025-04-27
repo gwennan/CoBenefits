@@ -29,6 +29,20 @@ export const COBENEFS = [
     {id: "Diet change", label: "Dietary improvements"},
 ];
 
+export const DEFINITIONS = [
+    {id: "Air quality", def: "The value of public health benefits from reduced air pollution from transport and buildings."},
+    {id: "Noise", def: "The value to public health and worker productivity from reduced noise."},
+    {id: "Excess cold", def: "The value of reducing visits to hospital attributable to insufficient heating."},
+    {id: "Excess heat", def: "Excess heat reduction"},
+    {id: "Dampness", def: "Dampness reduction"},
+    {id: "Congestion", def: "The value of reduced time spent traveling and road repairs from reduced numbers of vehicles on roads."},
+    {id: "Hassle costs", def: "Hassle cost"},
+    {id: "Road repairs", def: "The value of repairs avoided when infrastructure (in this case solely roads) are used less frequently."},
+    {id: "Road safety", def: "The value of reduced vehicle repairs and lives lost from vehicle accidents."},
+    {id: "Physical activity", def: "The value of health benefits from increased walking and cycling."},
+    {id: "Diet change", def: "Dietary improvements"},
+];
+
 // export const SCENARIOS = ["BNZ", "test"]
 export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
 
