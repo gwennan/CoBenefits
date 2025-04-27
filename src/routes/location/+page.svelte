@@ -20,7 +20,8 @@
         NATION_TO_COLOR,
         COBENEFS_SCALE,
         removeSpinner,
-        addSpinner
+        addSpinner,
+        SEF_SCALE
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -417,7 +418,7 @@
                         height: height / 2,
                         ...MARGINS,
                         // y: {label: "Datazones Frequency"},
-                        // x: {domain},
+                        x: {label: SEF_SCALE(sef)},
                         style: {fontSize: "18px"},
                         marks: [
                             Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
@@ -453,7 +454,7 @@
                 height: height / 2,
                 ...MARGINS,
                 // y: {label: "Datazones Frequency"},
-                // x: {domain},
+                x: {label: SEF_SCALE(sef)},
                 style: {fontSize: "18px"},
                 color: {range: ["rgb(227, 248, 255)", "lightblue"]},
                 marks: [
@@ -581,13 +582,19 @@
             height: height,
             width: 800,
             ...MARGINS,
-            paddingLeft: 200,
             marginRight: 0,
-            x: {tickSize: 0, label: null, ticks: []},
-            // x: {tickSize: 0, label: null, ticks: [], padding: 0},
+            marginLeft: 40,
+            marginTop: 40,
+            style: {fontSize: "18px"},
+            y:{label: '£'},
+            //x: {tickSize: 0, label: 'Years', ticks: [],
+            //tickFormat: d => d.replace(/^Y/, '').split("_")[1]
+            //},
+            x: {tickSize: 0, label: null, ticks: [], padding: 0},
+            //fx:{tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
+            //    anchor:"bottom"},
             color: {range: [VIS_COLOR, AVERAGE_COLOR]},
             // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
-
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
                 //     x: "val",
@@ -603,7 +610,12 @@
                     fx: "time",
                     tip: true,
                     fill: "zone",
-                }))
+                })),
+                Plot.axisFx({anchor: "bottom", 
+                            tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
+                            offset:5,
+                            label: "Years"})
+            //Plot.axisX({label: null})
             ]
         })
         CBOverTimePLot?.append(plot);
@@ -672,30 +684,59 @@
         })
         console.log("debug", dataCBs);
 
+        let desiredOrder = [
+            "Road safety",
+            "Congestion",
+            "Air quality", 
+            "Noise", 
+            "Excess cold", 
+            "Excess heat", 
+            "Dampness", 
+            "Road repairs",
+            "Physical activity", 
+            "Diet change",
+            "Hassle costs"
+            
+            ];
+
         let plotPerCB = Plot.plot({
-            height: height,
+            height: height*1.5,
             width: 1000,
-            ...MARGINS,
-            paddingLeft: 200,
             marginRight: 0,
-            insetLeft: 10,
-            insetRight: 10,
-            insetBottom: 30,
-            style: {fontSize: "10px"},
+            marginTop:40,
+            marginLeft: 60,
+            marginBottom:60,
+            style: {fontSize: "18px"},
             y: {tickFormat: ".2f", label: 'Value (£)'},
-            x: {label: 'Year'},
+            x: {label: 'Years', 
+                tickFormat: d => d.replace(/^Y/, '').split("_")[1],
+            },
             // x: {tickSize: 0, label: null, ticks: []},
             color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
-                Plot.areaY(dataCBs, Plot.groupX({y: "mean"}, {
+                Plot.areaY(dataCBs, Plot.groupX({y: "mean"},
+                {
                     x: "time",
                     y: "value",
                     tip: true,
-                    fill: "cobenefit"
-                    // fill: "scenario",
+                    fill: "cobenefit",
+                    curve: "basis",
+                    order: [
+                            "Road safety",
+                            "Congestion",
+                            "Air quality", 
+                            "Noise", 
+                            "Excess cold", 
+                            "Excess heat", 
+                            "Dampness", 
+                            "Road repairs",
+                            "Physical activity", 
+                            "Diet change",
+                            "Hassle costs"],
+                    // offset: 
                 })),
-                Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
-                Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 1, strokeLinecap: 'round'}),
+                //Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
+                Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 0.5, strokeLinecap: 'round'}),
 
             ]
         })

@@ -99,25 +99,25 @@ export const COBENEFS_RANGE2 = [['#71C35D', '#244a1b', '#499437', '#7cc76a', '#b
     ['#D3A029', '#554010', '#aa8121', '#ddb454', '#eed9a9']];
 export const COBENEFS_SCALE2 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE2);
 
-export const SEF_UNITS = ['proportion of people',
-    'proportion of people',
-    '?',
-    '£',
-    '?',
-    '?',
-    'proportion of people',
-    '?',
-    '£',
-    '?',
-    '?',
-    'm^2',
-    '?',
-    'number of cars',
-    'number of trips',
-    'km',
-    'km'];
-export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);
-
+export const SEF_UNITS = ['Proportion of people', 
+                          'Proportion of people',
+                          '?',
+                          '£',
+                          '?',
+                          '?',
+                          'Proportion of people',
+                          '?',
+                          '£',
+                          '?',
+                          '?',
+                          "m²",
+                          '?',
+                          'Number of cars',
+                          'Number of trips',
+                          'Km',
+                          'Km'];
+export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);  
+  
 
 // export const HEROSLIDES = [
 //     {
