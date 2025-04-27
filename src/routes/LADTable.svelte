@@ -68,7 +68,7 @@
   </script>
   
   <div class="controls">
-    <label>Region:</label>
+    <label>Nation:</label>
     <select bind:value={region} on:change={updateRegion}>
       {#each regions as r}
         <option value={r.value}>{r.label}</option>
