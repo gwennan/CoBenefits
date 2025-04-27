@@ -59,7 +59,7 @@ export type SEFactor = typeof COBENEFS[number]
 
 
 // DESIGN PARAMS
-export const VIS_COLOR = "black";
+export const VIS_COLOR = "#333";
 // export const AVERAGE_COLOR = "lightblue";
 export const AVERAGE_COLOR = "#636363";
 export const NATION_TO_COLOR = {

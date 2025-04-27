@@ -21,7 +21,8 @@
         COBENEFS_SCALE,
         removeSpinner,
         addSpinner,
-        SEF_SCALE
+        SEF_SCALE,
+        getIconFromCobenef
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -601,10 +602,11 @@
             width: 800,
             ...MARGINS,
             marginRight: 0,
-            marginLeft: 40,
+            marginLeft: 60,
             marginTop: 40,
+            marginBottom:70,            
             style: {fontSize: "18px"},
-            y:{label: '£'},
+            y:{label: '£', grid: true},
             //x: {tickSize: 0, label: 'Years', ticks: [],
             //tickFormat: d => d.replace(/^Y/, '').split("_")[1]
             //},
@@ -632,7 +634,7 @@
                 Plot.axisFx({anchor: "bottom", 
                             tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
                             offset:5,
-                            label: "Years"})
+                            label: "Years"}),
             //Plot.axisX({label: null})
             ]
         })
@@ -702,35 +704,21 @@
         })
         console.log("debug", dataCBs);
 
-        let desiredOrder = [
-            "Road safety",
-            "Congestion",
-            "Air quality", 
-            "Noise", 
-            "Excess cold", 
-            "Excess heat", 
-            "Dampness", 
-            "Road repairs",
-            "Physical activity", 
-            "Diet change",
-            "Hassle costs"
-            
-            ];
-
         let plotPerCB = Plot.plot({
-            height: height*1.5,
-            width: 1000,
+            height: height*3,
+            width: 2500,
             marginRight: 0,
             marginTop:40,
-            marginLeft: 60,
-            marginBottom:60,
-            style: {fontSize: "18px"},
-            y: {tickFormat: ".2f", label: 'Value (£)'},
+            marginLeft: 80,
+            marginBottom:80,
+            insetTop: 30,
+            style: {fontSize: "30px"},
+            y: {tickFormat: ".2f", label: '£', ticks: 10},
             x: {label: 'Years', 
                 tickFormat: d => d.replace(/^Y/, '').split("_")[1],
             },
             // x: {tickSize: 0, label: null, ticks: []},
-            color: {legend: true, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
+            color: {legend: false, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"},
                 {
@@ -979,12 +967,13 @@
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
             <h2 class="section-title">How co-benefits change over time?</h2>
-            <p class="description">Detailed breakdown of temporal trends for total co-benefits, types of co-benefits,
-                and five pathways.</p>
+            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of co-benefits.</p>
         </div>
 
         <div class="component singlevis">
             <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
+            <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
+            <br>
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePLot}>
                     <!--                    <div class="badge-container">-->
@@ -995,19 +984,7 @@
         </div>
 
 
-        <div class="component singlevis">
-            <h3 class="component-title">11 Types of Co-benefits Distribution Following Balance Pathway from
-                2025-2050</h3>
-            <div class="row">
-                <div class="row">
-                    <div class="plot" bind:this={CBOverTimePerCBPLot}>
-                        <!--                        <div class="badge-container">-->
-                        <!--                            <img class="badge" src={predictionsBadge} />-->
-                        <!--                        </div>-->
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!--        <div class="component singlevis">-->
         <!--            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>-->
@@ -1020,7 +997,55 @@
 
         <!--            </div>-->
         <!--        </div>-->
+ 
+
+    <div id="main-block" class="component" style="margin-left: 0.5rem;">
+        <div id="main-title">
+            <h3 class="component-title">Average co-benefit gain/loss by 5 year intervals for the area of {LADToName[LAD]}</h3>
+            <br>
+
+            <!-- Legend -->
+            <div id="main-legend" class="legend-box">
+                <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
+                <span>The stacked area plot is coloured by co-benefit:</span>
+                <br><br/>
+                <ul class="legend-list">
+                    <li><span class="legend-color" style="background-color: #D3A029"></span>
+                        <img src="${getIconFromCobenef('Diet change')}" alt="Icon" class="legend-icon" /> Diet change</li>
+                    <li><span class="legend-color" style="background-color: #48773E"></span>
+                        Physical activity</li>
+                    <li><span class="legend-color" style="background-color: #183668"></span>
+                        Dampness</li>
+                    <li><span class="legend-color" style="background-color: #00AED9"></span>
+                        Excess cold</li>
+                    <li><span class="legend-color" style="background-color: #E11484"></span>
+                        Noise</li>
+                    <li><span class="legend-color" style="background-color: #71C35D"></span>
+                        Air quality</li>
+                    <li><span class="legend-color" style="background-color: #8F1838"></span>
+                        Congestion</li>
+                    <li><span class="legend-color" style="background-color: #EF402B"></span>
+                        Excess heat</li>
+                    <li><span class="legend-color" style="background-color: #F36D25"></span>
+                        Road safety</li>
+                    <li><span class="legend-color" style="background-color: #F99D26"></span>
+                        Road repairs</li>
+                    <li><span class="legend-color" style="background-color: #C31F33"></span>
+                        Hassle costs</li>
+                </ul>
+                
+            </div>
+
+            <!-- Disclaimer -->
+            <div id="main-disclaimer" class="disclaimer-box">
+                <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the co-benefits some values are very small in comparison to larger values so therefore are not visable on this plot. </p>
+
+            </div>
+        </div>
+            <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
     </div>
+
+</div>
 
     <div class="section">
         <div class="section-header">
@@ -1036,7 +1061,7 @@
         <div id="multiple-comp">
             {#each SEF as sef}
                 <div>
-                    <h2>{sef}</h2>
+                    <h2>{sef.replaceAll('_', ' ')}</h2>
                     <!--                <div class="inside-row">-->
                     <div class="row">
 
@@ -1109,6 +1134,24 @@
         padding-bottom: 1%;
     }
 
+    #main-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 70vh;
+    }
+
+    #main-title {
+        min-width: 25vw;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        position: sticky;
+        top: 120px;
+        align-self: flex-start;
+        height: fit-content;
+    }
+
+
     label {
         font-weight: bold;
     }
@@ -1134,6 +1177,48 @@
     .nation-label {
         /*color: #90bcca;*/
         color: var(--compareColor);
+    }
+
+    .disclaimer-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.legend-box {
+    margin-bottom: 2rem;
+    padding: 0.75rem;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.legend-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 2px;
+}
+
+.legend-icon {
+    width: 0.2rem;
+    height: 0.2rem;
     }
 
 </style>
