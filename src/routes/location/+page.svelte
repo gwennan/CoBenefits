@@ -983,7 +983,7 @@
 
     <div id="main-block" class="component" style="margin-left: 0.5rem;">
         <div id="main-title">
-            <h3 class="component-title">Average co-benefit gain/loss by 5 year intervals for the area of {LADToName[LAD]}</h3>
+            <h3 class="component-title">Average co-benefit gain/loss for the area of {LADToName[LAD]} (by 5 year intervals)</h3>
             <br>
 
             <!-- Legend -->
