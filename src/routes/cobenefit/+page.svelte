@@ -215,7 +215,7 @@
     function renderDistPlot() {
         plotDist?.append(
             Plot.plot({
-                height: height / 1.2,
+                height: height / 1.5,
                 ...MARGINS,
                 marginLeft: 80,
                 marginTop: 40,
@@ -249,7 +249,7 @@
 
         plot?.append(
             Plot.plot({
-                height: height / 1.2,
+                height: height / 1.5,
                 marginLeft: 90,
                 marginRight: 40,
                 marginBottom: 60,
@@ -522,6 +522,9 @@
 
     <!--    <div id="vis-block">-->
     <div class="section">
+        <div class="section-header">
+        <p class="section-subtitle">Overview</p>
+        </div>
         <div id="vis-block">
             <div class="component singlevis">
                 <h3 class="component-title">Total <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> (£k) to 2050
@@ -557,6 +560,10 @@
                 <div id="map" bind:this={mapDiv}>
                 </div>
             </div>
+        </div>
+
+        <div class="section-header">
+        <p class="section-subtitle">Compare by socio-economic factor</p>
         </div>
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
@@ -635,7 +642,7 @@
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 800px;
+        height: 600px;
         /*flex: 1; !* take the remaining height *!*/
     }
 
