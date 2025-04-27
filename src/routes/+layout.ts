@@ -18,7 +18,8 @@ import {
     getTotalPerHouseholdByLAD,
     getTopSelectedLADsPerHousehold,
     getAggregationPerCapitaPerBenefit,
-    getDistinctNationValues
+    getDistinctNationValues,
+    getTotalAggregation
 } from "$lib/duckdb";
 
 
@@ -75,7 +76,7 @@ export async function load() {
 
 
     let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
-    
+    let totalAggregation = await getTableData(getTotalAggregation());
 
     console.log("end root")
 
@@ -83,7 +84,8 @@ export async function load() {
         datazones: UKZones,
         LADToName,
         aggregationPerBenefit,
-        aggregationPerCapitaPerBenefit
+        aggregationPerCapitaPerBenefit,
+        totalAggregation
     }
 }
 

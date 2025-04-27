@@ -15,7 +15,6 @@ const DB_TABLE_SE_NAME = "socioEconmicFactors";
 
 
 const initDB = async () => {
-
     // when building, Sveltekit prerenders pages using Node. In this step, we don't want to call duckdb.
     if (!browser) {
         return
@@ -213,7 +212,7 @@ export function getSUMCBGroupedByLADAndCB(time = "total", nation="UK") {
 
     let query = `SELECT SUM("${time}") as val, LAD as Lookup_Value, co_benefit_type
                  FROM ${DB_TABLE_NAME}
-                 WHERE co_benefit_type in (${COBENEFS.map(v => `'${v}'`).join(",")})
+                 WHERE co_benefit_type in (${COBENEFS.map(v => `'${v.id}'`).join(",")})
                  ${nationConstraint}
                  GROUP BY LAD, co_benefit_type`
 
@@ -511,6 +510,18 @@ export function getAggregationPerCapitaPerBenefit() {
         ORDER BY co_benefit_type
     `;
 }
+
+export function getTotalAggregation() {
+    return `
+      SELECT 
+        SUM(total) / 1000 AS total_value,
+        SUM(total) / SUM(Population) * 1000 AS total_value_per_capita
+      FROM ${DB_TABLE_NAME}
+      WHERE co_benefit_type != 'Total'
+        AND Population IS NOT NULL
+    `;
+  }
+  
 
 
 

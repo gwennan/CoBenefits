@@ -9,23 +9,19 @@ import * as topojson from "topojson-client";
 import {getCustomCBData, getTableData, getTotalPerPathway} from "$lib/duckdb";
 import {type CoBenefit, COBENEFS, type Scenario} from "../../globals";
 import {Legend} from "$lib/utils";
-import {polygonToLine} from '@turf/polygon-to-line';
+// import {polygonToLine} from '@turf/polygon-to-line';
 
 
 // const LSOAzonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
 const LSOAzonesPath = 'maps/LSOA.json';
-// const LADzonesPath = 'maps/LAD.json';
-// const LADzonesPath = 'maps/LAD2.json';
 const LADzonesPath = 'maps/LAD3.json';
 
 
-// let datazones = await load().then(data => data.datazones);
 let datazones = await d3.json(LSOAzonesPath)
 // datazones = topojson.feature(datazones, datazones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
 datazones = topojson.feature(datazones, datazones.objects["LSOA"]);
 
 let LADZones = await d3.json(LADzonesPath)
-
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2024_Boundaries_UK_BGC_-8811838383176485936"]);
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
 LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
@@ -45,6 +41,7 @@ export class Map {
     dataKey: string;
     zoneKey: string;
     border: boolean
+    colorRange: Array<any>;
 
 
     constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false) {
@@ -56,54 +53,20 @@ export class Map {
         this.loaded = false;
         this.border = border;
 
+        this.colorRange = ["red", "white", "black"]
+
+
         this.loadData(data);
 
         // UK centering
         // this.center = [-3.19648, 55.95206] // Edn
         // this.center = [-0.12574, 51.50853] // London
         this.center = [-1.54785, 53.79648] // Leeds
-
-
-        let style;
-        if (tiles) {
-            style = {
-                'version': 8,
-                'sources': {
-                    'raster-tiles': {
-                        'type': 'raster',
-                        'tiles': [
-                            // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
-                            // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
-                            // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-                            // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
-                        ],
-                        'tileSize': 256,
-                        'attribution':
-                            'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-                    }
-                },
-                'layers': [
-                    {
-                        'id': 'simple-tiles',
-                        'type': 'raster',
-                        'source': 'raster-tiles',
-                        paint: {
-                            "raster-opacity": 0.5
-                        },
-                        'minzoom': 0,
-                        'maxzoom': 10
-                    }
-                ]
-            }
-        } else {
-            style = {version: 8, sources: {}, layers: []};
-        }
-
+        
         this.map = new maplibregl.Map({
             container: 'map', // container id
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
-            style: style,
+            style: {version: 8, sources: {}, layers: []},
             center: this.center, // starting position [lng, lat]
             zoom: 5, // starting zoom
             preserveDrawingBuffer: true,
@@ -140,6 +103,10 @@ export class Map {
         for (const sourceId in sources) {
             this.map.removeSource(sourceId); // Remove each source by its id
         }
+    }
+
+    setColorScale(colorScale) {
+        this.colorScale = colorScale;
     }
 
     loadData(data, type: "SEF" | "Cobenefit" = "Cobenefit") {
@@ -207,16 +174,16 @@ export class Map {
 
         } else {
             domain = d3.extent(data.map(d => d[this.dataKey]));
-            domain.splice(1, 0, 0);
-            if (domain[0] >= 0) {
-                domain[0] = -1;
+
+            // for black/white scales
+            if (this.colorRange[0] == "red") {
+                domain.splice(1, 0, 0);
+                if (domain[0] >= 0) {
+                    domain[0] = -1;
+                }
+            } else {
+                domain = d3.range(0, this.colorRange.length).map(i => domain[0] + (i / 5) * (domain[1] - domain[0]))
             }
-
-            // this.colorScale = d3.scaleDiverging()
-            //     .domain(domain)
-            //     // .interpolator(d3.interpolatePuOr)
-            //     .interpolator(d3.interpolateBrBG)
-
 
             if (type == "Cobenefit") {
                 // Remove outlier values from the scale otherwise we dont see anything
@@ -224,7 +191,6 @@ export class Map {
                     // domain[0] = 0;
                     domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
                 }
-
 
                 this.colorScale = d3.scaleSequential()
                     .domain(domain)
@@ -238,22 +204,13 @@ export class Map {
                     .interpolator(d3.interpolateYlOrBr)
             }
 
-            // this.colorScale = d3.scaleSequentialQuantile()
-            //         .domain(domain)
-            //         .range(["white", "black"])
-
             this.colorScale = d3.scaleLinear()
                 .domain(domain)
-                .range(["red", "white", "black"]); // You can use any colors you want
+                .range(this.colorRange) // You can use any colors you want
 
             // console.log("DOMAIN ", domain)
-            // console.log(this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)]))
-
-            // this.colorScale = d3.scaleDiverging()
-            //         .domain(domain)
-            // .range(["red", "white", "black"])
+            console.log("colorscale ", this.colorScale.domain(), this.colorScale.range())
         }
-
     }
 
     loadLayers() {
@@ -274,7 +231,7 @@ export class Map {
                     ['get', 'value'], // Replace with your data property
                     ...this.colorScale.domain().flatMap((d) => [d, this.colorScale(d)])
                 ],
-                'fill-opacity': 0.7
+                'fill-opacity': 1
             }
         });
 
@@ -305,6 +262,34 @@ export class Map {
         //         'line-width': 3
         //     }
         // });
+
+        // Tiles
+
+         this.map.addSource('raster-tiles',{
+             'type': 'raster',
+                        'tiles': [
+                            // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+                            // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+                        ],
+                        'tileSize': 256,
+                        'attribution':
+                            'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+                    }
+        );
+
+        this.map.addLayer({
+                        'id': 'simple-tiles',
+                        'type': 'raster',
+                        'source': 'raster-tiles',
+                        paint: {
+                            "raster-opacity": 0.35
+                        },
+                        // 'minzoom': 0,
+                        // 'maxzoom': 10
+                    }
+            );
+
 
         this.loaded = true;
     }
@@ -355,16 +340,13 @@ export class Map {
         // });
     }
 
-    update = (newData, mapType) => {
+    update = (newData, mapType, loadLayers=false, colorRange) => {
         if (!this.loaded) return;
+        this.colorRange = colorRange;
+
+        if (loadLayers) this.loadLayers();
 
         this.loadData(newData, mapType);
-
-        // Put cobenef values inside the geojson for maplibre rendering
-        for (let zone of this.geojson.features) {
-            let zoneId = this.zoneName(zone)
-            zone.properties.value = this.dataZoneToValue[zoneId]
-        }
 
         // // Add data source
         this.map.getSource('datazones').setData(

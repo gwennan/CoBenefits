@@ -264,6 +264,7 @@
     }
 
     function renderPerCobenefPlot() {
+        console.log(99, allCBAllLADSUM)
         plotPerCb?.append(
             Plot.plot({
                 height: height,
@@ -290,8 +291,6 @@
                         y: "val",
                         x: "co_benefit_type",
                         dx: AVERAGE_DX,
-                        // fill: AVERAGE_COLOR,
-                        // fill: NATION_TO_COLOR[compareTo],
                         fill: AVERAGE_COLOR,
                         sort: {x: "y", reverse: true},
                         tip: true
@@ -300,26 +299,9 @@
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
-                        // inset: 50,
                          fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
                         tip: true
                     }))
-
-
-                    // Plot.link(
-                    //     dataPerCb,
-                    //     Plot.groupY(
-                    //         {
-                    //             x1: (data) => d3.mean(data) - d3.deviation(data),
-                    //             x2: (data) => d3.mean(data) + d3.deviation(data)
-                    //         },
-                    //         {
-                    //             x: "total",
-                    //             y: "co_benefit_type",
-                    //             stroke: "gray",
-                    //             strokeWidth: 3
-                    //         }
-                    //     )
                 ]
             }))
     }

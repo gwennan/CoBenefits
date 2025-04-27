@@ -12,13 +12,12 @@
         getTotalPerPathway,
         getAverageSEFGroupedByLAD, getSEFData
     } from "$lib/duckdb";
-    import {type CoBenefit, COBENEFS, type Scenario, SEF, getIconFromCobenef} from "../../globals";
+    import {type CoBenefit, COBENEFS, type Scenario, SEF, getIconFromCobenef, COBENEFS_SCALE2} from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
     import {legend} from "@observablehq/plot";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
-
-
+    import {COBENEFS_RANGE2} from "../../globals.js";
 
 
     export let data;
@@ -38,7 +37,8 @@
 
     let scenario: Scenario = "BNZ";
     // let coBenefits: Set<CoBenefit> = new Set(COBENEFS);
-    let coBenefits: Set<string> = new Set(COBENEFS.map(d => d.id));
+    // let coBenefits: Set<string> = new Set(COBENEFS.map(d => d.id));
+    let coBenefits: Array<CoBenefit> = COBENEFS.map(d => d.id);
 
     let timeSelected: string = "total";
     let mapStyleLoaded = false;
@@ -81,15 +81,31 @@
                 }
             }
 
+            // if (coBenefits.length == 1) {
+            //     let colorScale = d3.scaleSequential()
+            //         .domain()
+            // }
+
 
             fullData.then((data) => {
 
                 // Load layers again when changing granularity
+                let loadLayers = false;
                 if (map.map.getStyle().layers.length == 0) {
-                    map.loadLayers();
+                    // map.loadLayers();
+                    loadLayers = true;
                 }
 
-                map.update(data, mapType);
+                let colorRange;
+                if (coBenefits.length == 1) {
+                    colorRange = COBENEFS_SCALE2(coBenefits[0])
+                    colorRange.shift()
+                    // colorRange.splice(0, 0, "red");
+                } else {
+                    colorRange = ["red", "white", "black"];
+                }
+
+                map.update(data, mapType, loadLayers, colorRange);
                 updateLegend();
             })
 
@@ -109,15 +125,6 @@
             return "Cobenefits (Millions of £)"
         }
     }
-
-
-    // $: {
-    //     if (map?.loaded) {
-    //         legendSvg = map.legend();
-    //         legendDiv.append(legendSvg)
-    //         document.querySelector("#legend").append(legendSvg)
-    //     }
-    // }
 
 
     onMount(async () => {
@@ -183,13 +190,6 @@
         //         // Zoom level is below or equal to the threshold, revert changes
         //     }
         // });
-
-
-        // legendSvg = Legend(colorScale, {
-        //     title: "Cobenefits (Millions of £)"
-        // })
-        // legendDiv.append(legendSvg)
-        // document.querySelector("#legend").append(leg)
     })
 
 
@@ -214,7 +214,12 @@
     // radio
     const onChangeCobenef = (e) => {
         const cobenef: CoBenefit = e.currentTarget.value;
-        coBenefits = [cobenef];
+
+        if (cobenef == "total") {
+            coBenefits = COBENEFS.map(cb => cb.id);
+        } else {
+            coBenefits = [cobenef];
+        }
     }
 
     const onChangeTime = (e) => {
@@ -240,8 +245,7 @@
 
     function exportMap() {
         const canvas = document.getElementsByClassName('maplibregl-canvas')
-        console.log(canvas)
-        const img    = canvas[0].toDataURL('image/png')
+        const img = canvas[0].toDataURL('image/png')
 
         var dlLink = document.createElement('a');
         dlLink.download = "map.png";
@@ -251,7 +255,6 @@
         document.body.appendChild(dlLink);
         dlLink.click();
         document.body.removeChild(dlLink);
-
     }
 
 </script>
@@ -264,13 +267,14 @@
     <div class="component" id="heaser">
         <h2> Map </h2>
 
-        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factor at the local authorities and datazones levels.</p>
+        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factor at the local
+            authorities and datazones levels.</p>
 
-<!--        <p>-->
-<!--            This interactive map shows the average co-benefit value (in million of £) for each Local Authority (or datazone) of the UK.-->
-<!--            The pathway and time window can be selected,-->
-<!--            along a given set of co-benefits.-->
-<!--        </p>-->
+        <!--        <p>-->
+        <!--            This interactive map shows the average co-benefit value (in million of £) for each Local Authority (or datazone) of the UK.-->
+        <!--            The pathway and time window can be selected,-->
+        <!--            along a given set of co-benefits.-->
+        <!--        </p>-->
     </div>
 
     <div id="map-row" class="row">
@@ -289,8 +293,12 @@
 
 
             <div class="tab">
-                <button class="tablinks" class:active={mapType == "Cobenefit"} value="Cobenefit" on:click={changeMap}>CoBenefits</button>
-                <button class="tablinks" class:active={mapType == "SEF"} value="SEF" on:click={changeMap}>Socio-Economic Factors</button>
+                <button class="tablinks" class:active={mapType == "Cobenefit"} value="Cobenefit" on:click={changeMap}>
+                    CoBenefits
+                </button>
+                <button class="tablinks" class:active={mapType == "SEF"} value="SEF" on:click={changeMap}>Socio-Economic
+                    Factors
+                </button>
             </div>
 
 
@@ -304,45 +312,44 @@
 
             {#if mapType == "Cobenefit"}
                 <div class="tabcontent">
-                    <!--                <h2> Scenario </h2>-->
-                    <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="BNZ" checked>-->
-                    <!--                <label for="html">BNZ</label><br>-->
-                    <!--                <input type="radio" on:change={onChangeScenario} name="visType" value="Test">-->
-                    <!--                <label for="css">Test</label><br>-->
-
                     <div class="component">
 
-                    <h2> Co-Benefits </h2>
-                    {#each COBENEFS as coBenef}
-                        <div class="checkbox-div">
-                        <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef.id)}/>
-                        <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef.id} checked>
-<!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
-                        <label for="css">{coBenef.label}</label>
-                            <br>
-                        </div>
-                    {/each}
+                        <h2> Co-Benefits </h2>
+                        {#each COBENEFS.concat({id: "total", label: "Total"}) as coBenef}
+                            <div class="checkbox-div">
+                                {#if coBenef.id != "total" }
+                                    <img alt="cobenefit icon" class="icon" src={getIconFromCobenef(coBenef.id)}/>
+                                {:else}
+                                    <img style="opacity: 0" class="icon" src={getIconFromCobenef("Air quality")}/>
+                                {/if}
+                                <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef.id}
+                                       checked>
+                                <!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
+                                <label for="css">{coBenef.label}</label>
+                                <br>
+                            </div>
+                        {/each}
 
                     </div>
 
                     <div class="component">
-                    <h2> Time </h2>
-                    <div id="time">
-                        <label class="time-radio"><input type="radio" name="toggle" value="total"
-                                                         on:change={onChangeTime}
-                                                         checked><span>Total</span></label>
-                        <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
-                                                         on:change={onChangeTime}><span>2025-2029</span></label>
-                        <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"
-                                                         on:change={onChangeTime}><span>2030-2034</span></label>
-                        <label class="time-radio"><input type="radio" name="toggle" value="Y2035_2039"
-                                                         on:change={onChangeTime}><span>2035-2039</span></label>
-                        <label class="time-radio"><input type="radio" name="toggle" value="Y2040_2044"
-                                                         on:change={onChangeTime}><span>2040-2044</span></label>
-                        <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
-                                                         on:change={onChangeTime}><span>2045-2049</span></label>
-                    </div>
+                        <h2> Time </h2>
+                        <div id="time">
+                            <label class="time-radio"><input type="radio" name="toggle" value="total"
+                                                             on:change={onChangeTime}
+                                                             checked><span>Total</span></label>
+                            <label class="time-radio"><input type="radio" name="toggle" value="Y2025_2029"
+                                                             on:change={onChangeTime}><span>2025-2029</span></label>
+                            <label class="time-radio"><input type="radio" name="toggle" value="Y2030_2034"
+                                                             on:change={onChangeTime}><span>2030-2034</span></label>
+                            <label class="time-radio"><input type="radio" name="toggle" value="Y2035_2039"
+                                                             on:change={onChangeTime}><span>2035-2039</span></label>
+                            <label class="time-radio"><input type="radio" name="toggle" value="Y2040_2044"
+                                                             on:change={onChangeTime}><span>2040-2044</span></label>
+                            <label class="time-radio"><input type="radio" name="toggle" value="Y2045_2049"
+                                                             on:change={onChangeTime}><span>2045-2049</span></label>
                         </div>
+                    </div>
                 </div>
 
             {:else if mapType == "SEF"}
@@ -352,7 +359,8 @@
                     <h2> Social Economic Factor </h2>
                     <div id="time">
                         {#each SEF as sef}
-                            <input type="radio" id="html" name="fav_language" value={sef} on:change={onChangeSEF} checked={sef == selectedSef}>
+                            <input type="radio" id="html" name="fav_language" value={sef} on:change={onChangeSEF}
+                                   checked={sef == selectedSef}>
                             <label for="html">{sef}</label><br>
                         {/each}
                     </div>

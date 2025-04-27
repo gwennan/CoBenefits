@@ -4,7 +4,7 @@ import { goto } from '$app/navigation';
 import * as Plot from "@observablehq/plot";
 import { onMount, onDestroy } from 'svelte';
 
-import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides} from "../globals";
+import {COBENEFS, COBENEFS_RANGE, COBENEFS_SCALE, getHeroSlides, getIconFromCobenef, type CoBenefit} from "../globals";
 
 import NavigationBar from "$lib/components/NavigationBar.svelte";
 import LADSearch from './LADSearch.svelte';
@@ -19,7 +19,8 @@ import { getTableData } from '$lib/duckdb';
 export let data;
 let aggregationPerBenefit = [...data.aggregationPerBenefit].sort((a, b) => b.total - a.total);
 let aggregationPerCapitaPerBenefit = [...data.aggregationPerCapitaPerBenefit].sort((a, b) => b.total_value - a.total_value);
-// console.log("aggregationPerCapitaPerBenefit", aggregationPerCapitaPerBenefit);
+console.log("aggregationPerCapitaPerBenefit", aggregationPerCapitaPerBenefit);
+let aggregationPerCapita = data.totalAggregation[0].total_value_per_capita;
 
 // explore by lad: reactive queries
 let ladData = [];
@@ -58,6 +59,11 @@ let waffleBgEl: HTMLElement;
 let waffleLabelEl: HTMLElement;
 let activeTypeLabel: string;
 let activeValueLabel: string;
+let activePerCapitaLabel: string;
+let activePercentLabel: string;
+let activeIcon: string | null = null;
+
+
 // for hero background images
 let slides: any[] = [];
 let heroEl: HTMLElement;
@@ -83,15 +89,45 @@ function startWaffleHighlightLoop(height: number) {
     const highlightSequence = [
       {
         type: null,
-        label: 'total co-benefits',
-        value: totalValue.toFixed(1)
+        label: 'Total Co-Benefits',
+        icon: null,
+        // value: totalValue.toFixed(1),
+        totalValue:totalValue.toFixed(3),
+        perCapitaValue: aggregationPerCapita.toFixed(3),
+        percentValue: "100%"
       },
       ...orderedTypes.map((type) => {
         const match = COBENEFS.find(d => d.id === type);
         // const label = type;
         const label = match?.label ?? type;
-        const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(3) ?? "";
-        return { type, label, value };
+        let icon = getIconFromCobenef(type as CoBenefit)
+
+        // const value = aggregationPerBenefit.find((d) => d.co_benefit_type === type)?.total.toFixed(3) ?? "";
+
+        const aggregation = aggregationPerBenefit.find(d => d.co_benefit_type === type);
+        const perCapita = aggregationPerCapitaPerBenefit.find(d => d.co_benefit_type === type);
+
+        const total = aggregation?.total ?? 0;
+        const perCapitaVal = perCapita?.value_per_capita ?? 0;
+        const totalFormatted = total.toFixed(3);
+
+        const perCapitaFormatted = perCapitaVal.toFixed(3);
+
+        // const percent = totalValue > 0 ? ((total / totalValue) * 100).toFixed(2) + "%" : "0%";
+        const percent = totalValue > 0 ? ((total / totalValue) * 100).toFixed(2): 0;
+
+        console.log("percentage", type, total, totalValue, percent);
+
+
+        return { 
+          type, 
+          label, 
+          icon,
+          // value,
+          totalValue: totalFormatted,
+          perCapitaValue: perCapitaFormatted,
+          percentValue: percent
+        };
       })
     ];
 
@@ -99,19 +135,26 @@ function startWaffleHighlightLoop(height: number) {
     intervalId = setInterval(() => {
         previousIndex = currentIndex;
         currentIndex = (currentIndex + 1) % highlightSequence.length;
-        const { type, label, value } = highlightSequence[currentIndex];
+        const { type, label, icon, totalValue, perCapitaValue, percentValue } = highlightSequence[currentIndex];
         activeType = type;
         activeTypeLabel = label;
-        activeValueLabel = value;
+        activeValueLabel = totalValue;
+        activePerCapitaLabel = perCapitaValue;
+        activePercentLabel = percentValue;
+        activeIcon = icon;
 
         renderWaffle(height, type);
     }, 5000);
 
     // On default load, show the total
-    const firstSlide = slides[0];
+    // const firstSlide = slides[0];
+    const firstSlide = highlightSequence[0];
     activeType = firstSlide.type;
     activeTypeLabel = firstSlide.label;
-    activeValueLabel = totalValue.toFixed(1);
+    // activeValueLabel = totalValue.toFixed(1);
+    activeValueLabel = firstSlide.totalValue;
+    activePerCapitaLabel = firstSlide.perCapitaValue;
+    activePercentLabel = firstSlide.percentValue;
     renderWaffle(height, firstSlide.type);
 
     console.log("update display", slides)
@@ -269,23 +312,56 @@ let showDropdown = false;
 
     <div class="waffle-overlay">
       <div class="waffle-label" bind:this={waffleLabelEl}>
-        <!-- National gain of <br>
-        <strong style="font-size: 1.5rem">{activeTypeLabel}</strong> <br>
-        in reaching NetZero <br>
-        by 2050 is: <br>
-        <strong style="font-size: 1.2rem">{activeValueLabel}</strong>
-        £billion
-      </div> -->
-
-      <strong style="font-size: 1.2rem">£{activeValueLabel} billion</strong> <br>
-      is saved nationally from <br>
-      <strong style="font-size: 1.5rem">{activeTypeLabel}</strong> <br>
-
+        
+          <div class="waffle-header">
+            {#if activeIcon}
+              <div class="waffle-icon">
+                <img src="{activeIcon}" alt="Icon" />
+              </div>
+            {/if}
+            <div class="waffle-title">{activeTypeLabel}</div>
+          </div>
+    
+          <div class="waffle-stats">
+            <div class="waffle-stat">
+              <div class="waffle-value">
+                <span class="waffle-big">£{activeValueLabel}</span>
+                <span class="small">billion</span>
+              </div>
+              {#if activeValueLabel > 0}
+                <div class="waffle-caption">National benefits</div>
+              {:else}
+                <div class="waffle-caption">National costs</div>
+              {/if}
+            </div>
+            <div class="waffle-stat">
+              <div class="waffle-value">
+                <span class="waffle-big">£{activePerCapitaLabel}</span>
+                <span class="small">thousand</span>
+              </div>
+              {#if activePerCapitaLabel > 0}
+                <div class="waffle-caption">Per capita benefits</div>
+              {:else}
+                <div class="waffle-caption">Per capita costs</div>
+              {/if}
+            </div>
+            {#if activeType !== null}
+              <div class="waffle-stat">
+                <div class="waffle-value">
+                  <span class="waffle-big">{activePercentLabel}</span>
+                  <span class="small">%</span>
+                </div>
+                <div class="waffle-caption">Contribution</div>
+              </div>
+            {/if}
+          </div>
+  
+        
       </div>
-      
+
       <div class="waffle-bg" bind:this={waffleBgEl}></div>
       <div bind:this={waffleEl}></div>
-  </div>
+    </div>
   </section>
 
   <section class="search-section">
@@ -417,6 +493,8 @@ main {
     pointer-events: none;
     z-index: 10;
     margin: 0;
+    align-items: start;
+    justify-content: flex-start;
     /* background-color: white; */
 }
 
@@ -427,25 +505,89 @@ main {
     background: white;
     z-index: -1;
 }
-
-
 .waffle-label {
   position: absolute;
   top: 50%;
   right: 105%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #000;
-  padding: 1rem 1rem;
-  white-space: nowrap;
-  /* max-width: 400px; */
+  padding: 1.5rem 1.2rem;
+  width: 200px;
   font-size: 0.95rem;
   line-height: 1.4;
   z-index: 2;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  color: #000;
+  background-color: rgba(255, 255, 255, 0.2);
+  /* box-shadow: 0 4px 8px rgba(0,0,0,0.2); */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 12px;
+}
+
+.waffle-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.waffle-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waffle-icon img {
+  width: 48px;
+  height: 48px;
+}
+
+.waffle-title {
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+  font-weight: bold;
+  color: #111;
   text-align: left;
 }
 
+.waffle-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.waffle-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.waffle-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.waffle-big {
+  font-size: 1.5rem;
+  font-weight: medium;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: black;
+}
+
+.waffle-caption {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: black;
+}
 
 .side-by-side-section {
   display: flex;
