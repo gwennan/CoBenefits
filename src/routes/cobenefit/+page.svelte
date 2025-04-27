@@ -26,7 +26,9 @@
         getTableData,
         getTotalPerOneCoBenefit,
         getAggregationPerBenefit,
-        initDB
+        getAggregationPerCapitaPerBenefit,
+        initDB,
+        getTotalAggregation
     } from "$lib/duckdb";
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
@@ -49,7 +51,11 @@
     let SEFData;
     let totalValue;
     let aggregationPerBenefit;
+    let aggregationPerCapitaPerBenefit;
+    let totalBenefits;
+    let totalBenefitsValue;
     let dataLoaded = false;
+    let coBenefit_percapita;
 
     let map: Map;
 
@@ -96,11 +102,18 @@
         aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
         aggregationPerBenefit = aggregationPerBenefit.sort((a, b) => b.total - a.total);
 
-        console.log("coben waffle data",aggregationPerBenefit);
+        aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
+        aggregationPerCapitaPerBenefit = aggregationPerCapitaPerBenefit.sort((a, b) => b.total_value - a.total_value);
+        const matched = aggregationPerCapitaPerBenefit.find(d => d.co_benefit_type === coBenefit);
+        coBenefit_percapita = matched ? matched.value_per_capita : null;
+
+        console.log("coben waffle data",aggregationPerCapitaPerBenefit);
         console.log("coben type", coBenefit);
 
 
         LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
+        totalBenefits = await getTableData(getTotalAggregation())
+        totalBenefitsValue = totalBenefits[0].total_value
 
         console.log(22, LADAveragedData);
         SEF.forEach(SE => {
@@ -437,13 +450,50 @@
           </div>
           <div class="header-waffle-wrapper">
             <div class="waffle-label">
-              National gain of <br />
+              <!-- National gain of <br />
               <strong style="font-size: 1.2rem">{coBenefitLabel}</strong> <br />
               in reaching NetZero <br />
               by 2050 is: <br />
               {#if totalValue}
               <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} billion</strong>
-              {/if}
+              {/if} -->
+              <div class="waffle-stats">
+              <div class="waffle-stat">
+                <div class="waffle-value">
+                    {#if totalValue}
+                  <span class="waffle-big">£{totalValue.toLocaleString()}</span>
+                  {/if}
+                  <span class="small">billion</span>
+                </div>
+                {#if totalValue > 0}
+                  <div class="waffle-caption">National benefits</div>
+                {:else}
+                  <div class="waffle-caption">National costs</div>
+                {/if}
+              </div>
+              <div class="waffle-stat">
+                <div class="waffle-value">
+                    {#if totalValue}
+                  <span class="waffle-big">£{coBenefit_percapita.toLocaleString()}</span>
+                  {/if}
+                  <span class="small">thousand</span>
+                </div>
+                {#if totalValue > 0}
+                  <div class="waffle-caption">Per capita benefits</div>
+                {:else}
+                  <div class="waffle-caption">Per capita costs</div>
+                {/if}
+              </div>
+              <div class="waffle-stat">
+                {#if totalValue}
+                <div class="waffle-value">
+                  <span class="waffle-big">{((totalValue / totalBenefitsValue) * 100).toFixed(2)}</span>
+                  <span class="small">%</span>
+                </div>
+                {/if}
+                  <div class="waffle-caption">Contribution</div>
+              </div>
+            </div>
             </div>
 
             <div class="waffle-el" bind:this={waffleEl}></div>
@@ -703,25 +753,25 @@
 }
 
 
-    .waffle-label {
-        position: absolute;
-        top: 50%;
-        right: 105%;
-        transform: translateY(-50%);
-        width: 170px;
+.waffle-label {
+    position: absolute;
+    top: 50%;
+    right: 105%;
+    transform: translateY(-50%);
+    width: 150px;
 
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        color: #333;
-        text-align: left;
-        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
-        }
+    /* background-color: #fff; */
+    /* border: 1px solid #ddd; */
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #333;
+    text-align: left;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
+    }
 
-    .disclaimer-box {
+.disclaimer-box {
     margin-bottom: 1rem;
     padding: 0.75rem;
     background-color: #f9f9f9;
@@ -797,5 +847,38 @@
   color: #555;
 }
 
+.waffle-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.waffle-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.waffle-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.waffle-big {
+  font-size: 1.5rem;
+  font-weight: medium;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: black;
+}
+
+.waffle-caption {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: black;
+}
 
 </style>

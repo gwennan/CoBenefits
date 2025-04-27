@@ -511,6 +511,18 @@ export function getAggregationPerCapitaPerBenefit() {
     `;
 }
 
+export function getTotalAggregation() {
+    return `
+      SELECT 
+        SUM(total) / 1000 AS total_value,
+        SUM(total) / SUM(Population) * 1000 AS total_value_per_capita
+      FROM ${DB_TABLE_NAME}
+      WHERE co_benefit_type != 'Total'
+        AND Population IS NOT NULL
+    `;
+  }
+  
+
 
 
 

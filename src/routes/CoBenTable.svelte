@@ -30,7 +30,7 @@
         marginRight: 0,
         x: { domain: [minAbs, maxAbs], axis: null }, //for negative values
         marks: [
-        Plot.ruleX([0], { stroke: "#ccc" }), // baseline
+        Plot.ruleX([0], { stroke: "#3C3C3C" }), // baseline
         Plot.barX([value], {
             x: d => d,
             y: 0,

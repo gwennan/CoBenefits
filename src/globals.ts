@@ -2,17 +2,17 @@ import * as d3 from "d3"
 import {base} from '$app/paths';
 
 
-import airQualityIcon from '$lib/icons/AirQuality.jpg';
-import congestionIcon from '$lib/icons/Congestion.jpg';
-import dampnessIcon from '$lib/icons/Dampness.jpg';
-import dietChangeIcon from '$lib/icons/DietChange.jpg';
-import excessColdIcon from '$lib/icons/ExcessCold.jpg';
-import excessHeatIcon from '$lib/icons/ExcessHeat.jpg';
-import hassleCostIcon from '$lib/icons/HassleCosts.jpg';
-import noiseIcon from '$lib/icons/Noise.jpg';
-import roadRepairsIcon from '$lib/icons/RoadRepairs.jpg';
-import roadSafetyIcon from '$lib/icons/RoadSafety.jpg';
-import physicalActivityIcon from '$lib/icons/PhysicalActivity.jpg';
+import airQualityIcon from '$lib/icons/AirQuality.png';
+import congestionIcon from '$lib/icons/Congestion.png';
+import dampnessIcon from '$lib/icons/Dampness.png';
+import dietChangeIcon from '$lib/icons/DietChange.png';
+import excessColdIcon from '$lib/icons/ExcessCold.png';
+import excessHeatIcon from '$lib/icons/ExcessHeat.png';
+import hassleCostIcon from '$lib/icons/HassleCosts.png';
+import noiseIcon from '$lib/icons/Noise.png';
+import roadRepairsIcon from '$lib/icons/RoadRepairs.png';
+import roadSafetyIcon from '$lib/icons/RoadSafety.png';
+import physicalActivityIcon from '$lib/icons/PhysicalActivity.png';
 
 // export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
 export const COBENEFS = [
@@ -169,6 +169,7 @@ export function getHeroSlides(waffleOrderedTypes: string[]) {
 }
 
 export function getIconFromCobenef(cobenefit: CoBenefit) {
+
     if (cobenefit == "Air quality") {
         return airQualityIcon;
     } else if (cobenefit == "Noise") {
