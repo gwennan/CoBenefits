@@ -20,7 +20,8 @@
         NATION_TO_COLOR,
         COBENEFS_SCALE,
         removeSpinner,
-        addSpinner
+        addSpinner,
+        SEF_SCALE
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -435,7 +436,7 @@
                         height: height / 2,
                         ...MARGINS,
                         // y: {label: "Datazones Frequency"},
-                        // x: {domain},
+                        x: {label: SEF_SCALE(sef)},
                         style: {fontSize: "18px"},
                         marks: [
                             Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
@@ -471,7 +472,7 @@
                 height: height / 2,
                 ...MARGINS,
                 // y: {label: "Datazones Frequency"},
-                // x: {domain},
+                x: {label: SEF_SCALE(sef)},
                 style: {fontSize: "18px"},
                 color: {range: ["rgb(227, 248, 255)", "lightblue"]},
                 marks: [
@@ -599,13 +600,19 @@
             height: height,
             width: 800,
             ...MARGINS,
-            paddingLeft: 200,
             marginRight: 0,
-            x: {tickSize: 0, label: null, ticks: []},
-            // x: {tickSize: 0, label: null, ticks: [], padding: 0},
+            marginLeft: 40,
+            marginTop: 40,
+            style: {fontSize: "18px"},
+            y:{label: '£'},
+            //x: {tickSize: 0, label: 'Years', ticks: [],
+            //tickFormat: d => d.replace(/^Y/, '').split("_")[1]
+            //},
+            x: {tickSize: 0, label: null, ticks: [], padding: 0},
+            //fx:{tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
+            //    anchor:"bottom"},
             color: {range: [VIS_COLOR, AVERAGE_COLOR]},
             // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
-
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
                 //     x: "val",
@@ -621,7 +628,12 @@
                     fx: "time",
                     tip: true,
                     fill: "zone",
-                }))
+                })),
+                Plot.axisFx({anchor: "bottom", 
+                            tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
+                            offset:5,
+                            label: "Years"})
+            //Plot.axisX({label: null})
             ]
         })
         CBOverTimePLot?.append(plot);
@@ -709,7 +721,7 @@
             height: height*1.5,
             width: 1000,
             marginRight: 0,
-            marginTop:20,
+            marginTop:40,
             marginLeft: 60,
             marginBottom:60,
             style: {fontSize: "18px"},
