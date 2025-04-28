@@ -73,19 +73,6 @@
     const LAD = data.LAD;
     let compareTo: "UK" | "England" | "Wales" | "NI" | "Scotland" = "UK"
 
-    // const oneLADData = data.oneLADData;
-    // const oneLADAllCbs = data.oneLADAllCBs;
-    //
-    // const totalCBAllZones = data.totalCBAllZones;
-    // const allCBAllZones = data.totalCBAllZones;
-    //
-    // const allCBAllLAD = data.allCBAllLAD;
-    //
-    //
-    // // aggregated by sum
-    // const totalCBAllLAD = data.totalCBAllLAD;
-    // const allCBAllLADSUM = data.allCBAllLADSUM;
-
     let totalCBAllZones;
     let allCBsAllZones;
     let totalCBAllLAD;
@@ -97,7 +84,11 @@
     let oneLADData;
     let oneLADAllCbs;
 
+    let totalValue: number;
+    let totalValuePerCapita: number;
+
     let dataLoaded = false;
+
 
 
     async function loadData() {
@@ -113,6 +104,12 @@
         oneLADData = await getTableData(getTotalCBForOneLAD(LAD));
         oneLADAllCbs = await getTableData(getAllCBForOneLAD(LAD));
 
+
+        console.log(9999, oneLADData, d3.sum(oneLADData, d => d.total))
+
+        totalValue = (d3.sum(oneLADData, d => d.total) / 1000).toFixed(3);
+        totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000).toFixed(3);
+
         dataLoaded = true;
         removeSpinner(element)
     }
@@ -127,7 +124,7 @@
     onMount(() => {
         addSpinner(element)
         map = new Map(LAD, "LAD", mapDiv, "val", true);
-        map.initMap();
+        map.initMap(false);
     })
 
     function renderPlot() {
@@ -204,7 +201,6 @@
             plotDist?.append(pl);
 
             setTimeout(() => {
-
                 const rects = d3.select(pl)
                     .selectAll("g[aria-label='bar']")
                 // .selectAll("g")
@@ -212,14 +208,14 @@
                 const rects1 = d3.select(rects.nodes()[0])
                 const rects2 = d3.select(rects.nodes()[1])
 
-                console.log(2323232323, rects1.node())
+                // console.log(2323232323, rects1.node())
                 // console.log(groupA._groups[0][1])
 
                 // const groupB = d3.select("#groupB");
                 //
                 // // Move all children of groupB into groupA
                 rects2.selectAll("rect").each(function () {
-                    console.log(2, this)
+                    // console.log(2, this)
                     // rects1.node().appendChild(this);
                 });
                 //
@@ -264,7 +260,6 @@
     }
 
     function renderPerCobenefPlot() {
-        console.log(99, allCBAllLADSUM)
         plotPerCb?.append(
             Plot.plot({
                 height: height,
@@ -457,7 +452,8 @@
                 // y: {label: "Datazones Frequency"},
                 x: {label: SEF_SCALE(sef)},
                 style: {fontSize: "18px"},
-                color: {range: ["rgb(227, 248, 255)", "lightblue"]},
+                // color: {range: ["rgb(227, 248, 255)", "lightblue"]},
+                color: {range: ["#c8c8c8", AVERAGE_COLOR]},
                 marks: [
                     // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
                     //     x: sef,
@@ -684,7 +680,6 @@
                 return {time: t, value: d[t], cobenefit: d.co_benefit_type}
             })
         })
-        console.log("debug", dataCBs);
 
         let plotPerCB = Plot.plot({
             height: height*3,
@@ -829,35 +824,71 @@
 
         totalCBAllZones = await getTableData(getTotalCBAllDatazones(compareTo));
     }
+
 </script>
 
 
 <NavigationBar></NavigationBar>
 
-
 <div class="page-container" bind:this={element}>
 
-    <!--Define css variable -->
-    <div style="--color: {AVERAGE_COLOR}"></div>
+    <div class="section header header-row">
+        <div>
+            <p class="page-subtitle">Data Report</p>
+            <h1 class="page-title"> {LADToName[LAD]}</h1>
+            <p class="description">Explore how this local authority will benefit from achieving Net Zero and general factors
+                of their households.</p>
 
-    <div class="section header">
-        <p class="page-subtitle">Data Report</p>
-        <h1 class="page-title"> {LADToName[LAD]}</h1>
-        <p class="description">Explore how this local authority will benefit from achieving Net Zero and general factors
-            of their households.</p>
+            <div class="radio-set">
+                Compare the Local District Area with average of:
+                <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
+                <label class="nation-label" for="html">UK</label><br>
+                <input type="radio" on:change={onChangeComparison} name="compare" value="England">
+                <label class="nation-label" for="html">England</label><br>
+                <input type="radio" on:change={onChangeComparison} name="compare" value="Wales">
+                <label class="nation-label" for="html">Wales</label><br>
+                <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
+                <label class="nation-label" for="javascript" >Scotland</label>
+                <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
+                <label class="nation-label" for="javascript">Northern Ireland</label>
+            </div>
+        </div>
 
-        <div class="radio-set">
-            Compare the Local District Area with average of:
-            <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
-            <label class="nation-label" for="html">UK</label><br>
-            <input type="radio" on:change={onChangeComparison} name="compare" value="England">
-            <label class="nation-label" for="html">England</label><br>
-            <input type="radio" on:change={onChangeComparison} name="compare" value="Wales">
-            <label class="nation-label" for="html">Wales</label><br>
-            <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
-            <label class="nation-label" for="javascript" >Scotland</label>
-            <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
-            <label class="nation-label" for="javascript">Northern Ireland</label>
+        <div>
+            <!--{d3.sum(totalCBAllZones.map(d => d.total))}-->
+            {#if oneLADData}
+
+            <div class="waffle-stats">
+              <div class="waffle-stat">
+                <div class="waffle-value">
+                    {#if totalValue}
+                  <span class="waffle-big">£{totalValue.toLocaleString()}</span>
+                  {/if}
+                  <span class="small">billion</span>
+                </div>
+                {#if totalValue > 0}
+                  <div class="waffle-caption">Local area benefits</div>
+                {:else}
+                  <div class="waffle-caption">Local area costs</div>
+                {/if}
+              </div>
+              <div class="waffle-stat">
+                <div class="waffle-value">
+                    {#if totalValue}
+                  <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
+                  {/if}
+                  <span class="small">thousand</span>
+                </div>
+                {#if totalValue > 0}
+                  <div class="waffle-caption">Per capita benefits</div>
+                {:else}
+                  <div class="waffle-caption">Per capita costs</div>
+                {/if}
+              </div>
+            </div>
+            {/if}
+
+
         </div>
 
     </div>
@@ -1105,6 +1136,14 @@
 
 
 <style>
+    .header-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+          align-items: center;
+
+    }
+
     #vis-block {
         display: flex;
         flex-direction: row;
@@ -1202,5 +1241,36 @@
     width: 0.2rem;
     height: 0.2rem;
     }
+
+
+
+
+.waffle-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.waffle-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.waffle-big {
+  font-size: 1.5rem;
+  font-weight: medium;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: black;
+}
+
+.waffle-caption {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: black;
+}
 
 </style>

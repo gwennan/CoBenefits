@@ -275,7 +275,7 @@ export function getAllCBAllDatazones() {
 
 // Co-benefit=total to get only one row per datazone. We can use this for the SEF data too.
 export function getTotalCBForOneLAD(LAD: string) {
-    let q = `SELECT total, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => `"${d}"`).join(", ")}, ${SEF.join(", ")}
+    let q = `SELECT total, total / Population as totalPerCapita, Lookup_value, co_benefit_type, LAD, scenario, ${TIMES.map(d => `"${d}"`).join(", ")}, ${SEF.join(", ")}
              FROM ${DB_TABLE_NAME}
              WHERE LAD = '${LAD}'
                AND co_benefit_type = 'Total'`
@@ -521,7 +521,19 @@ export function getTotalAggregation() {
         AND Population IS NOT NULL
     `;
   }
-  
+
+
+  export function getTotalLAD(LAD: string) {
+    return `
+      SELECT 
+        SUM(total) / 1000 AS total_value,
+        SUM(total) / SUM(Population) * 1000 AS total_value_per_capita
+      FROM ${DB_TABLE_NAME}
+      WHERE co_benefit_type == 'Total'
+      GROUP BY co_benefit_type
+        AND Population IS NOT NULL
+    `;
+  }
 
 
 

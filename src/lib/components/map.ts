@@ -56,13 +56,11 @@ export class Map {
         this.colorRange = ["red", "white", "black"]
 
 
+        // UK centering
+        this.center = [-1.54785, 53.79648] // Leeds
+
         this.loadData(data);
 
-        // UK centering
-        // this.center = [-3.19648, 55.95206] // Edn
-        // this.center = [-0.12574, 51.50853] // London
-        this.center = [-1.54785, 53.79648] // Leeds
-        
         this.map = new maplibregl.Map({
             container: 'map', // container id
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
@@ -122,8 +120,9 @@ export class Map {
             this.geojson = LADZones;
 
             for (let zone of this.geojson.features) {
-                // let zoneId = zone.properties.LAD24CD;
-                let zoneId = zone.properties.lad11cd;
+                let zoneId = this.zoneName(zone)
+
+                this.center = [zone.properties.LONG, zone.properties.LAT]
 
                 if (zoneId == data) {
                     zone.properties.value = 1
@@ -265,65 +264,65 @@ export class Map {
 
         // Tiles
 
-         this.map.addSource('raster-tiles',{
-             'type': 'raster',
-                        'tiles': [
-                            // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-                            // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
-                        ],
-                        'tileSize': 256,
-                        'attribution':
-                            'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-                    }
+        this.map.addSource('raster-tiles', {
+                'type': 'raster',
+                'tiles': [
+                    // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+                    // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+                ],
+                'tileSize': 256,
+                'attribution':
+                    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+            }
         );
 
         this.map.addLayer({
-                        'id': 'simple-tiles',
-                        'type': 'raster',
-                        'source': 'raster-tiles',
-                        paint: {
-                            "raster-opacity": 0.35
-                        },
-                        // 'minzoom': 0,
-                        // 'maxzoom': 10
-                    }
-            );
+                'id': 'simple-tiles',
+                'type': 'raster',
+                'source': 'raster-tiles',
+                paint: {
+                    "raster-opacity": 0.35
+                },
+                // 'minzoom': 0,
+                // 'maxzoom': 10
+            }
+        );
 
 
         this.loaded = true;
     }
 
-    initMap() {
+    initMap(tooltip=true) {
         this.map.on('style.load', () => {
             this.loadLayers();
         })
 
-        this.map.on('mousemove', (event) => {
+        if (tooltip) {
+            this.map.on('mousemove', (event) => {
+                const zones = this.map.queryRenderedFeatures(event.point, {
+                    layers: ['fill']
+                });
 
-            const zones = this.map.queryRenderedFeatures(event.point, {
-                layers: ['fill']
-            });
+                let zone = zones[0];
 
-            let zone = zones[0];
-            console.log(zones)
+                let name = zone.properties.LAD22NM;
 
-            let name = zone.properties.LAD22NM;
-
-            if (zone) {
-                let cobenefValue = zone.properties.value;
-                this.tooltip.innerHTML = `
+                if (zone) {
+                    let cobenefValue = zone.properties.value;
+                    this.tooltip.innerHTML = `
                  <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
                  <br>
                  <strong>Value</strong>: ${cobenefValue}
                  `;
-                this.tooltip.style.left = event.point.x + 10 + 'px';
-                this.tooltip.style.top = event.point.y + 10 + 'px';
-                this.tooltip.style.display = 'block';
-            } else {
-                this.tooltip.style.display = 'none';
-            }
-        });
+                    this.tooltip.style.left = event.point.x + 10 + 'px';
+                    this.tooltip.style.top = event.point.y + 10 + 'px';
+                    this.tooltip.style.display = 'block';
+                } else {
+                    this.tooltip.style.display = 'none';
+                }
+            });
+        }
 
         // // Listen for zoom events
         // this.map.on('zoom',  () => {
@@ -340,7 +339,7 @@ export class Map {
         // });
     }
 
-    update = (newData, mapType, loadLayers=false, colorRange) => {
+    update = (newData, mapType, loadLayers = false, colorRange) => {
         if (!this.loaded) return;
         this.colorRange = colorRange;
 
