@@ -450,7 +450,7 @@
                 {coBenefitLabel}
               </h1>
               <div style="margin-top: 14px;"></div>
-              <p class='definition'> {coBenefitDef} </p>
+              <!--<p class='definition'> {coBenefitDef} </p>-->
             </div>
 
           </div>
