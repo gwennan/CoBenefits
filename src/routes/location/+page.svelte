@@ -304,7 +304,7 @@
                         tipoffset: 10,
                         fillOpacity:0.8
                     })),
-                    Plot.axisY({label: 'Total Co-Benefit (£)',  labelAnchor: "center"}),
+                    Plot.axisY({label: 'Total Co-Benefit (£million)',  labelAnchor: "center"}),
                     Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25,  labelAnchor: "center", labelArrow: false}),
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
@@ -932,7 +932,7 @@
             <div class="component column">
                 <h3 class="component-title">11 types of co-benefit values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits recieved across all local 
-                    authorities in <span class="nation-label">{compareTo}</span> (in grey).</p>
+                    authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
                     <!--                    <div class="badge-container">-->
                     <!--                        <img class="badge" src={aggregationBadge} />-->
