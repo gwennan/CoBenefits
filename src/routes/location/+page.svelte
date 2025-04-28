@@ -407,7 +407,6 @@
 
                     plot = Plot.plot({
                         height: height / 2,
-                        width: 800,
                         ...MARGINS,
                         marginLeft: 100,
                         // x: {label: SEF_SCALE(sef)},
