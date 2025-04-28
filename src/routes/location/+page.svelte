@@ -263,9 +263,12 @@
         plotPerCb?.append(
             Plot.plot({
                 height: height,
-                width: 811,
-                MARGINS,
+                // width: 400,
+                ...MARGINS,
+                marginBottom: 100,
                 x: {type: "band"},
+                y: {grid: true},
+                color: {legend: true, range: COBENEFS_SCALE.range(), domain: COBENEFS_SCALE.domain()},
                 marks: [
                     // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
                     //     y: "val",
@@ -290,13 +293,16 @@
                         sort: {x: "y", reverse: true},
                         tip: true
                     })),
-
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
                          fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
                         tip: true
-                    }))
+                    })),
+                    Plot.axisY({label: 'Total Co-Benefit (£)',  labelAnchor: "center"}),
+                    Plot.axisX({label: 'Co-Benefit Type', tickRotate: 45,  labelAnchor: "center"}),
+                    Plot.ruleY([0]),
+
                 ]
             }))
     }
@@ -378,7 +384,8 @@
                         width: 500,
                         ...MARGINS,
                         marginLeft: 100,
-                        x: {grid: true, label: sef, tickFormat: d => Math.floor(d)},
+                        // x: {label: SEF_SCALE(sef)},
+                        x: {grid: true, label: SEF_SCALE(sef), tickFormat: d => Math.floor(d)},
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
@@ -446,6 +453,7 @@
                 SEFPlotLAD[sef]?.append(plot)
             }
 
+            console.log(9988888, oneLADData)
             let cbplot = Plot.plot({
                 height: height / 2,
                 ...MARGINS,
@@ -453,7 +461,7 @@
                 x: {label: SEF_SCALE(sef)},
                 style: {fontSize: "18px"},
                 // color: {range: ["rgb(227, 248, 255)", "lightblue"]},
-                color: {range: ["#c8c8c8", AVERAGE_COLOR]},
+                color: {range: ["#e6e6e6", AVERAGE_COLOR]},
                 marks: [
                     // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
                     //     x: sef,
@@ -481,17 +489,20 @@
                         fill: "black",
                         r: 2
                     }),
-                    Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
-                        x: sef,
-                        y: "total"
-                    }),
+                    // Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
+                    //     x: sef,
+                    //     y: "total"
+                    // }),
                     // Declaring the axes so they are on top of the densities
-                    Plot.axisY(),
+                    Plot.axisY({label: "Datazone Co-Benefit (£)"}),
                     Plot.axisX({anchor: "bottom"})
                 ]
             })
             // console.log("debug", cbplot)
 
+            if (SEFPlotPerCB[sef]) {
+                SEFPlotPerCB[sef].innerHTML = ""
+            }
             SEFPlotPerCB[sef]?.append(cbplot)
         })
     }
@@ -770,7 +781,6 @@
         }
 
         if (dataLoaded && allCBAllLADSUM && totalCBAllLAD && totalCBAllZones) {
-            console.log("render")
             renderPlot();
             renderPerCobenefPlot();
             renderCBOverTimePlot();
@@ -780,17 +790,14 @@
     $: {
         Object.values(SEFPlotLAD).forEach(sefPlot => {
             if (sefPlot) removeChart(sefPlot)
-            // sefPlot?.firstChild?.remove();
         })
 
         Object.values(SEFPlotFullDistrib).forEach(sefPlot => {
             if (sefPlot) removeChart(sefPlot)
-            // sefPlot?.firstChild?.remove();
         })
 
         Object.values(SEFPlotPerCB).forEach(sefPlot => {
             if (sefPlot) removeChart(sefPlot)
-            // sefPlot?.firstChild?.remove();
         })
 
         if (dataLoaded) {
@@ -1067,8 +1074,8 @@
             <p class="description">We describe the distribution of household economic factors aggregated on the data
                 zone level and the different level of co-benefits recieved by those data zones.</p>
 
-            <input type="checkbox" bind:checked={isSEFAggregated}/>
-            <label for="checkbox">Aggregate Plots</label>
+<!--            <input type="checkbox" bind:checked={isSEFAggregated}/>-->
+<!--            <label for="checkbox">Aggregate Plots</label>-->
         </div>
 
         <div id="multiple-comp">
@@ -1090,11 +1097,6 @@
                                 <p class="description short">Histogram shows the number of data zones distributed across
                                     different household social economic factors.</p>
                                 <div class="plot" bind:this={SEFPlotLAD[sef]}>
-                                    <!--                                    <div class="badge-container">-->
-                                    <!--                                        <img class="badge" src={normalizedBadge} />-->
-                                    <!--                                        <img class="badge" src={modeledDataBadge} />-->
-                                    <!--                                        <img class="badge" src={binningBadge} />-->
-                                    <!--                                    </div>-->
                                 </div>
                             </div>
 
@@ -1105,17 +1107,12 @@
                                         Values</h3>
                                     <p class="description short">Density plot refers to UK distribution while the
                                         scattered points refer to data zones in the local authority.</p>
-                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>
-                                    </div>
+<!--                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>-->
+<!--                                    </div>-->
                                 </div>
 
                                 <div>
                                     <div class="plot" bind:this={SEFPlotPerCB[sef]}>
-                                        <!--                                    <div class="badge-container">-->
-                                        <!--                                        <img class="badge" src={overlapBadge} />-->
-                                        <!--                                        <img class="badge" src={multipleDataSourceBadge} />-->
-                                        <!--                                        <img class="badge" src={modeledDataBadge} />-->
-                                        <!--                                    </div>-->
                                     </div>
                                 </div>
                             </div>
