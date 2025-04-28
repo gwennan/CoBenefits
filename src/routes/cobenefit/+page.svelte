@@ -217,7 +217,7 @@
             Plot.plot({
                 height: height / 1.5,
                 ...MARGINS,
-                marginLeft: 80,
+                marginLeft: 90,
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Datazones Frequency"},
@@ -233,7 +233,8 @@
                         strokeWidth: 3
                     })),
                     Plot.axisY({anchor: "left", label: 'Datazone frequency',  labelArrow:'none', labelAnchor: "center"}),
-                    Plot.ruleX([0])
+                    Plot.ruleX([0],{stroke: "#333", strokeWidth: 0.75}),
+                    //Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                 ]
             })
         );

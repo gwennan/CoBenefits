@@ -260,12 +260,22 @@
     }
 
     function renderPerCobenefPlot() {
+
+        let combinedData = [
+            ...allCBAllLADSUM.map(d => ({...d, source: "Average"})),
+            ...oneLADAllCbs.map(d => ({...d, source: "One LAD"}))
+        ];
+        
         plotPerCb?.append(
             Plot.plot({
-                height: height,
+                height: height*1.3,
                 width: 811,
-                MARGINS,
-                x: {type: "band"},
+                marginBottom: 80,
+                marginTop: 30,
+                marginRight: 60,
+                style: {fontSize: "14px"},
+                x: {type: "band", label: "Co-benefit type", tickRotate:25,padding: 0.6},
+                y:{label: "Average value (£)", labelArrow: false, grid:true},
                 marks: [
                     // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
                     //     y: "val",
@@ -285,17 +295,19 @@
                     Plot.barY(allCBAllLADSUM, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
-                        dx: AVERAGE_DX,
+                        dx: 12,
                         fill: AVERAGE_COLOR,
                         sort: {x: "y", reverse: true},
-                        tip: true
+                        tip: true,
                     })),
 
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
-                         fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
-                        tip: true
+                        dx:-12,
+                        fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
+                        fillOpacity:0.8,
+                        tip: true,
                     }))
                 ]
             }))
@@ -1182,7 +1194,7 @@
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 400px;
+        height: 500px;
         /*flex: 1; !* take the remaining height *!*/
     }
 
