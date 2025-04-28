@@ -260,21 +260,17 @@
     }
 
     function renderPerCobenefPlot() {
-
-        let combinedData = [
-            ...allCBAllLADSUM.map(d => ({...d, source: "Average"})),
-            ...oneLADAllCbs.map(d => ({...d, source: "One LAD"}))
-        ];
-        
         plotPerCb?.append(
             Plot.plot({
-                height: height,
-                // width: 400,
+                height: height*1.4,
+                width: 811,
                 ...MARGINS,
-                marginBottom: 100,
-                x: {type: "band"},
+                marginBottom: 80,
+                marginTop: 30,
+                x: {type: "band", padding:0.6},
                 y: {grid: true},
-                color: {legend: true, range: COBENEFS_SCALE.range(), domain: COBENEFS_SCALE.domain()},
+                style: {fontSize: "14px"},
+                color: {legend: false, range: COBENEFS_SCALE.range(), domain: COBENEFS_SCALE.domain()},
                 marks: [
                     // Plot.barY(allCBAllLAD, Plot.groupX({y: "mean"}, {
                     //     y: "val",
@@ -302,12 +298,14 @@
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
-                         fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
-                        tip: true
+                        dx:-12,
+                        fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
+                        tip: true,
+                        fillOpacity:0.8
                     })),
                     Plot.axisY({label: 'Total Co-Benefit (£)',  labelAnchor: "center"}),
-                    Plot.axisX({label: 'Co-Benefit Type', tickRotate: 45,  labelAnchor: "center"}),
-                    Plot.ruleY([0]),
+                    Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25,  labelAnchor: "center", labelArrow: false}),
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
                 ]
             }))
