@@ -48,15 +48,42 @@ export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innova
 
 
 // export const SCENARIOS = ["BNZ", "test", "all"]
-export let SEF = ['Under_35',
-    'Over_65', 'EPC', 'Median_Income', 'Tenure', 'Typology', 'Unemployment',
-    'Rurality', 'House_value', 'Fuel_Type', 'Fuel_consumption_total',
-    'Floor_area', 'Gas_flag', 'Number_cars', 'Urban_trips', 'Total_vkm',
-    'Urban_vkm']
+// export let SEF = ['Under_35',
+//     'Over_65', 'EPC', 'Median_Income', 'Tenure', 'Typology', 'Unemployment',
+//     'Rurality', 'House_value', 'Fuel_Type', 'Fuel_consumption_total',
+//     'Floor_area', 'Gas_flag', 'Number_cars', 'Urban_trips', 'Total_vkm',
+//     'Urban_vkm']
+
+// Categorical are first and then numerical
+export let SEF = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars",
+    'Under_35', 'Over_65', 'Median_Income', 'Unemployment',
+    'Rurality', 'House_value', 'Fuel_consumption_total',
+    'Floor_area', 'Urban_trips', 'Total_vkm', 'Urban_vkm']
 
 export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars"]
 
-SEF.sort((a, b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
+// SEF.sort((a, b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
+
+export const SEF_UNITS = ['?',
+                          '?',
+                          '?',
+                          '?',
+                          '?',
+                          'Number of cars',
+                          'Proportion of people',
+                          'Proportion of people',
+                          '£',
+                          'Proportion of people',
+                          '?',
+                          "£²",
+                          '?',
+                          'm²',
+                          'Number of trips',
+                          'Km',
+                          'Km'];
+
+export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);
+
 
 // The years labels have an Y for start otherwise it causes sql issues
 // export const TIMES = ["2025_2029", "2030_2034", "2035_2039", "2040_2044", "2045_2040"]
@@ -114,24 +141,7 @@ export const COBENEFS_RANGE2 = [['#71C35D', '#244a1b', '#499437', '#7cc76a', '#b
     ['#D3A029', '#554010', '#aa8121', '#ddb454', '#eed9a9']];
 export const COBENEFS_SCALE2 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE2);
 
-export const SEF_UNITS = ['Proportion of people', 
-                          'Proportion of people',
-                          '?',
-                          '£',
-                          '?',
-                          '?',
-                          'Proportion of people',
-                          '?',
-                          '£',
-                          '?',
-                          '?',
-                          "m²",
-                          '?',
-                          'Number of cars',
-                          'Number of trips',
-                          'Km',
-                          'Km'];
-export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);  
+
   
 
 // export const HEROSLIDES = [

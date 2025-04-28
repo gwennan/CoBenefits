@@ -155,7 +155,8 @@ export class Map {
 
                 // Put cobenef values inside the geojson for maplibre rendering
                 for (let zone of this.geojson.features) {
-                    let zoneId = zone.properties.LSOA21CD;
+                    // let zoneId = zone.properties.LSOA21CD;
+                    let zoneId = this.zoneName(zone);
                     zone.properties.value = this.dataZoneToValue[zoneId]
                     // console.log(this.dataZoneToValue[zoneId], zoneId)
                 }
@@ -181,7 +182,6 @@ export class Map {
                     domain[0] = -1;
                 }
             } else {
-                console.log(999999, domain)
                 domain = d3.range(0, this.colorRange.length).map(i => domain[0] + (i / (this.colorRange.length - 1)) * (domain[1] - domain[0]))
             }
 
@@ -236,8 +236,8 @@ export class Map {
         });
 
         // Optional: Add border
-        // if (this.border) {
-        if (true) {
+        if (this.border) {
+        // if (true) {
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
@@ -307,7 +307,8 @@ export class Map {
 
                 let zone = zones[0];
 
-                let name = zone.properties.LAD22NM;
+                // name of LAD or LSOA
+                let name = zone.properties.LAD22NM ?? zone.properties.LSOA21NM;
 
                 if (zone) {
                     let cobenefValue = zone.properties.value;
