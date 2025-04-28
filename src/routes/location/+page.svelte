@@ -325,7 +325,7 @@
                         tipoffset: 10,
                         fillOpacity:0.8
                     })),
-                    Plot.axisY({label: 'Total Co-Benefit (£)',  labelAnchor: "center"}),
+                    Plot.axisY({label: 'Total Co-Benefit (£million)',  labelAnchor: "center"}),
                     Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25,  labelAnchor: "center", labelArrow: false}),
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
@@ -407,7 +407,6 @@
 
                     plot = Plot.plot({
                         height: height / 2,
-                        width: 500,
                         ...MARGINS,
                         marginLeft: 100,
                         // x: {label: SEF_SCALE(sef)},
@@ -421,7 +420,8 @@
                                 fill: AVERAGE_COLOR
                             }))),
                             Plot.barY(oneLADData, Plot.normalizeY(Plot.groupX({y: "count"}, {
-                                x: sef
+                                x: sef,
+                                dx:-20
                             })))
                         ]
                     })
@@ -926,7 +926,7 @@
     <div class="section">
         <div class="section-header">
             <p class="section-subtitle">Overview</p>
-            <h2 class="section-title">How much co-benefits would this area recieve?</h2>
+            <h2 class="section-title">What co-benefits would this area receive?</h2>
             <p class="description">We model 11 types of co-benefits, based on the Climate Change Committee’s 
                 Sixth Carbon Budget, from 2025 to 2050 at the data zone level across the UK.</p>
         </div>
@@ -956,7 +956,7 @@
             <div class="component column">
                 <h3 class="component-title">11 types of co-benefit values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits recieved across all local 
-                    authorities in <span class="nation-label">{compareTo}</span> (in grey).</p>
+                    authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
                     <!--                    <div class="badge-container">-->
                     <!--                        <img class="badge" src={aggregationBadge} />-->
@@ -1102,7 +1102,7 @@
     <div class="section">
         <div class="section-header">
             <p class="section-subtitle">Households</p>
-            <h2 class="section-title">Social Economic Factors of Households</h2>
+            <h2 class="section-title">{LADToName[LAD]} social-economic factors</h2>
             <p class="description">We describe the distribution of household economic factors aggregated on the data
                 zone level and the different level of co-benefits recieved by those data zones.</p>
 
@@ -1126,7 +1126,7 @@
                         {:else}
                             <div class="component">
                                 <h3 class="component-title">Data Zones Distribution (vs. <span class="nation-label">{compareTo}</span> average)</h3>
-                                <p class="description short">Histogram shows the number of data zones distributed across
+                                <p class="description short">The histogram shows the number of data zones distributed across
                                     different household social economic factors.</p>
                                 <div class="plot" bind:this={SEFPlotLAD[sef]}>
                                 </div>
@@ -1135,10 +1135,10 @@
 
                             <div class="component">
                                 <div>
-                                    <h3 class="component-title">Co-benefits Recieved by Data Zones across {sef}
+                                    <h3 class="component-title">Co-benefits Recieved by Data Zones across {sef.replaceAll('_', ' ')}
                                         Values</h3>
                                     <p class="description short">Density plot refers to UK distribution while the
-                                        scattered points refer to data zones in the local authority.</p>
+                                        scattered points refer to data zones in {LADToName[LAD]}.</p>
 <!--                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>-->
 <!--                                    </div>-->
                                 </div>
