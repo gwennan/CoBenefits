@@ -86,9 +86,9 @@
 
     let totalValue: number;
     let totalValuePerCapita: number;
+    let totalValueMax: number;
 
     let dataLoaded = false;
-
 
 
     async function loadData() {
@@ -105,10 +105,14 @@
         oneLADAllCbs = await getTableData(getAllCBForOneLAD(LAD));
 
 
-        console.log(9999, oneLADData, d3.sum(oneLADData, d => d.total))
-
         totalValue = (d3.sum(oneLADData, d => d.total) / 1000).toFixed(3);
+
+        // This is an approximation
         totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000).toFixed(3);
+
+
+        totalValueMax = d3.max(totalCBAllLAD, d => d.val) / 1000;
+        // totalValueMaxPerCapita = d3.max(totalCBAllLAD, d => d.val) / 1000;
 
         dataLoaded = true;
         removeSpinner(element)
@@ -126,6 +130,23 @@
         map = new Map(LAD, "LAD", mapDiv, "val", true);
         map.initMap(false);
     })
+
+    function makeLADBarSVG(value, max) {
+      const plot = Plot.plot({
+        width: 80,
+        height: 20,
+        margin: 0,
+        x: { domain: [0, max], axis: null },
+        marks: [
+          Plot.barX([value], {
+            x: d => d,
+            y: 0,
+            fill: "#ccc"
+          })
+        ]
+      });
+      return plot.outerHTML;
+    }
 
     function renderPlot() {
         if (chartType == "boxplot") {
@@ -459,7 +480,6 @@
                 SEFPlotLAD[sef]?.append(plot)
             }
 
-            console.log(9988888, oneLADData)
             let cbplot = Plot.plot({
                 height: height / 2,
                 ...MARGINS,
@@ -861,16 +881,18 @@
             </div>
         </div>
 
+
         <div>
             <!--{d3.sum(totalCBAllZones.map(d => d.total))}-->
-            {#if oneLADData}
+            {#if totalValue}
 
             <div class="waffle-stats">
               <div class="waffle-stat">
                 <div class="waffle-value">
-                    {#if totalValue}
+                    {@html
+                    makeLADBarSVG(totalValue, totalValueMax)
+                        }
                   <span class="waffle-big">£{totalValue.toLocaleString()}</span>
-                  {/if}
                   <span class="small">billion</span>
                 </div>
                 {#if totalValue > 0}
@@ -881,9 +903,11 @@
               </div>
               <div class="waffle-stat">
                 <div class="waffle-value">
-                    {#if totalValue}
+<!--                    TODO: current placeholder -->
+                    {@html
+                    makeLADBarSVG(totalValue, 1000000)
+                        }
                   <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
-                  {/if}
                   <span class="small">thousand</span>
                 </div>
                 {#if totalValue > 0}
@@ -1277,6 +1301,12 @@
   margin-top: 0.2rem;
   font-size: 0.85rem;
   color: black;
+    /*float: right;*/
+    margin-left: auto;
+margin-right: 10%;
+
+
+
 }
 
 </style>

@@ -51,7 +51,6 @@
     // let granularity: "LSOA" | "LAD" = "LSOA";
 
     let selectedSef: SEF = "EPC";
-
     let fullData;
 
 
@@ -377,21 +376,6 @@
 </div>
 
 <style>
-
-    /*#main {*/
-    /*    display: flex;*/
-    /*    flex-direction: row;*/
-
-    /*    gap: 1%;*/
-
-    /*    !*TODO: Make alignement layour better*!*/
-    /*    !*width: 100vw;*!*/
-    /*    width: 95%;*/
-    /*    height: 100vh;*/
-
-    /*    !* width includes padding *!*/
-    /*    box-sizing: content-box;*/
-    /*}*/
 
     #mapComp {
         position: relative;
