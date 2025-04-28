@@ -270,7 +270,7 @@ export class Map {
                 'tiles': [
                     // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
                     // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+                    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=2400b8d8-5e34-491f-87b0-181af8c12f88"
                 ],
                 'tileSize': 256,
                 'attribution':
