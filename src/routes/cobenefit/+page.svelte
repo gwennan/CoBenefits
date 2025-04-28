@@ -573,8 +573,8 @@
                 <br>
                 <!-- Disclaimer -->
                 <div id="se-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represents modeled associations and should not be interpreted as direct causal relationships. </p>
-                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where x-axis is non-liner:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where the x-axis is non-linear:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
 
                 </div>
 
