@@ -86,8 +86,9 @@
 
                 if (mapType == "Cobenefit") {
                     if (coBenefits.length == 1) {
-                        colorRange = COBENEFS_SCALE2(coBenefits[0])
+                        colorRange = JSON.parse(JSON.stringify(COBENEFS_SCALE2(coBenefits[0])))
                         colorRange.shift()
+                        colorRange = colorRange.reverse()
                         // colorRange.splice(0, 0, "red");
                     } else {
                         colorRange = ["red", "white", "black"];
