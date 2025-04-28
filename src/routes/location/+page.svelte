@@ -301,6 +301,7 @@
                         dx:-12,
                         fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
                         tip: true,
+                        tipoffset: 10,
                         fillOpacity:0.8
                     })),
                     Plot.axisY({label: 'Total Co-Benefit (£)',  labelAnchor: "center"}),
@@ -597,16 +598,11 @@
             marginRight: 0,
             marginLeft: 60,
             marginTop: 40,
-            marginBottom:70,            
+            marginBottom:60,            
             style: {fontSize: "18px"},
             y:{label: '£', grid: true},
-            //x: {tickSize: 0, label: 'Years', ticks: [],
-            //tickFormat: d => d.replace(/^Y/, '').split("_")[1]
-            //},
-            x: {tickSize: 0, label: null, ticks: [], padding: 0},
-            //fx:{tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
-            //    anchor:"bottom"},
-            color: {range: [VIS_COLOR, AVERAGE_COLOR]},
+            x: {tickSize: 0, label: null, ticks: [], padding: 0.3},
+            color: {range: [ AVERAGE_COLOR, VIS_COLOR], legend:false},
             // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
@@ -619,16 +615,16 @@
                 // })),
                 Plot.barY(data, Plot.groupX({y: "mean"}, {
                     x: "zone",
+                    //dx: 30,
                     y: "value",
                     fx: "time",
-                    tip: true,
+                    tip: false,
                     fill: "zone",
+                    //sort: {x: "x", reverse: true},
                 })),
                 Plot.axisFx({anchor: "bottom", 
                             tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
-                            offset:5,
                             label: "Years"}),
-            //Plot.axisX({label: null})
             ]
         })
         CBOverTimePLot?.append(plot);
@@ -998,6 +994,13 @@
             <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
             <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
             <br>
+
+            <ul class="legend-list">
+                <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
+                    {LADToName[LAD]}</li>
+                <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
+                    <span class="nation-label">{compareTo}</span></li>
+
             <div class="row">
                 <div class="plot" bind:this={CBOverTimePLot}>
                     <!--                    <div class="badge-container">-->
@@ -1035,7 +1038,7 @@
                 <br><br/>
                 <ul class="legend-list">
                     <li><span class="legend-color" style="background-color: #D3A029"></span>
-                        <img src="${getIconFromCobenef('Diet change')}" alt="Icon" class="legend-icon" /> Diet change</li>
+                        Diet change</li>
                     <li><span class="legend-color" style="background-color: #48773E"></span>
                         Physical activity</li>
                     <li><span class="legend-color" style="background-color: #183668"></span>
@@ -1062,7 +1065,9 @@
 
             <!-- Disclaimer -->
             <div id="main-disclaimer" class="disclaimer-box">
-                <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the co-benefits some values are very small in comparison to larger values so therefore are not visable on this plot. </p>
+                <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the co-benefits some values are very small in comparison 
+                    to larger values so therefore are not visable on this plot. </p>
+                <p style="margin: 0 0 0.5rem 0;"> *Hover over areas for more information.</p>
 
             </div>
         </div>
