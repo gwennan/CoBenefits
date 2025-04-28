@@ -260,6 +260,12 @@
     }
 
     function renderPerCobenefPlot() {
+
+        let combinedData = [
+            ...allCBAllLADSUM.map(d => ({...d, source: "Average"})),
+            ...oneLADAllCbs.map(d => ({...d, source: "One LAD"}))
+        ];
+        
         plotPerCb?.append(
             Plot.plot({
                 height: height,
@@ -288,10 +294,10 @@
                     Plot.barY(allCBAllLADSUM, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
-                        dx: AVERAGE_DX,
+                        dx: 12,
                         fill: AVERAGE_COLOR,
                         sort: {x: "y", reverse: true},
-                        tip: true
+                        tip: true,
                     })),
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
@@ -1179,7 +1185,7 @@
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 400px;
+        height: 500px;
         /*flex: 1; !* take the remaining height *!*/
     }
 
