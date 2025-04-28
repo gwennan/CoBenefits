@@ -313,7 +313,7 @@
                     // Very weird it's needed!
                     //x: {label: SEF_SCALE(sef)},
                     //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
-                    y: {label: '£/capita',  labelArrow:'none'},
+                    y: {label: '£billion',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
@@ -352,8 +352,8 @@
                     marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
-                    x: {label: SEF_SCALE(sef)},
-                    y: {label: '£/capita'},
+                    x: {label: SEF_SCALE(sef), labelArrow:false},
+                    y: {label: '£billion', labelArrow:false},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {

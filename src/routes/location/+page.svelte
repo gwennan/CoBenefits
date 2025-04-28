@@ -620,7 +620,7 @@
             marginTop: 40,
             marginBottom:60,            
             style: {fontSize: "18px"},
-            y:{label: '£', grid: true},
+            y:{label: '£billion', grid: true, labelArrow:false},
             x: {tickSize: 0, label: null, ticks: [], padding: 0.3},
             color: {range: [ AVERAGE_COLOR, VIS_COLOR], legend:false},
             // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
@@ -721,7 +721,7 @@
             marginBottom:80,
             insetTop: 30,
             style: {fontSize: "30px"},
-            y: {tickFormat: ".2f", label: '£', ticks: 10},
+            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow:false},
             x: {label: 'Years', 
                 tickFormat: d => d.replace(/^Y/, '').split("_")[1],
             },
@@ -863,11 +863,10 @@
         <div>
             <p class="page-subtitle">Data Report</p>
             <h1 class="page-title"> {LADToName[LAD]}</h1>
-            <p class="description">Explore how this local authority will benefit from achieving Net Zero and general factors
-                of their households.</p>
+            <p class="description">Explore how this local authority will benefit from achieving Net Zero and learn about the characteristics of its households.</p>
 
             <div class="radio-set">
-                Compare the Local District Area with average of:
+                Compare this Local Authority District (LAD) against:
                 <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
                 <label class="nation-label" for="html">UK</label><br>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="England">
@@ -927,10 +926,9 @@
     <div class="section">
         <div class="section-header">
             <p class="section-subtitle">Overview</p>
-            <h2 class="section-title">How much co-benefit values would this area recieve?</h2>
-            <p class="description">We calculate and model 11 types of co-benefits across five different pathyways
-                suggested by Climate Change Committee in the Sixth Carbon Budget from 2025-2050 on the level of data
-                zones across UK.</p>
+            <h2 class="section-title">How much co-benefits would this area recieve?</h2>
+            <p class="description">We model 11 types of co-benefits, based on the Climate Change Committee’s 
+                Sixth Carbon Budget, from 2025 to 2050 at the data zone level across the UK.</p>
         </div>
 
         <div id="vis-block">
@@ -956,9 +954,9 @@
             <!--            </div>-->
 
             <div class="component column">
-                <h3 class="component-title">11 Types of Co-Benefits Values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
-                <p class="description">Co-benefits values in {LADToName[LAD]} verus average value across all local
-                    authorities in <span class="nation-label">{compareTo}</span> </p>
+                <h3 class="component-title">11 types of co-benefit values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
+                <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits recieved across all local 
+                    authorities in <span class="nation-label">{compareTo}</span> (in grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
                     <!--                    <div class="badge-container">-->
                     <!--                        <img class="badge" src={aggregationBadge} />-->
@@ -967,8 +965,9 @@
             </div>
 
             <div class="component column">
-                <h3 class="component-title">{LADToName[LAD]} on UK Map</h3>
-                <p class="description">Scroll for zooming in and out.</p>
+                <h3 class="component-title">Where is {LADToName[LAD]}?</h3>
+                <p class="description">{LADToName[LAD]} has been highlighted in red on this UK map.</p>
+                <p class="description">*Scroll for zooming in and out</p>
                 <div id="map" bind:this={mapDiv}>
                     <!--                    <div class="badge-container">-->
                     <!--                        <img class="badge" src={zoomBadge} />-->
@@ -1010,12 +1009,12 @@
     <div class="section">
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
-            <h2 class="section-title">How co-benefits change over time?</h2>
+            <h2 class="section-title">How will co-benefits change over time?</h2>
             <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of co-benefits.</p>
         </div>
 
         <div class="component singlevis">
-            <h3 class="component-title">Total Co-benefits Distribution from 2025-2050 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
+            <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
             <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
             <br>
 
@@ -1052,7 +1051,7 @@
 
     <div id="main-block" class="component" style="margin-left: 0.5rem;">
         <div id="main-title">
-            <h3 class="component-title">Average co-benefit gain/loss for the area of {LADToName[LAD]} (by 5 year intervals)</h3>
+            <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
             <br>
 
             <!-- Legend -->
