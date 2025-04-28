@@ -237,7 +237,7 @@ export class Map {
 
         // Optional: Add border
         if (this.border) {
-        // if (true) {
+            // if (true) {
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
@@ -294,7 +294,7 @@ export class Map {
         this.loaded = true;
     }
 
-    initMap(tooltip=true) {
+    initMap(tooltip = true) {
         this.map.on('style.load', () => {
             this.loadLayers();
         })
@@ -307,10 +307,10 @@ export class Map {
 
                 let zone = zones[0];
 
-                // name of LAD or LSOA
-                let name = zone.properties.LAD22NM ?? zone.properties.LSOA21NM;
-
                 if (zone) {
+                    // name of LAD or LSOA
+                    let name = zone.properties.LAD22NM ?? zone.properties.LSOA21NM;
+
                     let cobenefValue = zone.properties.value;
                     this.tooltip.innerHTML = `
                  <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
