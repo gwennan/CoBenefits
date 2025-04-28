@@ -181,33 +181,34 @@ export class Map {
                     domain[0] = -1;
                 }
             } else {
-                domain = d3.range(0, this.colorRange.length).map(i => domain[0] + (i / 5) * (domain[1] - domain[0]))
+                console.log(999999, domain)
+                domain = d3.range(0, this.colorRange.length).map(i => domain[0] + (i / (this.colorRange.length - 1)) * (domain[1] - domain[0]))
             }
 
-            if (type == "Cobenefit") {
-                // Remove outlier values from the scale otherwise we dont see anything
-                if (this.granularity == "LSOA") {
-                    // domain[0] = 0;
-                    domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
-                }
-
-                this.colorScale = d3.scaleSequential()
-                    .domain(domain)
-                    .interpolator(d3.interpolateYlGnBu)
-                // .interpolator(d3.interpolateYlGnBu)
-                // .range(d3.interpolatePuBuGn)
-
-            } else if (type == "SEF") {
-                this.colorScale = d3.scaleSequential()
-                    .domain(domain)
-                    .interpolator(d3.interpolateYlOrBr)
-            }
+            // if (type == "Cobenefit") {
+            //     // Remove outlier values from the scale otherwise we dont see anything
+            //     if (this.granularity == "LSOA") {
+            //         // domain[0] = 0;
+            //         domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
+            //     }
+            //
+            //     this.colorScale = d3.scaleSequential()
+            //         .domain(domain)
+            //         .interpolator(d3.interpolateYlGnBu)
+            //     // .interpolator(d3.interpolateYlGnBu)
+            //     // .range(d3.interpolatePuBuGn)
+            //
+            // } else if (type == "SEF") {
+            //     this.colorScale = d3.scaleSequential()
+            //         .domain(domain)
+            //         .interpolator(d3.interpolateYlOrBr)
+            // }
 
             this.colorScale = d3.scaleLinear()
                 .domain(domain)
                 .range(this.colorRange) // You can use any colors you want
 
-            // console.log("DOMAIN ", domain)
+            // console.log("DOMAIN ", domain,)
             console.log("colorscale ", this.colorScale.domain(), this.colorScale.range())
         }
     }

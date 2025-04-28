@@ -97,13 +97,19 @@
                 }
 
                 let colorRange;
-                if (coBenefits.length == 1) {
-                    colorRange = COBENEFS_SCALE2(coBenefits[0])
-                    colorRange.shift()
-                    // colorRange.splice(0, 0, "red");
+
+                if (mapType == "Cobenefit") {
+                    if (coBenefits.length == 1) {
+                        colorRange = COBENEFS_SCALE2(coBenefits[0])
+                        colorRange.shift()
+                        // colorRange.splice(0, 0, "red");
+                    } else {
+                        colorRange = ["red", "white", "black"];
+                    }
                 } else {
-                    colorRange = ["red", "white", "black"];
+                    colorRange = ["white", "black"];
                 }
+
 
                 map.update(data, mapType, loadLayers, colorRange);
                 updateLegend();
