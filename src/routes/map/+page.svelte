@@ -10,12 +10,19 @@
         getAverageCBGroupedByLAD,
         getTableData,
         getTotalPerPathway,
-        getAverageSEFGroupedByLAD, getSEFData
+        getAverageSEFGroupedByLAD, getSEFData, getSUMCBGroupedByLAD
     } from "$lib/duckdb";
-    import {type CoBenefit, COBENEFS, type Scenario, SEF, getIconFromCobenef, COBENEFS_SCALE2} from "../../globals";
+    import {
+        type CoBenefit,
+        COBENEFS,
+        type Scenario,
+        SEF,
+        getIconFromCobenef,
+        COBENEFS_SCALE2,
+        SEF_SCALE
+    } from "../../globals";
     import {Legend} from "$lib/utils";
     import {Map} from "$lib/components/map";
-    import {legend} from "@observablehq/plot";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {COBENEFS_RANGE2} from "../../globals.js";
 
@@ -29,14 +36,12 @@
     let exportButton: HTMLElement;
     let map: Map;
     let mapType: "Cobenefit" | "SEF" = "Cobenefit";
-    // let fullData;
 
 
     // Main data
     let cobenefData: Array<Record<any, any>>;
 
     let scenario: Scenario = "BNZ";
-    // let coBenefits: Set<CoBenefit> = new Set(COBENEFS);
     // let coBenefits: Set<string> = new Set(COBENEFS.map(d => d.id));
     let coBenefits: Array<CoBenefit> = COBENEFS.map(d => d.id);
 
@@ -50,26 +55,13 @@
     let fullData;
 
 
-    // $: (async () => {
-    //     if (granularity == "LAD") {
-    //         fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-    //         console.log(2323, fullData)
-    //     } else if (granularity == "LSOA") {
-    //         fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
-    //     }
-    //
-    //     if (map) {
-    //         console.log("map update")
-    //         map.update(fullData);
-    //     }
-    // })()
-
     $: {
         if (map?.loaded) {
 
             if (mapType == "Cobenefit") {
                 if (granularity == "LAD") {
-                    fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+                    fullData = getTableData(getSUMCBGroupedByLAD(Array.from(coBenefits), "UK", timeSelected))
+                    // fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
                 } else if (granularity == "LSOA") {
                     fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
                 }
@@ -81,18 +73,12 @@
                 }
             }
 
-            // if (coBenefits.length == 1) {
-            //     let colorScale = d3.scaleSequential()
-            //         .domain()
-            // }
-
 
             fullData.then((data) => {
 
                 // Load layers again when changing granularity
                 let loadLayers = false;
                 if (map.map.getStyle().layers.length == 0) {
-                    // map.loadLayers();
                     loadLayers = true;
                 }
 
@@ -110,7 +96,6 @@
                     colorRange = ["white", "black"];
                 }
 
-
                 map.update(data, mapType, loadLayers, colorRange);
                 updateLegend();
             })
@@ -126,7 +111,7 @@
 
     function mapLegend() {
         if (mapType == "SEF") {
-            return `${selectedSef} (Millions of £)`;
+            return `${selectedSef} (${SEF_SCALE(selectedSef)})`;
         } else if (mapType == "Cobenefit") {
             return "Cobenefits (Millions of £)"
         }
@@ -142,13 +127,14 @@
 
         let fullData;
         if (granularity == "LAD") {
-            fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+            // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
+            fullData = await getTableData(getSUMCBGroupedByLAD(Array.from(coBenefits), "UK", timeSelected))
         } else if (granularity == "LSOA") {
             fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
 
 
-        map = new Map(fullData, granularity, mapDiv, "val", false, "Lookup_Value", true);
+        map = new Map(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
         map.initMap();
 
         legendSvg = map.legend();
@@ -247,6 +233,13 @@
 
         granularity = e.currentTarget.value;
         map.granularity = granularity;
+
+        if (granularity == "LSOA") {
+            map.border = false
+        } else {
+            map.border = true;
+        }
+
     }
 
     function exportMap() {
