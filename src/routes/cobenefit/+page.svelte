@@ -221,7 +221,7 @@
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Datazones Frequency"},
-                x: {label: '£/capita',  labelArrow:'none', labelAnchor: "center"},
+                x: {label: 'Total (£billion)',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
                     Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
@@ -251,7 +251,7 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.5,
-                marginLeft: 90,
+                marginLeft: 70,
                 marginRight: 40,
                 marginBottom: 60,
                 marginTop: 40,
@@ -261,14 +261,11 @@
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
                     label: "Year Intervals"
                 },
-                y: {
-                    label: "Cost Benefit £/Capita",
-                    grid: true
-                },
+                y: {grid:true},
                 marks: [
                     Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
                         x: "time",
-                        y: "value",
+                        y: d => d.value / 1000,
                         fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
                         fillOpacity: 0.8,
@@ -276,7 +273,7 @@
                         insetLeft: 15,
                         insetRight: 15
                     })),
-                    Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.axisY({anchor: "left", grid: true, label: 'Total (£billion)',  labelArrow:'none', labelAnchor: "center"}),
                 ]
             })
         );
@@ -528,23 +525,23 @@
         </div>
         <div id="vis-block">
             <div class="component singlevis">
-                <h3 class="component-title">Total <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> (£k) to 2050
+                <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
                 </h3>
                 {#if totalValue>0}
-                    <p class="description">The benefit per capita for each 5 year interval towards 2050. </p>
+                    <p class="description">The total benefit for each 5 year interval towards 2050. </p>
                 {:else}
-                    <p class="description">The cost per capita for each 5 year interval towards 2050. </p>
+                    <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p>
                 {/if}
                 <!--  <div class="component row">-->
                     <div class="plot" bind:this={plot}>
                     </div>
                 <!--  </div>-->
                 <br>
-                <h3 class="component-title"> Distribution of <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK data zones.</h3>
+                <h3 class="component-title"> Distribution of values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
                 {#if totalValue>0}
-                    <p class="description"> The total benefit per capita for each data zone. </p>
+                    <p class="description"> The total benefit for each data zone across the UK. </p>
                 {:else}
-                    <p class="description"> The total cost per capita for each data zone. </p>
+                    <p class="description"> The total cost/benefit for each data zone across the UK. </p>
                 {/if}
                 <!-- <p class="description"> The total cost benefit per capita for each LSOA. </p> -->
                 <!--<div class="component row">-->
@@ -556,7 +553,7 @@
 
 
             <div class="component column">
-                <h3 class="component-title"><span style={cobensStyle}>{coBenefitLabel}</span> on a map of the UK</h3>
+                <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
                 <p class="description">Scroll for zooming in and out.</p>
                 <div id="map" bind:this={mapDiv}>
                 </div>
