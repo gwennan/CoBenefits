@@ -76,18 +76,41 @@ export function Legend(color, {
 
   // Continuous
   if (color.interpolate) {
-    const n = Math.min(color.domain().length, color.range().length);
+  const domain = color.domain();
+  const range = color.range();
+  const n = range.length;
 
-    x = color.copy().rangeRound(d3.quantize(d3.interpolate(marginLeft, width - marginRight), n));
+  const extent = [Math.min(...domain), Math.max(...domain)];
 
-    svg.append("image")
-        .attr("x", marginLeft)
-        .attr("y", marginTop)
-        .attr("width", width - marginLeft - marginRight)
-        .attr("height", height - marginTop - marginBottom)
-        .attr("preserveAspectRatio", "none")
-        .attr("xlink:href", ramp(color.copy().domain(d3.quantize(d3.interpolate(0, 1), n))).toDataURL());
+  x = d3.scaleLinear()
+      .domain(extent)
+      .range([marginLeft, width - marginRight]);
+
+  // Create a defs section and a linear gradient
+  const defs = svg.append("defs");
+
+  const gradient = defs.append("linearGradient")
+      .attr("id", "legend-gradient")
+      .attr("x1", "0%")
+      .attr("x2", "100%")
+      .attr("y1", "0%")
+      .attr("y2", "0%");
+
+  for (let i = 0; i < domain.length; i++) {
+    const t = (domain[i] - extent[0]) / (extent[1] - extent[0]); // Normalize domain value to [0,1]
+    gradient.append("stop")
+      .attr("offset", `${t * 100}%`)
+      .attr("stop-color", range[i]);
   }
+
+  // Draw a single rectangle filled with the gradient
+  svg.append("rect")
+    .attr("x", marginLeft)
+    .attr("y", marginTop)
+    .attr("width", width - marginLeft - marginRight)
+    .attr("height", height - marginTop - marginBottom)
+    .style("fill", "url(#legend-gradient)");
+}
 
   // Sequential
   else if (color.interpolator) {
@@ -147,6 +170,9 @@ export function Legend(color, {
 
   // Ordinal
   else {
+    console.log(454545454)
+
+
     x = d3.scaleBand()
         .domain(color.domain())
         .rangeRound([marginLeft, width - marginRight]);
