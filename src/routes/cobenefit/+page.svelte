@@ -120,18 +120,15 @@
         console.log("coben waffle data",aggregationPerCapitaPerBenefit);
         console.log("coben type", coBenefit);
 
-
         LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
         totalBenefits = await getTableData(getTotalAggregation())
         totalBenefitsValue = totalBenefits[0].total_value
 
-        console.log(22, LADAveragedData);
         SEF.forEach(SE => {
             SEFData[SE] = +SEFData[SE];
         })
 
         totalValue = (d3.sum(fullData, d => d.total / 1000)).toFixed(3);
-
 
         dataLoaded = true;
     }
@@ -563,6 +560,11 @@
             <div class="component column">
                 <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
                 <p class="description">Scroll for zooming in and out.</p>
+                {#if map}
+                <div id="legend">
+                    {@html map.legend().outerHTML}
+                </div>
+                    {/if}
                 <div id="map" bind:this={mapDiv}>
                 </div>
             </div>
