@@ -44,7 +44,7 @@ export class Map {
     colorRange: Array<any>;
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange=null) {
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
@@ -53,11 +53,11 @@ export class Map {
         this.loaded = false;
         this.border = border;
 
-        this.colorRange = ["red", "white", "black"]
+        this.colorRange = colorRange ?? ["red", "white", "black"]
 
 
         // UK centering
-        this.center = [-1.54785, 53.79648] // Leeds
+        this.center = [-3.54785, 54.79648] // Leeds
 
         this.loadData(data);
 
@@ -66,7 +66,7 @@ export class Map {
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
             style: {version: 8, sources: {}, layers: []},
             center: this.center, // starting position [lng, lat]
-            zoom: 5, // starting zoom
+            zoom: 4, // starting zoom
             preserveDrawingBuffer: true,
         });
 

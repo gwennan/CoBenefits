@@ -22,7 +22,7 @@
         removeSpinner,
         addSpinner,
         SEF_SCALE,
-        getIconFromCobenef
+        getIconFromCobenef, COBENEFS_SCALE2
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -128,6 +128,9 @@
     onMount(() => {
         addSpinner(element)
         map = new Map(LAD, "LAD", mapDiv, "val", true);
+
+
+
         map.initMap(false);
     })
 

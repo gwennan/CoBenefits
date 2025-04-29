@@ -65,8 +65,16 @@
     let mapLegendDiv: HTMLElement;
 
     loadData().then(() => {
-        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false);
+        let colorRange = JSON.parse(JSON.stringify(COBENEFS_SCALE2(coBenefit)))
+        colorRange.shift()
+        colorRange = colorRange.reverse()
+
+        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false, colorRange);
+
+
         map.initMap();
+
+
 
         let legendSvg = map.legend();
         mapLegendDiv.append(legendSvg)
