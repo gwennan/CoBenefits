@@ -34,7 +34,7 @@
     <section class="about-citation">
       <h2>Atlas Citation</h2>
       <p class="citation-text">
-        Citation: Wang, J; Pister, A; Phillips, S, Hinrichs, U; Field, S; Sudmant, A; Bisset, S; Wharmby, C; Higgins-Lavery, R.; Bach, B (2025). “The UK Co-Benefits Atlas”. Published May 6, 2025.
+        Citation: Wang, J; Pister, A; Phillips, S, Hinrichs, U; Field, S; Sudmant, A; Bissett, S; Wharmby, C; Higgins-Lavery, R.; Bach, B (2025). “The UK Co-Benefits Atlas”. Published May 6, 2025.
       </p>
     </section>
 

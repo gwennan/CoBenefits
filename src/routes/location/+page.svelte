@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
-    import {onMount} from 'svelte';
+    import {onMount, onDestroy} from 'svelte';
 
     import {Map} from "$lib/components/map";
     import {
@@ -27,6 +27,8 @@
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
 
+    import StickyNav from "./StickyNav.svelte"
+
     // BADGES
     // import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
     // import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
@@ -50,6 +52,13 @@
         getTotalCBAllDatazones, getTotalCBForOneLAD
     } from "$lib/duckdb";
 
+
+    let sectionRefs = {
+        head: null,
+        overview: null,
+        temporal: null,
+        households: null
+    };
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -120,6 +129,38 @@
 
     loadData();
 
+    let scrolledPastHeader = false;
+    let currentSection = '';
+    const sectionIds = ['overview', 'temporal', 'households'];
+
+    function handleScroll() {
+        const scrollY = window.scrollY;
+        scrolledPastHeader = scrollY > 100;
+
+        for (const id of sectionIds) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+
+            const rect = el.getBoundingClientRect();
+            const isInView = rect.top <= 150 && rect.bottom >= 150;
+
+            if (isInView) {
+                currentSection = id;
+                // console.log("currentSection", currentSection);
+                break;
+            }
+            }
+    }
+
+    function formatLabel(id: string): string {
+        const labels: Record<string, string> = {
+            overview: 'Overview',
+            temporal: 'Temporal trends',
+            households: 'Household benefits'
+        };
+        return labels[id] || '';
+    }
+
     const LADToName = data.LADToName;
 
     let map: Map;
@@ -128,9 +169,16 @@
     onMount(() => {
         addSpinner(element)
         map = new Map(LAD, "LAD", mapDiv, "val", true);
-
-
         map.initMap(false);
+
+        window.addEventListener('scroll', handleScroll); // header scroll listener
+
+        handleScroll(); // initialize
+        return () => window.removeEventListener('scroll', handleScroll);
+    })
+
+    onDestroy(() => {
+        window.removeEventListener('scroll', handleScroll); // remove listener
     })
 
     function makeLADBarSVG(value, max) {
@@ -867,10 +915,27 @@
 
 
 <NavigationBar></NavigationBar>
+<!-- <StickyNav sectionRefs={sectionRefs}></StickyNav> -->
+
+
 
 <div class="page-container" bind:this={element}>
 
-    <div class="section header header-row">
+    {#if scrolledPastHeader}
+      <div class="mini-header">
+        <div class="mini-header-content">
+          <span class="mini-header-text">
+            {LADToName[LAD]} 
+            {#if totalValue}
+            <span class="mini-header-value">(Total: £{totalValue.toLocaleString()} billion)</span>
+            {/if}
+            >> {formatLabel(currentSection)}</span>
+          
+        </div>
+      </div>
+    {/if}
+
+    <div class="section header header-row" id="head">
         <div>
             <p class="page-subtitle">Data Report</p>
             <h1 class="page-title"> {LADToName[LAD]}</h1>
@@ -892,7 +957,7 @@
             </div>
         </div>
 
-
+        
         <div>
             <!--{d3.sum(totalCBAllZones.map(d => d.total))}-->
             {#if totalValue}
@@ -935,7 +1000,7 @@
 
     </div>
 
-    <div class="section">
+    <div class="section" id="overview">
         <div class="section-header">
             <p class="section-subtitle">Overview</p>
             <h2 class="section-title">What co-benefits would this area receive?</h2>
@@ -1020,7 +1085,7 @@
     <!--        </div>-->
     <!--    </div>-->
 
-    <div class="section">
+    <div class="section" id="temporal">
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
             <h2 class="section-title">How will co-benefits change over time?</h2>
@@ -1126,7 +1191,7 @@
 
     </div>
 
-    <div class="section">
+    <div class="section" id="households">
         <div class="section-header">
             <p class="section-subtitle">Households</p>
             <h2 class="section-title">{LADToName[LAD]} social-economic factors</h2>
@@ -1377,8 +1442,38 @@
         /*float: right;*/
         margin-left: auto;
         margin-right: 10%;
-
-
     }
+
+.waffle-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.waffle-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.waffle-big {
+  font-size: 1.5rem;
+  font-weight: medium;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: black;
+}
+
+.waffle-caption {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: black;
+    /*float: right;*/
+    margin-left: auto;
+margin-right: 10%;
+}
+
 
 </style>

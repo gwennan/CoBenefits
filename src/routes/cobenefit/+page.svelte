@@ -2,6 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
+    import { writable } from 'svelte/store';
 
     import {Map} from "$lib/components/map";
     import {
@@ -84,11 +85,36 @@
     let icon = getIconFromCobenef(coBenefit)
 
     let scrolledPastHeader = false;
+    let currentSection = '';
+    const sectionIds = ['overview', 'compare'];
 
     function handleScroll() {
         const scrollY = window.scrollY;
         scrolledPastHeader = scrollY > 250;
+
+        for (const id of sectionIds) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+
+            const rect = el.getBoundingClientRect();
+            const isInView = rect.top <= 150 && rect.bottom >= 150;
+
+            if (isInView) {
+                currentSection = id;
+                // console.log("currentSection", currentSection);
+                break;
+            }
+            }
     }
+
+    function formatLabel(id: string): string {
+        const labels: Record<string, string> = {
+            overview: 'Overview',
+            compare: 'Compare by socio-economic factor',
+        };
+        return labels[id] || '';
+    }
+
 
     onMount(() => {
         // map = new Map(LADAveragedData, "LAD", mapDiv, "total");
@@ -97,6 +123,9 @@
         // let legendSvg = map.legend();
         // mapLegendDiv.append(legendSvg)
         window.addEventListener('scroll', handleScroll); // header scroll listener
+
+        handleScroll(); // initialize
+        return () => window.removeEventListener('scroll', handleScroll);
     })
 
     onDestroy(() => {
@@ -513,65 +542,65 @@
       <div class="mini-header">
         <div class="mini-header-content">
           <img src={icon} alt="Icon" class="mini-heading-icon" />
-          <span class="mini-header-text">{coBenefitLabel}</span>
-          {#if totalValue}
-            <span class="mini-header-value">UK total: £{totalValue.toLocaleString()} billion</span>
-          {/if}
+          <span class="mini-header-text">
+            {coBenefitLabel} 
+            {#if totalValue}
+            <span class="mini-header-value">(UK total: £{totalValue.toLocaleString()} billion)</span>
+            {/if}
+            >> {formatLabel(currentSection)}</span>
+          
         </div>
       </div>
     {/if}
-      
 
-    <!--    <div id="vis-block">-->
+
     <div class="section">
-        <div class="section-header">
-        <p class="section-subtitle">Overview</p>
-        </div>
-        <div id="vis-block">
-            <div class="component singlevis">
-                <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
-                </h3>
-                {#if totalValue>0}
-                    <p class="description">The total benefit for each 5 year interval towards 2050. </p>
-                {:else}
-                    <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p>
-                {/if}
-                <!--  <div class="component row">-->
-                    <div class="plot" bind:this={plot}>
-                    </div>
-                <!--  </div>-->
-                <br>
-                <h3 class="component-title"> Distribution of values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
-                {#if totalValue>0}
-                    <p class="description"> The total benefit for each data zone across the UK. </p>
-                {:else}
-                    <p class="description"> The total cost/benefit for each data zone across the UK. </p>
-                {/if}
-                <!-- <p class="description"> The total cost benefit per capita for each LSOA. </p> -->
-                <!--<div class="component row">-->
-                    <div class="plot" bind:this={plotDist}>
-                    <!--</div>-->
-                </div>
-                <br>
+        <div id="overview">
+            <div class="section-header">
+                <p class="section-subtitle">Overview</p>
             </div>
-
-
-            <div class="component column">
-                <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
-                <p class="description">Scroll for zooming in and out.</p>
-                {#if map}
-                <div id="legend">
-                    {@html map.legend().outerHTML}
-                </div>
+            <div id="vis-block">
+                <div class="component singlevis">
+                    <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
+                    </h3>
+                    {#if totalValue>0}
+                        <p class="description">The total benefit for each 5 year interval towards 2050. </p>
+                    {:else}
+                        <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p>
                     {/if}
-                <div id="map" bind:this={mapDiv}>
+                        <div class="plot" bind:this={plot}></div>
+
+                    <br>
+                    <h3 class="component-title"> Distribution of values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
+                    {#if totalValue>0}
+                        <p class="description"> The total benefit for each data zone across the UK. </p>
+                    {:else}
+                        <p class="description"> The total cost/benefit for each data zone across the UK. </p>
+                    {/if}
+                        <div class="plot" bind:this={plotDist}>
+                    </div>
+                    <br>
+                </div>
+
+
+                <div class="component column">
+                    <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
+                    <p class="description">Scroll for zooming in and out.</p>
+                    {#if map}
+                    <div id="legend">
+                        {@html map.legend().outerHTML}
+                    </div>
+                        {/if}
+                    <div id="map" bind:this={mapDiv}>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-header">
+        <div id="compare">
+        <!-- <div class="section-header">
         <p class="section-subtitle">Compare by socio-economic factor</p>
-        </div>
+        </div> -->
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
@@ -613,6 +642,7 @@
                     {/each}
                 </div>
             </div>
+        </div>
         </div>
 </div>
 </div>
@@ -826,44 +856,7 @@
     border-radius: 2px;
 }
 
-.mini-header {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
-  background: white;
-  border-bottom: 1px solid #ddd;
-  z-index: 1000;
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 30px; /* mini header height */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-.mini-header-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.mini-heading-icon {
-  width: 24px;
-  height: 24px;
-}
-
-.mini-header-text {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.mini-header-value {
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-left: auto;
-  color: #555;
-}
 
 .waffle-stats {
   display: flex;

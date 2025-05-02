@@ -8,7 +8,7 @@
     export let minHHCoBenefValue;
     export let maxHHCoBenefValue;
     export let COBENEFS_SCALE;
-    import { COBENEFS } from "../globals";
+    import { COBENEFS, getIconFromCobenef } from "../globals";
 
     function getCoBenefLabel(id: string): string {
         return COBENEFS.find(d => d.id === id)?.label ?? id;
@@ -63,7 +63,7 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th style="width: 150px;">{viewMode === 'total' ? 'Total' : 'Per Capita'}</th>
+            <th style="width: 180px;">{viewMode === 'total' ? 'Total' : 'Per Capita'}</th>
             <th style="width: 80px;">{viewMode === 'total' ? '£billion' : '£thousand'}</th>
         </tr>
     </thead>
@@ -71,9 +71,14 @@
     {#each aggregationPerCapitaPerBenefit as coBenef}
         <tr>
         <td>
-            <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">
-                {getCoBenefLabel(coBenef.co_benefit_type)}</a>
-        </td>
+            <div class="coben-content">
+              <img src={getIconFromCobenef(coBenef.co_benefit_type)} alt="Icon" class="in-table-icon" />
+              <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">
+                {getCoBenefLabel(coBenef.co_benefit_type)}
+              </a>
+            </div>
+          </td>
+          
         <td>
             <div class="bar-cell">
               {#key viewMode}
@@ -95,3 +100,8 @@
     {/each}
     </tbody>
 </table>
+
+
+<style>
+    
+</style>

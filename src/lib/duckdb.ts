@@ -467,7 +467,7 @@ export function getTopSelectedLADsPerHousehold(n: number) {
 }
 
 export function getTopSelectedLADs({
-    limit = 11,
+    limit = 12,
     sortBy = 'total',
     region = 'All'
   }: {

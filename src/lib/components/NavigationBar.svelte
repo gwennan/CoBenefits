@@ -20,14 +20,12 @@ let showDropdown = false;
       <img src="{base}/logo.png" alt="Logo" class="logo" />
     </div>
 
-    <div class="nav-right">
-      <a href="{base}/" class:active={$page.url.pathname === `${base}`}>Home</a>
-
-      <div
-        class="dropdown"
-        on:mouseenter={() => (showDropdown = true)}
-        on:mouseleave={() => (showDropdown = false)}
+    <div class="nav-center">
+      <div class="dropdown nav-item"
+          on:mouseenter={() => (showDropdown = true)}
+          on:mouseleave={() => (showDropdown = false)}
       >
+        <div class="nav-count">17 types</div>
         <span
           class="dropdown-label"
           class:active={$page.url.pathname.startsWith(`${base}/cobenefit`)}
@@ -37,16 +35,36 @@ let showDropdown = false;
         {#if showDropdown}
           <ul class="dropdown-menu">
             {#each COBENEFS as coBenef}
-              <li><a href="{base}/cobenefit?cobenefit={coBenef.id}" data-sveltekit-reload>{coBenef.label}</a></li>
+              <li>
+                <a href="{base}/cobenefit?cobenefit={coBenef.id}" data-sveltekit-reload>
+                  {coBenef.label}
+                </a>
+              </li>
             {/each}
           </ul>
         {/if}
       </div>
 
-      <a href="{base}/lad" class:active={$page.url.pathname === `${base}/lad`}>Locations</a>
-      <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a>
-      <a href="{base}/methods" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
-      <a href="{base}/about" class:active={$page.url.pathname === `${base}/about`}>About</a>
+      <div class="nav-item">
+        <div class="nav-count">317</div>
+        <a href="{base}/lad" class:active={$page.url.pathname === `${base}/lad`}>Local Authorities</a>
+      </div>
+
+      <div class="nav-item inactive">
+        <div class="nav-count">17 factors</div>
+        <a>Households</a>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-count">46,000 zones</div>
+        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>Home</a>
+      <a href="{base}/methods" class="nav-item" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
+      <a href="{base}/about" class="nav-item" class:active={$page.url.pathname === `${base}/about`}>About</a>
     </div>
   </nav>
 
@@ -59,18 +77,18 @@ let showDropdown = false;
     display: flex;
     justify-content: space-between;
     /* align-items: center; */
-    height: 60px;
+    height: 65px;
     background-color: #fff;
     z-index: 1000;
     padding-bottom: 4px;
     border-bottom: 1px solid #ddd;
   }
 
-  .nav-left {
+  /* .nav-left {
     height: 100%;
     display: flex;
     align-items: center;
-  }
+  } */
 
   .logo {
     height: 100%;
@@ -78,22 +96,75 @@ let showDropdown = false;
     object-fit: contain;
   }
 
-  .nav-right {
+  /* .nav-right {
     display: flex;
     gap: 2rem;
     align-items: flex-end;
     padding-bottom: 0.4rem;
     margin-right: 2rem;
+  } */
+
+  .nav-item {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .nav-item.inactive a {
+    cursor: not-allowed;
+  }
+
+  .nav-item.inactive a:hover {
+    color: #999;
+    border-bottom: 3px solid transparent;
+  }
+
+
+  .nav-count {
+  font-size: 0.7rem;
+  color: #555;
+  margin-bottom: 2px;
+  line-height: 1;
+  text-align: center;
+  width: 100%;
+}
+
+
+
+  .nav-left,
+  .nav-center,
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-left {
+    flex: 1;
+  }
+
+  .nav-center {
+    flex: 2;
+    justify-content: center;
+  }
+
+  .nav-right {
+    flex: 1;
+    justify-content: flex-end;
   }
 
   .dropdown {
     position: relative;
-    display: inline-flex;
-    align-items: flex-end;
-    height: 100%;
-    }
+    display: block;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
 
   .nav-right a,
+  .nav-center a,
   .dropdown-label {
     display: inline-block;
     text-decoration: none;
@@ -106,29 +177,26 @@ let showDropdown = false;
     transition: all 0.2s ease;
   }
 
+  .nav-center a:hover,
+  .dropdown-label:hover,
   .nav-right a:hover{
     color: #0077cc;
     border-bottom: 3px solid #0077cc;
   }
 
-  .nav-right a.active {
+  .nav-right a.active,
+  .nav-center a.active,
+  .dropdown-label.active {
     color: #0077cc;
     border-bottom: 3px solid #0077cc;
   }
 
 
-  .dropdown-label:hover {
-    color: #0077cc;
-    /* border-bottom: 3px solid #0077cc; */
-  }
-
-  .dropdown-label.active {
-    color: #0077cc;
-    /* border-bottom: 3px solid #0077cc; */
-  }
-
   .dropdown {
     position: relative;
+    align-items: center;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 
   .dropdown-menu {
@@ -166,6 +234,8 @@ let showDropdown = false;
       height: auto;
     }
 
+    .nav-left,
+    .nav-center,
     .nav-right {
       flex-direction: column;
       align-items: flex-start;
@@ -178,6 +248,6 @@ let showDropdown = false;
       box-shadow: none;
       border: none;
     }
-  }
+}
 
 </style>
