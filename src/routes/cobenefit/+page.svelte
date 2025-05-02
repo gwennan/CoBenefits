@@ -69,9 +69,8 @@
         colorRange.shift()
         colorRange = colorRange.reverse()
 
+        // TODO: show sum and not avergade
         map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false, colorRange);
-
-
         map.initMap();
 
 
@@ -605,7 +604,6 @@
         
 
             <div id="multiple-comp">
-
                 <div id="multiple-plots">
                     {#each SEF as sef}
                         <div class="plot-container">

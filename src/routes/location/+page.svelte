@@ -130,25 +130,24 @@
         map = new Map(LAD, "LAD", mapDiv, "val", true);
 
 
-
         map.initMap(false);
     })
 
     function makeLADBarSVG(value, max) {
-      const plot = Plot.plot({
-        width: 80,
-        height: 20,
-        margin: 0,
-        x: { domain: [0, max], axis: null },
-        marks: [
-          Plot.barX([value], {
-            x: d => d,
-            y: 0,
-            fill: "#ccc"
-          })
-        ]
-      });
-      return plot.outerHTML;
+        const plot = Plot.plot({
+            width: 80,
+            height: 20,
+            margin: 0,
+            x: {domain: [0, max], axis: null},
+            marks: [
+                Plot.barX([value], {
+                    x: d => d,
+                    y: 0,
+                    fill: "#ccc"
+                })
+            ]
+        });
+        return plot.outerHTML;
     }
 
     function renderPlot() {
@@ -286,12 +285,12 @@
     function renderPerCobenefPlot() {
         plotPerCb?.append(
             Plot.plot({
-                height: height*1.4,
+                height: height * 1.4,
                 width: 811,
                 ...MARGINS,
                 marginBottom: 80,
                 marginTop: 30,
-                x: {type: "band", padding:0.6},
+                x: {type: "band", padding: 0.6},
                 y: {grid: true},
                 style: {fontSize: "14px"},
                 color: {legend: false, range: COBENEFS_SCALE.range(), domain: COBENEFS_SCALE.domain()},
@@ -322,14 +321,14 @@
                     Plot.barY(oneLADAllCbs, Plot.groupX({y: "sum"}, {
                         y: "total",
                         x: "co_benefit_type",
-                        dx:-12,
+                        dx: -12,
                         fill: d => COBENEFS_SCALE(d["co_benefit_type"]),
                         tip: true,
                         tipoffset: 10,
-                        fillOpacity:0.8
+                        fillOpacity: 0.8
                     })),
-                    Plot.axisY({label: 'Total Co-Benefit (£million)',  labelAnchor: "center"}),
-                    Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25,  labelAnchor: "center", labelArrow: false}),
+                    Plot.axisY({label: 'Total Co-Benefit (£million)', labelAnchor: "center"}),
+                    Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25, labelAnchor: "center", labelArrow: false}),
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
                 ]
@@ -392,22 +391,8 @@
 
             } else {
                 if (SEF_CATEGORICAL.includes(sef)) {
-                    // plotFullDistrib = Plot.plot({
-                    //     height: height / 2,
-                    //     width: 500,
-                    //     ...MARGINS,
-                    //     y: {grid: true, label: "mean value (£)"},
-                    //     x: {grid: true, label: sef, type: "band"},
-                    //     style: {fontSize: "18px"},
-                    //     color: {legend: true},
-                    //     marks: [
-                    //         Plot.barY(totalCBAllZones, Plot.groupX({y: "count"}, {
-                    //             x: sef
-                    //         })),
-                    //     ]
-                    // })
-                    // let domain = plotFullDistrib.scale('x').domain;
 
+                    // TODO: use only totalCBAllZones and set a variable to split between average and current LAD
                     plot = Plot.plot({
                         height: height / 2,
                         ...MARGINS,
@@ -424,27 +409,11 @@
                             }))),
                             Plot.barY(oneLADData, Plot.normalizeY(Plot.groupX({y: "count"}, {
                                 x: sef,
-                                dx:-20
+                                dx: -20
                             })))
                         ]
                     })
                 } else {
-                    // plotFullDistrib = Plot.plot({
-                    //     height: height / 2,
-                    //     width: 500,
-                    //     ...MARGINS,
-                    //     // y: {grid: true, label: "mean value (£)"},
-                    //     style: {fontSize: "18px"},
-                    //     color: {legend: true},
-                    //     marks: [
-                    //         Plot.areaY(totalCBAllZones, Plot.binX({y: "count"}, {
-                    //             x: sef,
-                    //             tip: true
-                    //         })),
-                    //     ]
-                    // })
-                    //
-                    // let domain = plotFullDistrib.scale('x').domain;
 
                     plot = Plot.plot({
                         height: height / 2,
@@ -458,8 +427,6 @@
                                 tip: true,
                                 fill: AVERAGE_COLOR,
                                 stroke: AVERAGE_COLOR,
-                                // stroke:"lightblue",
-                                // strokeWidth: 1.2,
                                 fillOpacity: 0.2,
                                 strokeWidth: 3
 
@@ -471,10 +438,7 @@
                                 stroke: "black",
                                 fillOpacity: 0.2,
                                 strokeWidth: 3
-                                // fill: AVERAGE_COLOR,
-                                // opacity: 0.3,
                             })),
-                            //  Median and Mean from ALL datazones
                         ]
                     })
                 }
@@ -482,50 +446,91 @@
                 SEFPlotLAD[sef]?.append(plot)
             }
 
-            let cbplot = Plot.plot({
-                height: height / 2,
-                ...MARGINS,
-                // y: {label: "Datazones Frequency"},
-                x: {label: SEF_SCALE(sef)},
-                style: {fontSize: "18px"},
-                // color: {range: ["rgb(227, 248, 255)", "lightblue"]},
-                color: {range: ["#e6e6e6", AVERAGE_COLOR]},
-                marks: [
-                    // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
-                    //     x: sef,
-                    //     y: "total",
-                    //     stroke: "lightblue",
-                    //     strokeWidth: 0.5,
-                    // }),
-                    // Plot.density(getRandomSubarray(totalCBAllZones, 10000), {
-                    //     x: sef,
-                    //     y: "total",
-                    //     stroke: "lightblue",
-                    //     strokeWidth: 1.2,
-                    //     thresholds: 10
-                    // }),
-                    Plot.density(getRandomSubarray(totalCBAllZones, 30000), {
-                        x: sef,
-                        y: "total",
-                        fill: "density",
-                        // strokeWidth: 1.2,
-                        thresholds: 10
-                    }),
-                    Plot.dot(oneLADData, {
-                        x: sef,
-                        y: "total",
-                        fill: "black",
-                        r: 2
-                    }),
-                    // Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
-                    //     x: sef,
-                    //     y: "total"
-                    // }),
-                    // Declaring the axes so they are on top of the densities
-                    Plot.axisY({label: "Datazone Co-Benefit (£)"}),
-                    Plot.axisX({anchor: "bottom"})
-                ]
-            })
+            // Using the domain of all data skew too much th plots
+            let domain = d3.extent(oneLADData.map(d => d["total"]));
+            domain[1] = domain[1] * 3;
+            domain[0] = -5;
+
+
+            let cbplot;
+            if (SEF_CATEGORICAL.includes(sef)) {
+                console.log(sef, oneLADData.map(d => d[sef]))
+                cbplot = Plot.plot({
+                    height: height / 1,
+                    ...MARGINS,
+                    // y: {label: "Datazones Frequency"},
+                    // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
+                    x: {label: SEF_SCALE(sef)},
+                    // y: {domain: domain, grid: true},
+                    style: {fontSize: "18px"},
+                    color: {range: ["#e6e6e6", AVERAGE_COLOR]},
+                    marks: [
+                        Plot.density(getRandomSubarray(totalCBAllZones, 15000), {
+                            // Plot.density(oneLADData, {
+                            // x: sef,
+                            x: d => `${d[sef]}`,
+                            y: "total",
+                            fill: "density",
+                            // strokeWidth: 1.2,
+                            // thresholds: 10
+                            bandwidth: 9
+                        }),
+                        Plot.dot(oneLADData, {
+                            x: d => `${d[sef]}`,
+                            // x: sef,
+                            y: "total",
+                            fill: "black",
+                            r: 2
+                        }),
+                        // Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
+                        //     x: sef,
+                        //     y: "total"
+                        // }),
+                        // Declaring the axes so they are on top of the densities
+                        Plot.axisY({label: "Datazone Co-Benefit (£)"}),
+                        Plot.axisX({anchor: "bottom"}),
+                    ]
+                })
+
+            } else {
+                cbplot = Plot.plot({
+                    height: height / 1,
+                    ...MARGINS,
+                    // y: {label: "Datazones Frequency"},
+                    x: {label: SEF_SCALE(sef)},
+                    y: {domain: domain},
+                    grid: true,
+                    style: {fontSize: "18px"},
+                    // color: {range: ["rgb(227, 248, 255)", "lightblue"]},
+                    color: {range: ["#e6e6e6", AVERAGE_COLOR]},
+                    marks: [
+                        Plot.density(getRandomSubarray(totalCBAllZones, 20000), {
+                            // Plot.density(oneLADData, {
+                            x: sef,
+                            y: "total",
+                            fill: "density",
+                            // strokeWidth: 1.2,
+                            thresholds: 10
+                        }),
+                        Plot.dot(oneLADData, {
+                            x: sef,
+                            y: "total",
+                            fill: "black",
+                            r: 2
+                        }),
+                        // Plot.linearRegressionY(oneLADData, { // Adds regression line and confidence interval
+                        //     x: sef,
+                        //     y: "total"
+                        // }),
+                        // Declaring the axes so they are on top of the densities
+                        Plot.axisY({label: "Datazone Co-Benefit (£)"}),
+                        Plot.axisX({anchor: "bottom"}),
+                    ]
+                })
+
+            }
+
+
             // console.log("debug", cbplot)
 
             if (SEFPlotPerCB[sef]) {
@@ -621,11 +626,11 @@
             marginRight: 0,
             marginLeft: 60,
             marginTop: 40,
-            marginBottom:60,            
+            marginBottom: 60,
             style: {fontSize: "18px"},
-            y:{label: '£billion', grid: true, labelArrow:false},
+            y: {label: '£billion', grid: true, labelArrow: false},
             x: {tickSize: 0, label: null, ticks: [], padding: 0.3},
-            color: {range: [ AVERAGE_COLOR, VIS_COLOR], legend:false},
+            color: {range: [AVERAGE_COLOR, VIS_COLOR], legend: false},
             // color: {range: [VIS_COLOR, NATION_TO_COLOR[compareTo]]},
             marks: [
                 // Plot.barX(allCBAllLAD, Plot.groupY({x: "mean"}, {
@@ -645,9 +650,11 @@
                     fill: "zone",
                     //sort: {x: "x", reverse: true},
                 })),
-                Plot.axisFx({anchor: "bottom", 
-                            tickFormat: d => d.replace(/^Y/, '').replace("_","-"),
-                            label: "Years"}),
+                Plot.axisFx({
+                    anchor: "bottom",
+                    tickFormat: d => d.replace(/^Y/, '').replace("_", "-"),
+                    label: "Years"
+                }),
             ]
         })
         CBOverTimePLot?.append(plot);
@@ -716,49 +723,50 @@
         })
 
         let plotPerCB = Plot.plot({
-            height: height*3,
+            height: height * 3,
             width: 2500,
             marginRight: 0,
-            marginTop:40,
+            marginTop: 40,
             marginLeft: 80,
-            marginBottom:80,
+            marginBottom: 80,
             insetTop: 30,
             style: {fontSize: "30px"},
-            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow:false},
-            x: {label: 'Years', 
+            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow: false},
+            x: {
+                label: 'Years',
                 tickFormat: d => d.replace(/^Y/, '').split("_")[1],
             },
             // x: {tickSize: 0, label: null, ticks: []},
             color: {legend: false, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"},
-                {
-                    x: "time",
-                    y: "value",
-                    tip: true,
-                    fill: "cobenefit",
-                    curve: "basis",
-                    order: [
+                    {
+                        x: "time",
+                        y: "value",
+                        tip: true,
+                        fill: "cobenefit",
+                        curve: "basis",
+                        order: [
                             "Road safety",
                             "Congestion",
-                            "Air quality", 
-                            "Noise", 
-                            "Excess cold", 
-                            "Excess heat", 
-                            "Dampness", 
+                            "Air quality",
+                            "Noise",
+                            "Excess cold",
+                            "Excess heat",
+                            "Dampness",
                             "Road repairs",
-                            "Physical activity", 
+                            "Physical activity",
                             "Diet change",
                             "Hassle costs"],
-                    // offset: 
-                })),
+                        // offset:
+                    })),
                 //Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
                 Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 0.5, strokeLinecap: 'round'}),
 
             ]
         })
 
-        
+
         CBOverTimePerCBPLot?.append(plotPerCB);
 
     }
@@ -866,7 +874,8 @@
         <div>
             <p class="page-subtitle">Data Report</p>
             <h1 class="page-title"> {LADToName[LAD]}</h1>
-            <p class="description">Explore how this local authority will benefit from achieving Net Zero and learn about the characteristics of its households.</p>
+            <p class="description">Explore how this local authority will benefit from achieving Net Zero and learn about
+                the characteristics of its households.</p>
 
             <div class="radio-set">
                 Compare this Local Authority District (LAD) against:
@@ -877,7 +886,7 @@
                 <input type="radio" on:change={onChangeComparison} name="compare" value="Wales">
                 <label class="nation-label" for="html">Wales</label><br>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="Scotland">
-                <label class="nation-label" for="javascript" >Scotland</label>
+                <label class="nation-label" for="javascript">Scotland</label>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="NI">
                 <label class="nation-label" for="javascript">Northern Ireland</label>
             </div>
@@ -888,37 +897,37 @@
             <!--{d3.sum(totalCBAllZones.map(d => d.total))}-->
             {#if totalValue}
 
-            <div class="waffle-stats">
-              <div class="waffle-stat">
-                <div class="waffle-value">
-                    {@html
-                    makeLADBarSVG(totalValue, totalValueMax)
-                        }
-                  <span class="waffle-big">£{totalValue.toLocaleString()}</span>
-                  <span class="small">billion</span>
+                <div class="waffle-stats">
+                    <div class="waffle-stat">
+                        <div class="waffle-value">
+                            {@html
+                                makeLADBarSVG(totalValue, totalValueMax)
+                            }
+                            <span class="waffle-big">£{totalValue.toLocaleString()}</span>
+                            <span class="small">billion</span>
+                        </div>
+                        {#if totalValue > 0}
+                            <div class="waffle-caption">Local area benefits</div>
+                        {:else}
+                            <div class="waffle-caption">Local area costs</div>
+                        {/if}
+                    </div>
+                    <div class="waffle-stat">
+                        <div class="waffle-value">
+                            <!--                    TODO: current placeholder -->
+                            {@html
+                                makeLADBarSVG(totalValue, 1000000)
+                            }
+                            <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
+                            <span class="small">thousand</span>
+                        </div>
+                        {#if totalValue > 0}
+                            <div class="waffle-caption">Per capita benefits</div>
+                        {:else}
+                            <div class="waffle-caption">Per capita costs</div>
+                        {/if}
+                    </div>
                 </div>
-                {#if totalValue > 0}
-                  <div class="waffle-caption">Local area benefits</div>
-                {:else}
-                  <div class="waffle-caption">Local area costs</div>
-                {/if}
-              </div>
-              <div class="waffle-stat">
-                <div class="waffle-value">
-<!--                    TODO: current placeholder -->
-                    {@html
-                    makeLADBarSVG(totalValue, 1000000)
-                        }
-                  <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
-                  <span class="small">thousand</span>
-                </div>
-                {#if totalValue > 0}
-                  <div class="waffle-caption">Per capita benefits</div>
-                {:else}
-                  <div class="waffle-caption">Per capita costs</div>
-                {/if}
-              </div>
-            </div>
             {/if}
 
 
@@ -930,7 +939,7 @@
         <div class="section-header">
             <p class="section-subtitle">Overview</p>
             <h2 class="section-title">What co-benefits would this area receive?</h2>
-            <p class="description">We model 11 types of co-benefits, based on the Climate Change Committee’s 
+            <p class="description">We model 11 types of co-benefits, based on the Climate Change Committee’s
                 Sixth Carbon Budget, from 2025 to 2050 at the data zone level across the UK.</p>
         </div>
 
@@ -957,8 +966,10 @@
             <!--            </div>-->
 
             <div class="component column">
-                <h3 class="component-title">11 types of co-benefit values (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
-                <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits recieved across all local 
+                <h3 class="component-title">11 types of co-benefit values (vs. <span
+                        class="nation-label">{compareTo}</span> Average)</h3>
+                <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
+                    recieved across all local
                     authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
                     <!--                    <div class="badge-container">-->
@@ -1013,12 +1024,15 @@
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
             <h2 class="section-title">How will co-benefits change over time?</h2>
-            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of co-benefits.</p>
+            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of
+                co-benefits.</p>
         </div>
 
         <div class="component singlevis">
-            <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span class="nation-label">{compareTo}</span> Average)</h3>
-            <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
+            <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span
+                    class="nation-label">{compareTo}</span> Average)</h3>
+            <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of
+                benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
             <br>
 
             <ul class="legend-list">
@@ -1027,17 +1041,15 @@
                 <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
                     <span class="nation-label">{compareTo}</span></li>
 
-            <div class="row">
-                <div class="plot" bind:this={CBOverTimePLot}>
-                    <!--                    <div class="badge-container">-->
-                    <!--                            <img class="badge" src={predictionsBadge} />-->
-                    <!--                        </div>-->
+                <div class="row">
+                    <div class="plot" bind:this={CBOverTimePLot}>
+                        <!--                    <div class="badge-container">-->
+                        <!--                            <img class="badge" src={predictionsBadge} />-->
+                        <!--                        </div>-->
+                    </div>
                 </div>
-            </div>
         </div>
 
-
-        
 
         <!--        <div class="component singlevis">-->
         <!--            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>-->
@@ -1050,57 +1062,69 @@
 
         <!--            </div>-->
         <!--        </div>-->
- 
 
-    <div id="main-block" class="component" style="margin-left: 0.5rem;">
-        <div id="main-title">
-            <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
-            <br>
 
-            <!-- Legend -->
-            <div id="main-legend" class="legend-box">
-                <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
-                <span>The stacked area plot is coloured by co-benefit:</span>
-                <br><br/>
-                <ul class="legend-list">
-                    <li><span class="legend-color" style="background-color: #D3A029"></span>
-                        Diet change</li>
-                    <li><span class="legend-color" style="background-color: #48773E"></span>
-                        Physical activity</li>
-                    <li><span class="legend-color" style="background-color: #183668"></span>
-                        Dampness</li>
-                    <li><span class="legend-color" style="background-color: #00AED9"></span>
-                        Excess cold</li>
-                    <li><span class="legend-color" style="background-color: #E11484"></span>
-                        Noise</li>
-                    <li><span class="legend-color" style="background-color: #71C35D"></span>
-                        Air quality</li>
-                    <li><span class="legend-color" style="background-color: #8F1838"></span>
-                        Congestion</li>
-                    <li><span class="legend-color" style="background-color: #EF402B"></span>
-                        Excess heat</li>
-                    <li><span class="legend-color" style="background-color: #F36D25"></span>
-                        Road safety</li>
-                    <li><span class="legend-color" style="background-color: #F99D26"></span>
-                        Road repairs</li>
-                    <li><span class="legend-color" style="background-color: #C31F33"></span>
-                        Hassle costs</li>
-                </ul>
-                
+        <div id="main-block" class="component" style="margin-left: 0.5rem;">
+            <div id="main-title">
+                <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
+                <br>
+
+                <!-- Legend -->
+                <div id="main-legend" class="legend-box">
+                    <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
+                    <span>The stacked area plot is coloured by co-benefit:</span>
+                    <br><br/>
+                    <ul class="legend-list">
+                        <li><span class="legend-color" style="background-color: #D3A029"></span>
+                            Diet change
+                        </li>
+                        <li><span class="legend-color" style="background-color: #48773E"></span>
+                            Physical activity
+                        </li>
+                        <li><span class="legend-color" style="background-color: #183668"></span>
+                            Dampness
+                        </li>
+                        <li><span class="legend-color" style="background-color: #00AED9"></span>
+                            Excess cold
+                        </li>
+                        <li><span class="legend-color" style="background-color: #E11484"></span>
+                            Noise
+                        </li>
+                        <li><span class="legend-color" style="background-color: #71C35D"></span>
+                            Air quality
+                        </li>
+                        <li><span class="legend-color" style="background-color: #8F1838"></span>
+                            Congestion
+                        </li>
+                        <li><span class="legend-color" style="background-color: #EF402B"></span>
+                            Excess heat
+                        </li>
+                        <li><span class="legend-color" style="background-color: #F36D25"></span>
+                            Road safety
+                        </li>
+                        <li><span class="legend-color" style="background-color: #F99D26"></span>
+                            Road repairs
+                        </li>
+                        <li><span class="legend-color" style="background-color: #C31F33"></span>
+                            Hassle costs
+                        </li>
+                    </ul>
+
+                </div>
+
+                <!-- Disclaimer -->
+                <div id="main-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the
+                        co-benefits some values are very small in comparison
+                        to larger values so therefore are not visable on this plot. </p>
+                    <p style="margin: 0 0 0.5rem 0;"> *Hover over areas for more information.</p>
+
+                </div>
             </div>
-
-            <!-- Disclaimer -->
-            <div id="main-disclaimer" class="disclaimer-box">
-                <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the co-benefits some values are very small in comparison 
-                    to larger values so therefore are not visable on this plot. </p>
-                <p style="margin: 0 0 0.5rem 0;"> *Hover over areas for more information.</p>
-
-            </div>
-        </div>
             <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
-    </div>
+        </div>
 
-</div>
+    </div>
 
     <div class="section">
         <div class="section-header">
@@ -1108,63 +1132,95 @@
             <h2 class="section-title">{LADToName[LAD]} social-economic factors</h2>
             <p class="description">We describe the distribution of household economic factors aggregated on the data
                 zone level and the different level of co-benefits recieved by those data zones.</p>
-
-<!--            <input type="checkbox" bind:checked={isSEFAggregated}/>-->
-<!--            <label for="checkbox">Aggregate Plots</label>-->
         </div>
 
-        <div id="multiple-comp">
-            {#each SEF as sef}
-                <div>
-                    <h2>{sef.replaceAll('_', ' ')}</h2>
-                    <!--                <div class="inside-row">-->
-                    <div class="row">
+        <div id="se-block" class="component" style="margin-left: 1rem;">
+            <div id="se-title">
+                <!--                <h3 class="component-title">Mapping the impact of <span> {coBenefitLabel?.toLowerCase()} </span> across UK local authorities according to socio-economic factors</h3>-->
+                <br>
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent
+                        modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic
+                        factors are using categorical values where the x-axis is non-linear: EPC, Tenure, Typology, Fuel
+                        type, Gas flag, Number of cars.</p>
+                </div>
+
+                <!-- Legend -->
+                <div id="se-legend" class="legend-box">
+                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                    <span>The scatter plots are shaded by nation.</span>
+
+                    <ul class="legend-list">
+                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>-->
+                        <!--                            Scotland</li>-->
+                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>-->
+                        <!--                            Northern Ireland</li>-->
+                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England</li>-->
+                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[4]}"></span>Wales</li>-->
+                    </ul>
+
+                </div>
+            </div>
 
 
-                        {#if isSEFAggregated}
-                            <div class="component">
-                                <div class="plot" bind:this={SEFPlotLAD[sef]}>
-                                </div>
-                            </div>
-                        {:else}
-                            <div class="component">
-                                <h3 class="component-title">Data Zones Distribution (vs. <span class="nation-label">{compareTo}</span> average)</h3>
-                                <p class="description short">The histogram shows the number of data zones distributed across
-                                    different household social economic factors.</p>
-                                <div class="plot" bind:this={SEFPlotLAD[sef]}>
-                                </div>
-                            </div>
+            <div id="multiple-comp">
+                {#each SEF as sef}
+                    <div>
+                        <h2>{sef.replaceAll('_', ' ')}</h2>
+                        <!--                <div class="inside-row">-->
+                        <div class="row">
 
 
-                            <div class="component">
-                                <div>
-                                    <h3 class="component-title">Co-benefits Recieved by Data Zones across {sef.replaceAll('_', ' ')}
-                                        Values</h3>
-                                    <p class="description short">Density plot refers to UK distribution while the
-                                        scattered points refer to data zones in {LADToName[LAD]}.</p>
-<!--                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>-->
-<!--                                    </div>-->
-                                </div>
-
-                                <div>
-                                    <div class="plot" bind:this={SEFPlotPerCB[sef]}>
+                            {#if isSEFAggregated}
+                                <div class="component">
+                                    <div class="plot" bind:this={SEFPlotLAD[sef]}>
                                     </div>
                                 </div>
-                            </div>
-                        {/if}
+                            {:else}
+                                <div class="component">
+                                    <h3 class="component-title">Data Zones Distribution (vs. <span
+                                            class="nation-label">{compareTo}</span> average)</h3>
+                                    <p class="description short">The histogram shows the number of data zones
+                                        distributed
+                                        across
+                                        different household social economic factors.</p>
+                                    <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                    </div>
+                                </div>
 
+
+                                <div class="component">
+                                    <div>
+                                        <h3 class="component-title">Co-benefits Recieved by Data Zones
+                                            across {sef.replaceAll('_', ' ')}
+                                            Values</h3>
+                                        <p class="description short">Density plot refers to UK distribution while the
+                                            scattered points refer to data zones in {LADToName[LAD]}.</p>
+                                        <!--                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>-->
+                                        <!--                                    </div>-->
+                                    </div>
+
+                                    <div>
+                                        <div class="plot" bind:this={SEFPlotPerCB[sef]}>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/if}
+
+                        </div>
                     </div>
-                </div>
-            {/each}
+                {/each}
+
+            </div>
 
         </div>
+
 
     </div>
 
 </div>
-
-
-
 
 
 <style>
@@ -1172,7 +1228,7 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-          align-items: center;
+        align-items: center;
 
     }
 
@@ -1233,82 +1289,96 @@
     }
 
     .disclaimer-box {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background-color: #f9f9f9;
-    border-left: 4px solid #ccc;
-    font-size: 0.9rem;
-    color: #555;
-}
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background-color: #f9f9f9;
+        border-left: 4px solid #ccc;
+        font-size: 0.9rem;
+        color: #555;
+    }
 
-.legend-box {
-    margin-bottom: 2rem;
-    padding: 0.75rem;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    font-size: 0.9rem;
-}
+    .legend-box {
+        margin-bottom: 2rem;
+        padding: 0.75rem;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
 
-.legend-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
+    .legend-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
 
-.legend-list li {
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-}
+    .legend-list li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
 
-.legend-color {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
-    border-radius: 2px;
-}
+    .legend-color {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        border-radius: 2px;
+    }
 
-.legend-icon {
-    width: 0.2rem;
-    height: 0.2rem;
+    .legend-icon {
+        width: 0.2rem;
+        height: 0.2rem;
+    }
+
+    #se-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    #se-title {
+        min-width: 25vw;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        position: sticky;
+        top: 120px;
+        align-self: flex-start;
+        height: fit-content;
     }
 
 
+    .waffle-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .waffle-value {
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
+    }
+
+    .waffle-big {
+        font-size: 1.5rem;
+        font-weight: medium;
+    }
+
+    .small {
+        font-size: 0.9rem;
+        color: black;
+    }
+
+    .waffle-caption {
+        margin-top: 0.2rem;
+        font-size: 0.85rem;
+        color: black;
+        /*float: right;*/
+        margin-left: auto;
+        margin-right: 10%;
 
 
-.waffle-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.waffle-value {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-}
-
-.waffle-big {
-  font-size: 1.5rem;
-  font-weight: medium;
-}
-
-.small {
-  font-size: 0.9rem;
-  color: black;
-}
-
-.waffle-caption {
-  margin-top: 0.2rem;
-  font-size: 0.85rem;
-  color: black;
-    /*float: right;*/
-    margin-left: auto;
-margin-right: 10%;
-
-
-
-}
+    }
 
 </style>
