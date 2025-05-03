@@ -64,7 +64,7 @@
         <tr>
             <th>Name</th>
             <th style="width: 180px;">{viewMode === 'total' ? 'Total' : 'Per Capita'}</th>
-            <th style="width: 80px;">{viewMode === 'total' ? '£billion' : '£thousand'}</th>
+            <th style="width: 80px;">{viewMode === 'total' ? '£, billion' : '£'}</th>
         </tr>
     </thead>
     <tbody>
@@ -91,9 +91,9 @@
         </td>
         <td>
             {#if viewMode === 'total'}
-                <span>{coBenef.total_value.toFixed(3)}</span>
+                <span>{coBenef.total_value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             {:else}
-                <span>{coBenef.value_per_capita.toFixed(3)}</span>
+                <span>{coBenef.value_per_capita.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             {/if}
         </td>
         </tr>

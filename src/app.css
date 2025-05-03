@@ -83,15 +83,14 @@ button:focus {
 
 
 /* For block containing several components */
-.row {
+/* .row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    /*justify-content: space-between;*/
     justify-content: space-evenly;
     gap: 1%;
     width: 100%;
-}
+} */
 
 .section {
     background: white;
@@ -332,18 +331,17 @@ button:focus {
     background-color: #e0e0e0;
   }
 
-  .navbar {
+  /* .navbar {
     position: sticky;
     top: 0;
     display: flex;
     justify-content: space-between;
-    /* align-items: center; */
     height: 60px;
     background-color: #fff;
     z-index: 1000;
     padding-bottom: 4px;
     border-bottom: 1px solid #ddd;
-  }
+  } */
 
 
   @keyframes spin {

@@ -71,12 +71,11 @@ let showDropdown = false;
 
 <style>
 
-    .navbar {
+  .navbar {
     position: sticky;
     top: 0;
     display: flex;
     justify-content: space-between;
-    /* align-items: center; */
     height: 65px;
     background-color: #fff;
     z-index: 1000;
@@ -89,6 +88,29 @@ let showDropdown = false;
     display: flex;
     align-items: center;
   } */
+
+  .nav-left,
+  .nav-center,
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-left {
+    flex: 1;
+    max-width: 350px;
+  }
+
+  .nav-center {
+    flex: 2;
+    justify-content: center;
+  }
+
+  .nav-right {
+    flex: 1;
+    justify-content: flex-end;
+  }
 
   .logo {
     height: 100%;
@@ -133,27 +155,7 @@ let showDropdown = false;
 
 
 
-  .nav-left,
-  .nav-center,
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
 
-  .nav-left {
-    flex: 1;
-  }
-
-  .nav-center {
-    flex: 2;
-    justify-content: center;
-  }
-
-  .nav-right {
-    flex: 1;
-    justify-content: flex-end;
-  }
 
   .dropdown {
     position: relative;
@@ -241,6 +243,7 @@ let showDropdown = false;
       align-items: flex-start;
       gap: 1rem;
       padding: 0.5rem 0;
+      /* min-width: 0 */
     }
 
     .dropdown-menu {

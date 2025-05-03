@@ -92,8 +92,8 @@ function startWaffleHighlightLoop(height: number) {
         label: 'Total Co-Benefits',
         icon: null,
         // value: totalValue.toFixed(1),
-        totalValue:totalValue.toFixed(3),
-        perCapitaValue: aggregationPerCapita.toFixed(3),
+        totalValue:totalValue.toFixed(2),
+        perCapitaValue: aggregationPerCapita.toFixed(2),
         percentValue: "100%"
       },
       ...orderedTypes.map((type) => {
@@ -109,9 +109,9 @@ function startWaffleHighlightLoop(height: number) {
 
         const total = aggregation?.total ?? 0;
         const perCapitaVal = perCapita?.value_per_capita ?? 0;
-        const totalFormatted = total.toFixed(3);
+        const totalFormatted = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        const perCapitaFormatted = perCapitaVal.toFixed(3);
+        const perCapitaFormatted = perCapitaVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         // const percent = totalValue > 0 ? ((total / totalValue) * 100).toFixed(2) + "%" : "0%";
         const percent = totalValue > 0 ? ((total / totalValue) * 100).toFixed(2): 0;
@@ -308,6 +308,9 @@ let showDropdown = false;
         <p class="hero-description">
           Explore how, when and for whom benefits emerge to further understand connections between a wide range of social, economic and environmental priorities, and drive more effective decision-making. 
         </p>
+        <p class="hero-description">
+          To understand more about the analysis or if you would like bespoke co-benefit modelling please get in touch by emailing <a href="mailto:cobens@ed.ac.uk">cobens@ed.ac.uk</a>
+        </p>
       </div>
 
     <div class="waffle-overlay">
@@ -337,7 +340,7 @@ let showDropdown = false;
             <div class="waffle-stat">
               <div class="waffle-value">
                 <span class="waffle-big">£{activePerCapitaLabel}</span>
-                <span class="small">thousand</span>
+                <!-- <span class="small">thousand</span> -->
               </div>
               {#if activePerCapitaLabel > 0}
                 <div class="waffle-caption">Per capita benefits</div>

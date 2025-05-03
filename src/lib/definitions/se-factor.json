@@ -1,0 +1,121 @@
+[
+  {
+    "id": "EPC",
+    "label": "EPC Band",
+    "units": "band",
+    "type": "categorical",
+    "def": "Energy efficiency rating for homes, from Band A (most efficient) to Band G (least efficient)"
+  },
+  {
+    "id": "Tenure",
+    "label": "Tenure",
+    "units": "type",
+    "type": "categorical",
+    "def": "Relationship of occupant to the dwelling's ownership"
+  },
+  {
+    "id": "Typology",
+    "label": "Typology",
+    "units": "type",
+    "type": "categorical",
+    "def": "Type of building"
+  },
+  {
+    "id": "Fuel_Type",
+    "label": "Domestic Fuel Type",
+    "units": "type",
+    "type": "categorical",
+    "def": "Current most common heating system across all buildings in the area"
+  },
+  {
+    "id": "Gas_Flag",
+    "label": "On gas grid",
+    "units": "/",
+    "type": "categorical",
+    "def": "Whether most buildings in the area are connected to the gas network"
+  },
+  {
+    "id": "Number_cars",
+    "label": "Number of cars",
+    "units": "No. cars",
+    "type": "categorical",
+    "def": "Mean number of cars per household in the area"
+  },
+  {
+    "id": "Under_35",
+    "label": "% inhabitants under 35",
+    "units": "%",
+    "type": "numeric",
+    "def": "Proportion of population under 35 years of age"
+  },
+  {
+    "id": "Over_65",
+    "label": "% inhabitants over 65",
+    "units": "%",
+    "type": "numeric",
+    "def": "Proportion of population over 65 years of age"
+  },
+  {
+    "id": "Median_Income",
+    "label": "Median income",
+    "units": "£",
+    "type": "numeric",
+    "def": "Median income (£ per capita per year)"
+  },
+  {
+    "id": "Unemployment",
+    "label": "Unemployment rate",
+    "units": "%",
+    "type": "numeric",
+    "def": "Unemployment rate "
+  },
+  {
+    "id": "Rurality",
+    "label": "Rurality",
+    "units": "density",
+    "type": "numeric",
+    "def": "How urban or rural is a given area, based on population density"
+  },
+  {
+    "id": "House_value",
+    "label": "House value",
+    "units": "£",
+    "type": "numeric",
+    "def": "Median value of household per area"
+  },
+  {
+    "id": "Fuel_consumption_total",
+    "label": "Annual fuel consumption ",
+    "units": "kwh",
+    "type": "numeric",
+    "def": "Annual mean energy consumption per household"
+  },
+  {
+    "id": "Floor_area",
+    "label": "Floor area",
+    "units": "Metres squared (m2)",
+    "type": "numeric",
+    "def": "Mean floor area per household"
+  },
+  {
+    "id": "Urban_trips",
+    "label": "No. urban trips",
+    "units": "No. trips",
+    "type": "numeric",
+    "def": "Mean number of car trips per household per year in urban areas"
+  },
+  {
+    "id": "Total_vkm",
+    "label": "Total car travel",
+    "units": "kilometres",
+    "type": "numeric",
+    "def": "Mean vehicular kilometres driven per household per year"
+  },
+  {
+    "id": "Urban_vkm",
+    "label": "Urban car travel",
+    "units": "kilometres",
+    "type": "numeric",
+    "def": "Mean vehicular kilometres driven per household in urban areas per year"
+  }
+ ]

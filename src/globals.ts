@@ -14,34 +14,43 @@ import roadRepairsIcon from '$lib/icons/RoadRepairs.png';
 import roadSafetyIcon from '$lib/icons/RoadSafety.png';
 import physicalActivityIcon from '$lib/icons/PhysicalActivity.png';
 
-// export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
-export const COBENEFS = [
-    {id: "Air quality", label: "Air quality improvements"},
-    {id: "Noise", label: "Noise reduction"},
-    {id: "Excess cold", label: "Excess cold reduction"},
-    {id: "Excess heat", label: "Excess heat reduction"},
-    {id: "Dampness", label: "Dampness reduction"},
-    {id: "Congestion", label: "Congestion reduction"},
-    {id: "Hassle costs", label: "Hassle cost"},
-    {id: "Road repairs", label: "Road repairs reduction"},
-    {id: "Road safety", label: "Road safety increase"},
-    {id: "Physical activity", label: "Physical activity increase"},
-    {id: "Diet change", label: "Dietary improvements"},
-];
+import coBenefits from '$lib/definitions/cobenf.json'
+import seFactors from '$lib/definitions/se-factor.json'
 
-export const DEFINITIONS = [
-    {id: "Air quality", def: "The value of public health benefits from reduced air pollution from transport and buildings."},
-    {id: "Noise", def: "The value to public health and worker productivity from reduced noise."},
-    {id: "Excess cold", def: "The value of reducing visits to hospital attributable to insufficient heating."},
-    {id: "Excess heat", def: "The value of..."},
-    {id: "Dampness", def: "The value of..."},
-    {id: "Congestion", def: "The value of reduced time spent traveling and road repairs from reduced numbers of vehicles on roads."},
-    {id: "Hassle costs", def: "The value of..."},
-    {id: "Road repairs", def: "The value of repairs avoided when infrastructure (in this case solely roads) are used less frequently."},
-    {id: "Road safety", def: "The value of reduced vehicle repairs and lives lost from vehicle accidents."},
-    {id: "Physical activity", def: "The value of health benefits from increased walking and cycling."},
-    {id: "Diet change", def: "The value of..."},
-];
+// export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
+
+export const COBENEFS = coBenefits.map(d => ({ id: d.id, label: d.label }));
+export const DEFINITIONS = coBenefits.map(d => ({ id: d.id, def: d.def }));
+
+// export const COBENEFS = [
+//     {id: "Air quality", label: "Air quality improvements"},
+//     {id: "Noise", label: "Noise reduction"},
+//     {id: "Excess cold", label: "Excess cold reduction"},
+//     {id: "Excess heat", label: "Excess heat reduction"},
+//     {id: "Dampness", label: "Dampness reduction"},
+//     {id: "Congestion", label: "Congestion reduction"},
+//     {id: "Hassle costs", label: "Hassle cost"},
+//     {id: "Road repairs", label: "Road repairs reduction"},
+//     {id: "Road safety", label: "Road safety increase"},
+//     {id: "Physical activity", label: "Physical activity increase"},
+//     {id: "Diet change", label: "Dietary improvements"},
+// ];
+
+// export const DEFINITIONS = [
+//     {id: "Air quality", def: "The value of public health benefits from reduced air pollution from transport and buildings."},
+//     {id: "Noise", def: "The value to public health and worker productivity from reduced noise."},
+//     {id: "Excess cold", def: "The value of reducing visits to hospital attributable to insufficient heating."},
+//     {id: "Excess heat", def: "The value of..."},
+//     {id: "Dampness", def: "The value of..."},
+//     {id: "Congestion", def: "The value of reduced time spent traveling and road repairs from reduced numbers of vehicles on roads."},
+//     {id: "Hassle costs", def: "The value of..."},
+//     {id: "Road repairs", def: "The value of repairs avoided when infrastructure (in this case solely roads) are used less frequently."},
+//     {id: "Road safety", def: "The value of reduced vehicle repairs and lives lost from vehicle accidents."},
+//     {id: "Physical activity", def: "The value of health benefits from increased walking and cycling."},
+//     {id: "Diet change", def: "The value of..."},
+// ];
+
+
 
 // export const SCENARIOS = ["BNZ", "test"]
 export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
@@ -55,32 +64,42 @@ export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innova
 //     'Urban_vkm']
 
 // Categorical are first and then numerical
-export let SEF = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars",
-    'Under_35', 'Over_65', 'Median_Income', 'Unemployment',
-    'Rurality', 'House_value', 'Fuel_consumption_total',
-    'Floor_area', 'Urban_trips', 'Total_vkm', 'Urban_vkm']
+// export let SEF = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars",
+//     'Under_35', 'Over_65', 'Median_Income', 'Unemployment',
+//     'Rurality', 'House_value', 'Fuel_consumption_total',
+//     'Floor_area', 'Urban_trips', 'Total_vkm', 'Urban_vkm']
 
-export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars"]
+// export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars"]
 
-// SEF.sort((a, b) => (SEF_CATEGORICAL.includes(b)) - (SEF_CATEGORICAL.includes(a)))
+// export const SEF_UNITS = ['?',
+//                           '?',
+//                           '?',
+//                           '?',
+//                           '?',
+//                           'Number of cars',
+//                           'Proportion of people',
+//                           'Proportion of people',
+//                           '£',
+//                           'Proportion of people',
+//                           '?',
+//                           "£²",
+//                           '?',
+//                           'm²',
+//                           'Number of trips',
+//                           'Km',
+//                           'Km'];
 
-export const SEF_UNITS = ['?',
-                          '?',
-                          '?',
-                          '?',
-                          '?',
-                          'Number of cars',
-                          'Proportion of people',
-                          'Proportion of people',
-                          '£',
-                          'Proportion of people',
-                          '?',
-                          "£²",
-                          '?',
-                          'm²',
-                          'Number of trips',
-                          'Km',
-                          'Km'];
+
+// export const SEF_META: SEFactor[] = seFactors;
+
+export let SE_FACTORS = seFactors.map(f => ({ id: f.id, label: f.label, def: f.def })); 
+
+export let SEF = seFactors.map(f => f.id);
+export let SEF_UNITS = seFactors.map(f => f.units ?? '?');
+export let SEF_CATEGORICAL = seFactors
+                                .filter(f => f.type === 'categorical')
+                                .map(f => f.id);
+console.log("import seFactors", SEF, SEF_UNITS, SEF_CATEGORICAL)
 
 export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);
 

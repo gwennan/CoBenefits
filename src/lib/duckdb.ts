@@ -485,7 +485,7 @@ export function getTopSelectedLADs({
           Nation,
           SUM(total) / 1000 AS total_value,
           SUM(Population) AS total_Population,
-          SUM(total) / SUM(Population) * 1000 AS value_per_capita
+          SUM(total) / SUM(Population) * 1000000 AS value_per_capita
       FROM cobenefits
       WHERE co_benefit_type = 'Total'
         AND Population IS NOT NULL
@@ -502,7 +502,7 @@ export function getAggregationPerCapitaPerBenefit() {
         SELECT 
             co_benefit_type, 
             SUM(total) / 1000 AS total_value,
-            SUM(total) / SUM(Population) * 1000 AS value_per_capita
+            SUM(total) / SUM(Population) * 1000000 AS value_per_capita
         FROM ${DB_TABLE_NAME}
         WHERE co_benefit_type != 'Total'
           AND Population IS NOT NULL

@@ -19,7 +19,8 @@
 		COBENEFS_SCALE2,
         SEF_UNITS,
         SEF_SCALE,
-        DEFINITIONS
+        DEFINITIONS,
+        SE_FACTORS
 
     } from "../../globals";
     import {
@@ -145,8 +146,8 @@
         const matched = aggregationPerCapitaPerBenefit.find(d => d.co_benefit_type === coBenefit);
         coBenefit_percapita = matched ? matched.value_per_capita : null;
 
-        console.log("coben waffle data",aggregationPerCapitaPerBenefit);
-        console.log("coben type", coBenefit);
+        // console.log("coben waffle data",aggregationPerCapitaPerBenefit);
+        // console.log("coben type", coBenefit);
 
         LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
         totalBenefits = await getTableData(getTotalAggregation())
@@ -156,7 +157,7 @@
             SEFData[SE] = +SEFData[SE];
         })
 
-        totalValue = (d3.sum(fullData, d => d.total / 1000)).toFixed(3);
+        totalValue = (d3.sum(fullData, d => d.total / 1000)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         dataLoaded = true;
     }
@@ -254,7 +255,7 @@
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Datazones Frequency"},
-                x: {label: 'Total (£billion)',  labelArrow:'none', labelAnchor: "center"},
+                x: {label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "18px"},
                 marks: [
                     Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
@@ -306,7 +307,7 @@
                         insetLeft: 15,
                         insetRight: 15
                     })),
-                    Plot.axisY({anchor: "left", grid: true, label: 'Total (£billion)',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.axisY({anchor: "left", grid: true, label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"}),
                 ]
             })
         );
@@ -342,16 +343,17 @@
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
-                    marginTop: 20,
+                    marginTop: 10,
                     // Very weird it's needed!
-                    //x: {label: SEF_SCALE(sef)},
+                    x: {label: SEF_SCALE(sef)},
                     //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
-                    y: {label: '£billion',  labelArrow:'none'},
+                    y: {label: '£, billion',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
                         Plot.dodgeX("middle",{
-                            fx: "SE",
+                            // fx: "SE",
+                            x: "SE",
                             y: "total",
                             r: 1,
                             padding: -2,
@@ -361,7 +363,8 @@
                                 : COBENEFS_SCALE2(coBenefit)[4],})),
                         
                         Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
-                            fx: "SE",
+                            // fx: "SE",
+                            x: "SE",
                             y: "total",
                             stroke: COBENEFS_SCALE2(coBenefit)[0],
                             fill: COBENEFS_SCALE2(coBenefit)[4],
@@ -386,7 +389,7 @@
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {label: SEF_SCALE(sef), labelArrow:false},
-                    y: {label: '£billion', labelArrow:false},
+                    y: {label: '£, billion', labelArrow:false},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
@@ -480,19 +483,12 @@
                 {coBenefitLabel}
               </h1>
               <div style="margin-top: 14px;"></div>
-              <!--<p class='definition'> {coBenefitDef} </p>-->
+              <p class='definition'> {coBenefitDef} </p>
             </div>
 
           </div>
           <div class="header-waffle-wrapper">
             <div class="waffle-label">
-              <!-- National gain of <br />
-              <strong style="font-size: 1.2rem">{coBenefitLabel}</strong> <br />
-              in reaching NetZero <br />
-              by 2050 is: <br />
-              {#if totalValue}
-              <strong style="font-size: 1.1rem">£{totalValue.toLocaleString()} billion</strong>
-              {/if} -->
               <div class="waffle-stats">
               <div class="waffle-stat">
                 <div class="waffle-value">
@@ -510,9 +506,8 @@
               <div class="waffle-stat">
                 <div class="waffle-value">
                     {#if totalValue}
-                  <span class="waffle-big">£{coBenefit_percapita.toLocaleString()}</span>
+                  <span class="waffle-big">£{coBenefit_percapita.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   {/if}
-                  <span class="small">thousand</span>
                 </div>
                 {#if totalValue > 0}
                   <div class="waffle-caption">Per capita benefits</div>
@@ -545,7 +540,7 @@
           <span class="mini-header-text">
             {coBenefitLabel} 
             {#if totalValue}
-            <span class="mini-header-value">(UK total: £{totalValue.toLocaleString()} billion)</span>
+            <span class="mini-header-value">(UK total: £{totalValue} billion)</span>
             {/if}
             >> {formatLabel(currentSection)}</span>
           
@@ -561,7 +556,7 @@
             </div>
             <div id="vis-block">
                 <div class="component singlevis">
-                    <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
+                    <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
                     </h3>
                     {#if totalValue>0}
                         <p class="description">The total benefit for each 5 year interval towards 2050. </p>
@@ -571,7 +566,7 @@
                         <div class="plot" bind:this={plot}></div>
 
                     <br>
-                    <h3 class="component-title"> Distribution of values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
+                    <h3 class="component-title"> Distribution of values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
                     {#if totalValue>0}
                         <p class="description"> The total benefit for each data zone across the UK. </p>
                     {:else}
@@ -584,7 +579,7 @@
 
 
                 <div class="component column">
-                    <h3 class="component-title">Total values (£billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
+                    <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
                     <p class="description">Scroll for zooming in and out.</p>
                     {#if map}
                     <div id="legend">
@@ -634,10 +629,11 @@
 
             <div id="multiple-comp">
                 <div id="multiple-plots">
-                    {#each SEF as sef}
-                        <div class="plot-container">
-                            <h3 class="component-title" style="text-align: center;"> {sef.replaceAll('_', ' ')} </h3>
-                            <div class="plot" bind:this={SEFPlot[sef]}></div>
+                    {#each SE_FACTORS as sef}
+                        <div class="plot-container">                         
+                            <h3 class="component-chart-title">{sef.label}</h3>
+                            <p class="component-chart-caption">{sef.def}</p>
+                              <div class="plot" bind:this={SEFPlot[sef.id]}></div>
                         </div>
                     {/each}
                 </div>
@@ -664,7 +660,8 @@
     }
 
     #se-title {
-        min-width: 25vw;
+        /* min-width: 25vw; */
+        width: 30vw;
         margin-left: 1rem;
         margin-right: 2rem;
         position: sticky;
@@ -683,10 +680,12 @@
     }
 
     #multiple-comp {
-        grid-column: span 2 / span 2;
+        /* grid-column: span 2 / span 2; */
+        width: 100%;
+        padding: 1rem 0;
     }
 
-    #multiple-plots {
+    /* #multiple-plots {
         display: flex;
         gap: 1%;
         flex-direction: row;
@@ -694,7 +693,34 @@
         align-items: center;
         align-content: space-between;
         justify-content: center;
+    } */
+
+    #multiple-plots {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        justify-items: start;
     }
+
+    .plot-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .component-chart-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+        text-align: left;
+    }
+    .component-chart-caption {
+        font-size: 0.9rem;
+        line-height: 1rem;
+        color: #555;
+        margin: 0 0 10px 0;
+        text-align: left;
+    }
+
 
     /* .heading-icon {
         width: 80px;
@@ -890,6 +916,12 @@
   margin-top: 0.2rem;
   font-size: 0.85rem;
   color: black;
+}
+
+.definition {
+    max-width: 550px;
+    font-size: 1rem;
+    line-height: 1.25rem;
 }
 
 </style>

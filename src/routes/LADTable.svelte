@@ -96,7 +96,7 @@
       <tr>
         <th>Name</th>
         <th style="width: 120px;">{sortBy === 'total' ? 'Total' : 'Per Capita'}</th>
-        <th style="width: 80px;">{sortBy === 'total' ? '£billion' : '£thousand'}</th>
+        <th style="width: 80px;">{sortBy === 'total' ? '£, billion' : '£'}</th>
       </tr>
     </thead>
     <tbody>
@@ -113,9 +113,10 @@
           </td>
           <td>
             {#if sortBy === 'total'}
-              <span>{LAD.total_value.toFixed(3)}</span>
+              <span>{LAD.total_value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             {:else}
-              <span>{LAD.value_per_capita.toFixed(3)}</span>
+              <!-- <span>{LAD.value_per_capita.toFixed(2).toLocaleString('en-US')}</span> -->
+              <span>{LAD.value_per_capita.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             {/if}
           </td> 
         </tr>
