@@ -291,12 +291,20 @@ let showDropdown = false;
 
   <section class="hero-container" bind:this={heroEl}>
     {#each slides as slide, index}
-      <div
+      <!-- <div
         class="hero-slide"
         style="background-image: url({slide.image});"
         class:active={index === currentIndex}
         class:previous={index === previousIndex}
-      />
+      /> -->
+      <div
+        class="hero-slide"
+        class:active={index === currentIndex}
+        class:previous={index === previousIndex}
+      >
+        <img class="slide-image" src={slide.image} alt={slide.label} />
+        <img class="slide-map" src={slide.mapImage} alt="Map overlay" />
+      </div>
     {/each}
   
     <div class="hero-content">
@@ -477,6 +485,19 @@ main {
 .hero-slide.previous {
   z-index: 0;
 }
+
+  .slide-map {
+    position: absolute;
+    /* width: 100%; */
+    height: 100%;
+    object-fit: cover;
+    top: 0;
+    left: 25%;
+  }
+
+  .slide-map {
+    z-index: 2;
+  }
 
 .hero-content {
   position: relative;

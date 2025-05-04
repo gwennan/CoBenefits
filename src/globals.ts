@@ -196,14 +196,17 @@ export function getHeroSlides(waffleOrderedTypes: string[]) {
     return [
         {
             image: `${base}/hero/hero0.png`,
+            mapImage: `${base}/hero/map0.png`,
             source: 'total co-benefits',
             type: null,
             label: 'total co-benefits'
         },
         ...waffleOrderedTypes.map((id) => {
+            const index = getImageIndex(id);
             const match = COBENEFS.find(d => d.id === id);
             return {
-                image: `${base}/hero/hero${getImageIndex(id)}.png`,
+                image: `${base}/hero/hero${index}.png`,
+                mapImage: `${base}/hero/map${index}.png`,
                 source: `${id.toLowerCase()}.`,
                 type: id,
                 label: match?.label ?? id
