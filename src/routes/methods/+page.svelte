@@ -42,6 +42,7 @@
 
         // h3 into glossary style
         const h3Sections = Array.from(doc.querySelectorAll('h3'));
+
         h3Sections.forEach(h3 => {
           const sectionWrapper = document.createElement('details');
           const summary = document.createElement('summary');
@@ -49,14 +50,19 @@
           sectionWrapper.appendChild(summary);
 
           let node = h3.nextElementSibling;
-          while (node && node.tagName !== 'H3') {
+          while (
+            node &&
+            !(node.tagName === 'H3') &&
+            !(node.tagName === 'SECTION' && node.id === 'footnotes')
+          ) {
             const next = node.nextElementSibling;
             sectionWrapper.appendChild(node); // moves the node
             node = next;
           }
 
-          h3.replaceWith(sectionWrapper); // remove original <h3>
+          h3.replaceWith(sectionWrapper);
         });
+
 
 
         htmlContent = doc.body.innerHTML;
