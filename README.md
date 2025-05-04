@@ -26,7 +26,7 @@ npm run build
  
 
 
-## Map
+## MapUK
 
 The data uses Lower Areas (LSOA), and Local Area Districts (LAD).
 The geojson delmitations are in static/maps downloaded from https://geoportal.statistics.gov.uk/datasets/

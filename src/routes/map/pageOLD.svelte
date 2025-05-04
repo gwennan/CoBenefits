@@ -203,7 +203,7 @@
 <div class="page-container" bind:this={element}>
 
     <div class="component" id="heaser">
-        <h2> Map </h2>
+        <h2> MapUK </h2>
 
         <p>
             This interactive map shows the co-benefit of each datazone. The pathway and time window can be selected,

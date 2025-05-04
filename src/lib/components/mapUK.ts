@@ -1,4 +1,4 @@
-// Map Component using Maplinre
+// MapUK Component using Maplinre
 import * as d3 from 'd3';
 import * as Plot from "@observablehq/plot";
 import {onMount} from 'svelte';
@@ -27,7 +27,7 @@ let LADZones = await d3.json(LADzonesPath)
 LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
 
 
-export class Map {
+export class MapUK {
     colorScale: d3.ScaleDiverging<any>;
     map: maplibregl.Map;
     center: [number, number];
@@ -274,7 +274,7 @@ export class Map {
                 ],
                 'tileSize': 256,
                 'attribution':
-                    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+                    'MapUK tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
             }
         );
 

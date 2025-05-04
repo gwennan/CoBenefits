@@ -4,7 +4,7 @@
     import {onMount, onDestroy} from 'svelte';
     import { writable } from 'svelte/store';
 
-    import {Map} from "$lib/components/map";
+    import {MapUK} from "$lib/components/mapUK";
     import {
         MARGINS,
         SEF,
@@ -61,7 +61,7 @@
     let dataLoaded = false;
     let coBenefit_percapita;
 
-    let map: Map;
+    let map: MapUK;
 
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
@@ -72,7 +72,7 @@
         colorRange = colorRange.reverse()
 
         // TODO: show sum and not avergade
-        map = new Map(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false, colorRange);
+        map = new MapUK(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false, colorRange);
         map.initMap();
 
 
@@ -118,7 +118,7 @@
 
 
     onMount(() => {
-        // map = new Map(LADAveragedData, "LAD", mapDiv, "total");
+        // map = new MapUK(LADAveragedData, "LAD", mapDiv, "total");
         // map.initMap();
         //
         // let legendSvg = map.legend();

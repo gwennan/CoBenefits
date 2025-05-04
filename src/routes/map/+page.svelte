@@ -22,7 +22,7 @@
         SEF_SCALE
     } from "../../globals";
     import {Legend} from "$lib/utils";
-    import {Map} from "$lib/components/map";
+    import {MapUK} from "$lib/components/mapUK";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {COBENEFS_RANGE2} from "../../globals.js";
 
@@ -34,7 +34,7 @@
     let legendSvg: SVGSVGElement | null;
     let legendDiv: HTMLElement;
     let exportButton: HTMLElement;
-    let map: Map;
+    let map: MapUK;
     let mapType: "Cobenefit" | "SEF" = "Cobenefit";
 
 
@@ -134,7 +134,7 @@
         }
 
 
-        map = new Map(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
+        map = new MapUK(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
         map.initMap();
 
         legendSvg = map.legend();
@@ -264,7 +264,7 @@
 <div class="page-container" bind:this={element}>
 
     <div class="component" id="heaser">
-        <h2> Map </h2>
+        <h2> MapUK </h2>
 
         <p>This interactive map allows to explore both the co-benefit values and the socio-economic factor at the local
             authorities and datazones levels.</p>

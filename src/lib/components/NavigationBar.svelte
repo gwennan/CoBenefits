@@ -58,7 +58,7 @@ let showDropdown = false;
 
       <div class="nav-item">
         <div class="nav-count">46,000</div>
-        <!-- <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a> -->
+        <!-- <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>MapUK</a> -->
         <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
       </div>
     </div>

@@ -3,7 +3,7 @@
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
 
-    import {Map} from "$lib/components/map";
+    import {MapUK} from "$lib/components/mapUK";
     import {
         SEF,
         SEF_CATEGORICAL,
@@ -104,6 +104,10 @@
         totalCBAllZones = await getTableData(getTotalCBAllDatazones());
         allCBsAllZones = await getTableData(getAllCBAllDatazones());
 
+        totalCBAllZones.forEach(datazone => {
+            datazone.isPageLAD = (datazone.LAD == LAD) ? true : false
+        })
+
         totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([]));
 
         allCBAllLAD = await getTableData(getAverageCBGroupedByLAD(COBENEFS.map(d => d.id)));
@@ -163,12 +167,12 @@
 
     const LADToName = data.LADToName;
 
-    let map: Map;
+    let map: MapUK;
     let mapDiv: HTMLElement;
 
     onMount(() => {
         addSpinner(element)
-        map = new Map(LAD, "LAD", mapDiv, "val", true);
+        map = new MapUK(LAD, "LAD", mapDiv, "val", true);
         map.initMap(false);
 
         window.addEventListener('scroll', handleScroll); // header scroll listener
@@ -440,6 +444,28 @@
             } else {
                 if (SEF_CATEGORICAL.includes(sef)) {
 
+                    // const counts = Array.from(
+                    //   d3.rollup(
+                    //     totalCBAllZones,
+                    //     v => v.length,
+                    //     d => d.fx,        // facet
+                    //     d => d.isPageLAD  // category
+                    //   ),
+                    //   ([fx, ladMap]) =>
+                    //     Array.from(ladMap, ([isPageLAD, count]) => ({ fx, isPageLAD, count }))
+                    // ).flat();
+                    //
+                    // // Step 3: Sum by isPageLAD
+                    // const totalByLAD = Array.from(
+                    //   d3.rollup(counts, v => d3.sum(v, d => d.count), d => d.isPageLAD)
+                    // );
+                    //
+                    // // Convert to lookup map
+                    // const totalMap = new Map(totalByLAD);
+
+
+
+
                     // TODO: use only totalCBAllZones and set a variable to split between average and current LAD
                     plot = Plot.plot({
                         height: height / 2,
@@ -450,6 +476,11 @@
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
+                            // Plot.barY(totalCBAllZones, Plot.normalizeY(Plot.groupX({y: "count"}, {
+                            //     x: "isPageLAD",
+                            //     fx: sef,
+                            //     fill: "isPageLAD"
+                            // }))),
                             Plot.barY(totalCBAllZones, Plot.normalizeY(Plot.groupX({y: "count"}, {
                                 x: sef,
                                 dx: 20,
@@ -496,20 +527,19 @@
 
             // Using the domain of all data skew too much th plots
             let domain = d3.extent(oneLADData.map(d => d["total"]));
-            domain[1] = domain[1] * 3;
+            domain[1] = domain[1] * 2.8;
             domain[0] = -5;
 
 
             let cbplot;
             if (SEF_CATEGORICAL.includes(sef)) {
-                console.log(sef, oneLADData.map(d => d[sef]))
+                // console.log(sef, oneLADData.map(d => d[sef]))
                 cbplot = Plot.plot({
                     height: height / 1,
                     ...MARGINS,
-                    // y: {label: "Datazones Frequency"},
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
                     x: {label: SEF_SCALE(sef)},
-                    // y: {domain: domain, grid: true},
+                    y: {domain: domain, grid: true, label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     color: {range: ["#e6e6e6", AVERAGE_COLOR]},
                     marks: [
@@ -1201,16 +1231,9 @@
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
-                <!--                <h3 class="component-title">Mapping the impact of <span> {coBenefitLabel?.toLowerCase()} </span> across UK local authorities according to socio-economic factors</h3>-->
+                    <h3 class="component-title">Comparing the Socio-Economic factors distributions of {LADToName[LAD]} and {compareTo}, and their correlation with co-benefits.</h3>
                 <br>
-                <!-- Disclaimer -->
-                <div id="se-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent
-                        modelled associations and should not be interpreted as direct causal relationships. </p>
-                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic
-                        factors are using categorical values where the x-axis is non-linear: EPC, Tenure, Typology, Fuel
-                        type, Gas flag, Number of cars.</p>
-                </div>
+
 
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
@@ -1218,14 +1241,27 @@
                     <span>The scatter plots are shaded by nation.</span>
 
                     <ul class="legend-list">
-                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>-->
-                        <!--                            Scotland</li>-->
-                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>-->
-                        <!--                            Northern Ireland</li>-->
-                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England</li>-->
-                        <!--                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[4]}"></span>Wales</li>-->
+                                                <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
+                                                    {LADToName[LAD]}</li>
+                                                <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
+                                                    {compareTo}</li>
                     </ul>
+                </div>
 
+                <!-- Interpretation  -->
+                <div id="se-legend" class="legend-box">
+                    <strong style="margin-bottom: 1rem;">Interpreting the charts:</strong> <br/>
+                    <p> <strong>Barchart:</strong> Each bar represents the normalized frequency of datazones linked to a given social economic factor value. </p>
+                    <p> <strong>Scatterplot:</strong> Each dot represents a datazone inside {LADToName[LAD]}. The cloud shows the distribution for {compareTo}. </p>
+                </div>
+
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent
+                        modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic
+                        factors are using categorical values where the x-axis is non-linear: EPC, Tenure, Typology, Fuel
+                        type, Gas flag, Number of cars.</p>
                 </div>
             </div>
 
