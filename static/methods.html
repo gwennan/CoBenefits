@@ -225,49 +225,47 @@
 <p>The avoided damages (i.e. benefits) are measured annually, accounting for forecasted changes in population growth, fuel usages, and emissions intensities. All costs are discounted through to 2050.</p>
 </blockquote>
 <p><span class="math display">
-\[
-\begin{aligned}
-& \sum_{}^{}{Fuel\ Use} \left( 
-Change\ in\ Energy\ Consumption\ (GWh) \times Particulate\ Emissions\ Factors 
-\right) \\
-& \times\ Air\ Quality\ Damage\ Cost\ by\ Pollutant\ Type \\
-& \times\ Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway \\
-& \times\ Share\ of\ Impacts\ to\ Beneficiary \\
-& = Total\ Value\ of\ Avoided\ Damages\ (£)\
-\end{aligned}
-\]
-
+  \[
+  \begin{aligned}
+  & \sum_{}^{} \text{Fuel Use} \left( 
+  \text{Change in Energy Consumption (GWh)} \times \text{Particulate Emissions Factors} 
+  \right) \\
+  & \times \text{Air Quality Damage Cost by Pollutant Type} \\
+  & \times \text{Share of Damages Attributable to Impact Pathway} \\
+  & \times \text{Share of Impacts to Beneficiary} \\
+  & = \text{Total Value of Avoided Damages (£)}
+  \end{aligned}
+  \]
 </span></p>
+  
 <p>Transport <em><strong>–</strong></em> We model the baseline scenario for vehicles driven in a given area, based on per capita assumptions from national and regional travel patterns, estimating travel by vehicle type, road type, and fuel type<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>. This is multiplied by average fuel consumption by vehicle type and per kilometre travelled, which is then multiplied by air pollutant emissions factors to estimate total emitted pollutants (PM<sub>2.5</sub>, SO<sub>2</sub>, NO<sub>x</sub>) from travel in an area from tailpipe emissions. Non-exhaust emissions (PM<sub>2.5</sub>) from wear on tyres, brakes and roads are estimated from distance travelled, using emissions factors from the Air Quality Expert Group<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Damage factors are applied on a per-tonne of pollutant basis, according to pollutant type and rurality bands.</p>
 <blockquote>
 <p>The same process is repeated for the low-carbon interventions; changing the vehicle type and fuel type, modifying distance travelled per capita where applicable, and summing total tailpipe and non-tailpipe pollutants.</p>
 <p>The total value of avoided air pollution is the delta of the two scenarios, calculated annually through to 2050 and discounted accordingly.</p>
 </blockquote>
-<p><span class="math inline">
+<p><span class="math display">
   \[
   \begin{aligned}
   & \left( 
     \left( 
-      Electricity\ Consumption\ by\ EVs \times Particulate\ Emissions\ Factors 
+      \text{Electricity Consumption by EVs} \times \text{Particulate Emissions Factors} 
     \right) + {} \right. \\
   & \left. \quad 
     \left( 
-      Fuel\ Consumption\ by\ ICE\ vehicles \times Particulate\ Emissions\ Factors 
+      \text{Fuel Consumption by ICE vehicles} \times \text{Particulate Emissions Factors} 
     \right) 
-  \right) \times Unit\ Conversions \\
+  \right) \times \text{Unit Conversions} \\
   & + \left( 
-    Particulate\ Emissions\ from\ (Brake\ Wear,\ Tyre\ Wear,\ Road\ Wear) 
+    \text{Particulate Emissions from (Brake Wear, Tyre Wear, Road Wear)} 
   \right) \\
-  & \times Change\ in\ distance\ by\ mode\ (vkm) \\
-  & \times Share\ of\ vkm\ travelled\ by\ rural - urban\ classification \\
-  & \times Air\ Quality\ Damage\ Costs \\
-  & \times Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway \\
-  & \times Share\ of\ Impacts\ to\ Beneficiary \\
-  & = Total\ Value\ of\ Avoided\ Damages\ (£)
+  & \times \text{Change in distance by mode (vkm)} \\
+  & \times \text{Share of vkm travelled by rural-urban classification} \\
+  & \times \text{Air Quality Damage Costs} \\
+  & \times \text{Share of Damages Attributable to Impact Pathway} \\
+  & \times \text{Share of Impacts to Beneficiary} \\
+  & = \text{Total Value of Avoided Damages (£)}
   \end{aligned}
   \]
-  
-
 </span></p>
 </blockquote>
 <h3 id="excess-cold">Excess Cold</h3>
@@ -275,41 +273,72 @@ Change\ in\ Energy\ Consumption\ (GWh) \times Particulate\ Emissions\ Factors
 <p>A building physics model is used to estimate internal temperature before and after installation of the low-carbon intervention, based on the household’s physical properties and characteristics. Buildings with temperatures below the excess cold threshold (19<sup>ο</sup> Celsius) are then mapped to damage costs developed by BRE<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> to estimate improvements in health, quality of life, and NHS savings, with seasonal variations in temperature accounted for.</p>
 <p>Damages are more heavily-weighted at the lower end of the temperature spectrum, using a sigmoid function from 10<sup>ο</sup> – 19<sup>ο</sup> Celsius. This allows us to properly quantify the reduction in excess cold damages if a property’s temperature increases from 12<sup>ο</sup> - 18<sup>ο</sup> Celsius; i.e. the most severe health outcomes originate from the lowest-temperature households. All households over 19<sup>ο</sup> Celsius are by definition not at risk of excess cold.</p>
 <p>Quality of life and health improvements are distributed directly to the household implementing the low-carbon measure, with economy and NHS savings attributed indirectly to society.</p>
-<p><span class="math display">\[Change\ in\ minimum\ winter\ temperature\ by\ archetype\ and\ EPC\ band\ (\mathrm{\Delta}℃)\]</span></p>
 <blockquote>
-<p><span class="math display">\[\times \ \left( (Change\ in\ QALYs\ per\ person\ per\ increase\ in\ temperature \times \ Population\ forecast\ by\ archetype\ \  \times \ Value\ of\ Life\ Year) + NHS\ and\ societal\ savings\ per\ change\ in\ property\ temperature \right)\]</span></p>
-<p><span class="math display">\[\times \ Number\ of\ households\ per\ archetype\ by\ EPC\ band\]</span></p>
-<p><span class="math display">\[\times Share\ of\ households\ with\ Category\ 1\ excess\ cold\ health\ hazards\]</span></p>
-<p><span class="math display">\[\times Share\ of\ vulnerable\ populations\ per\ archetype\]</span></p>
-<p><span class="math inline">\(= Total\ value\ of\ excess\ cold\ reduction\ to\ individuals\ and\ society\)</span> (£)</p>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Change in minimum winter temperature by archetype and EPC band } (\Delta^\circ\mathrm{C}) \\
+    & \times 
+      \left( 
+        \text{Change in QALYs per person per increase in temperature} \right. \\
+    & \quad \times \text{Population forecast by archetype} \\
+    & \quad \times \text{Value of Life Year} \\
+    & \left. \quad + \text{NHS and societal savings per change in property temperature} 
+      \right) \\
+    & \times \text{Number of households per archetype by EPC band} \\
+    & \times \text{Share of households with Category 1 excess cold health hazards} \\
+    & \times \text{Share of vulnerable populations per archetype} \\
+    & = \text{Total value of excess cold reduction to individuals and society (£)}
+    \end{aligned}
+    \]
+    </span></p>
+    
 </blockquote>
 <h3 id="dampness">Dampness</h3>
 <p>The reduction in dampness is a co-benefit resulting from decreased excess humidity in buildings, which leads to lower incidence of mould, building damage, and microbial growth; all of which can result in health deficiencies.</p>
 <p>The co-benefit is quantified in a similar manner to excess cold, using the building physics model to map relative humidity to internal temperature<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>, comparing the baseline humidity to the humidity levels after the intervention, and measuring the corresponding reduction in health risk<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a>.</p>
 <p>The co-benefits are distributed directly to the proponent of the low-carbon action as health benefits, with indirect impacts appropriated across relevant households and to the NHS.</p>
-<p><span class="math display">\[Change\ in\ minimum\ winter\ temperature\ by\ archetype\ and\ EPC\ band\ (\mathrm{\Delta}℃)\ \]</span></p>
 <blockquote>
-<p><span class="math display">\[\times \ Unit\ Conversion\ (\mathrm{\Delta}RH/\mathrm{\Delta}℃)\]</span></p>
-<p><span class="math display">\[\times \ \left( (Change\ in\ QALYs\ per\ person\ per\ increase\ in\ temperature \times \ Population\ forecast\ by\ archetype\  \times \ Value\ of\ Life\ Year) + NHS\ and\ societal\ savings\ per\ change\ in\ property\ relative\ humidity \right)\]</span></p>
-<p><span class="math display">\[\times \ Number\ of\ households\ per\ archetype\ by\ EPC\ band\]</span></p>
-<p><span class="math display">\[\times Share\ of\ households\ with\ Category\ 1\ dampness\ hazards\]</span></p>
-<p><span class="math display">\[\times Share\ of\ vulnerable\ populations\ per\ archetype\]</span></p>
-<p><span class="math inline">\(= Total\ value\ of\ dampness\ reduction\ to\ individuals\ and\ society\)</span> (£)</p>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Change in minimum winter temperature by archetype and EPC band } (\Delta^\circ\mathrm{C}) \\
+    & \times \text{ Unit Conversion } (\Delta RH / \Delta^\circ\mathrm{C}) \\
+    & \times \left( 
+        \text{Change in QALYs per person per increase in temperature} \right. \\
+    & \quad \times \text{ Population forecast by archetype} \\
+    & \quad \times \text{ Value of Life Year} \\
+    & \left. \quad + \text{ NHS and societal savings per change in property relative humidity} 
+      \right) \\
+    & \times \text{ Number of households per archetype by EPC band} \\
+    & \times \text{ Share of households with Category 1 dampness hazards} \\
+    & \times \text{ Share of vulnerable populations per archetype} \\
+    & = \text{Total value of dampness reduction to individuals and society (£)}
+    \end{aligned}
+    \]
+  </p></span>
 </blockquote>
 <h3 id="noise">Noise</h3>
 <p>The reduction of noise co-benefit is a result of decreased levels of noise pollution, which lead to the negative effects on the health and well-being of society and ecosystems.</p>
 <p>Environmental noise pollution is the second-greatest environmental risk in Europe<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a>, leading to declines in quality of life, reduced amenity, sleep disturbances, and increased health risks.</p>
 <p>The co-benefit is quantified by estimating baseline noise in the local area, through mapping noise levels by road type and rural-urban classification, using estimates from the Department for Transport<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a>.</p>
 <p>The change in noise pollution is modelled by using the relationship between vehicle type and noise<sup>11</sup>, to estimate the marginal changes in decibels per vehicular kilometre travelled (either by reduction in vkmt or shifting vkmt to EVs). The benefits are valued using the DfT’s TAG noise assessment databook<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a>, and distributed to populations based on the rural-urban classification in which the reduction in noise occurs, so that avoided damages can be weighted appropriately. This is broken down into distinct damage pathways, like increased amenity and reduced sleep disturbance.</p>
-<p><span class="math display">\[Baseline\ distance\ travelled\ by\ vehicle\ type\ and\ powetrain\ (vkm)\ \]</span></p>
+
 <blockquote>
-<p><span class="math display">\[\times Share\ of\ vkm\ by\ road\ type\ and\ rural - urban\ classification\ \]</span></p>
-<p><span class="math display">\[\times \ Typical\ noise\ pollution\ by\ vehicle\ and\ road\ type\ \left( \frac{dB}{vkm} \right)\]</span></p>
-<p><span class="math display">\[\times \ \left( Baseline\ modelled\ noise\ (dB) - Net\ change\ in\ modelled\ noise\ pollution \right)\ \]</span></p>
-<p><span class="math display">\[\times \ Share\ of\ population\ affected\ \]</span></p>
-<p><span class="math display">\[\times \ Avoided\ marginal\ external\ costs\ of\ noise\ pollution\ (\pounds)\ \]</span></p>
-<p><span class="math display">\[\times \ Share\ of\ impact\ pathway\]</span></p>
-<p><span class="math display">\[= Total\ value\ of\ avoided\ noise\ pollution\ relative\ to\ baseline\ (\pounds)\]</span></p>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Baseline distance travelled by vehicle type and powertrain (vkm)} \\
+    & \times \text{ Share of vkm by road type and rural-urban classification} \\
+    & \times \text{ Typical noise pollution by vehicle and road type} \left( \frac{\mathrm{dB}}{\mathrm{vkm}} \right) \\
+    & \times \left( \text{Baseline modelled noise (dB)} - \text{Net change in modelled noise pollution} \right) \\
+    & \times \text{ Share of population affected} \\
+    & \times \text{ Avoided marginal external costs of noise pollution (£)} \\
+    & \times \text{ Share of impact pathway} \\
+    & = \text{Total value of avoided noise pollution relative to baseline (£)}
+    \end{aligned}
+    \]
+  </span></p>
 </blockquote>
 <h3 id="physical-activity">Physical Activity</h3>
 <h3 id="congestion">Congestion</h3>
