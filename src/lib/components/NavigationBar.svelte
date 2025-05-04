@@ -17,7 +17,7 @@ let showDropdown = false;
 
 <nav class="navbar">
     <div class="nav-left">
-      <img src="{base}/logo.png" alt="Logo" class="logo" />
+      <img src="{base}/atlas-logos/logo-black-small.png" alt="Logo" class="logo" />
     </div>
 
     <div class="nav-center">
@@ -25,7 +25,7 @@ let showDropdown = false;
           on:mouseenter={() => (showDropdown = true)}
           on:mouseleave={() => (showDropdown = false)}
       >
-        <div class="nav-count">17 types</div>
+        <div class="nav-count">17</div>
         <span
           class="dropdown-label"
           class:active={$page.url.pathname.startsWith(`${base}/cobenefit`)}
@@ -51,13 +51,15 @@ let showDropdown = false;
       </div>
 
       <div class="nav-item inactive">
-        <div class="nav-count">17 factors</div>
-        <a>Households</a>
+        <div class="nav-count">17</div>
+        <!-- <a>Households</a> -->
+        <a>Factors</a>
       </div>
 
       <div class="nav-item">
-        <div class="nav-count">46,000 zones</div>
-        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a>
+        <div class="nav-count">46,000</div>
+        <!-- <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Map</a> -->
+        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
       </div>
     </div>
 
@@ -145,17 +147,14 @@ let showDropdown = false;
 
 
   .nav-count {
-  font-size: 0.7rem;
+  font-size: 1.3em;
   color: #555;
   margin-bottom: 2px;
   line-height: 1;
   text-align: center;
   width: 100%;
+  font-weight: 700;
 }
-
-
-
-
 
   .dropdown {
     position: relative;
@@ -177,6 +176,7 @@ let showDropdown = false;
     padding-bottom: 4px;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
+    /* text-decoration: underline; */
   }
 
   .nav-center a:hover,
