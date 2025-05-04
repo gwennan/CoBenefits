@@ -192,18 +192,14 @@
 <li><p>Roof insulation</p></li>
 <li><p>Solid wall insulation</p></li>
 <li><p>Cavity wall insulation</p></li>
-<li><p>Other insulation types        </p></li>
+<li><p>Other insulation types</p></li>
 <li><p>More efficient appliances</p></li>
 </ul>
-<p> </p>
 <p><strong>Transport:</strong></p>
 <ul>
 <li><p>Reduction in transport demand</p></li>
 <li><p>Shifts to low-carbon transport (public transport, electric vehicles, hybrid vehicles, active travel).</p></li>
 </ul>
-<blockquote>
-<p> </p>
-</blockquote>
 <p><strong>Dietary Change:</strong></p>
 <ul>
 <li><p>Shifts to healthier diets (reductions in meat and dairy, replaced with plant-based foods)</p></li>
@@ -217,7 +213,7 @@
 </figure>
 <p><img src="./media/media/image3.png" style="width:5.33333in;height:3.26389in" alt="A diagram of a venn diagram Description automatically generated" /></p>
 <p>Figure 3 – LSOA/Datazone-level data for archetypal analysis</p>
-<h3 id="section"></h3>
+
 <h3 id="air-quality">Air Quality </h3>
 <p>The air quality co-benefit measures the reduction in air pollution, primarily as a result of decreased fossil fuel combustion, and quantifies the benefit to individuals and society.</p>
 <p>Air quality improvements are quantified by modelling the delta of energy consumption between the low-carbon intervention (e.g. heat pumps) and the counterfactual (e.g. gas boilers), before estimating the tonnes of pollutants mitigated by type. The reduction in pollutants (PM<sub>2.5</sub>, PM<sub>10</sub>, SO<sub>2</sub>, NO<sub>x</sub>) from fossil fuel combustion are valued according to UK Green Book valuations (developed by Ricardo<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>).</p>
@@ -228,21 +224,51 @@
 <p>These avoided damages cover economic, social and environmental degradation, and are distributed to inhabitants specific to the area in question (improvements in life expectancy, improved health outcomes, etc.), or nationally where appropriate (NHS savings, productivity gains, etc.). Due to constraints in the literature, changes to indoor air quality were not modelled in this analysis.</p>
 <p>The avoided damages (i.e. benefits) are measured annually, accounting for forecasted changes in population growth, fuel usages, and emissions intensities. All costs are discounted through to 2050.</p>
 </blockquote>
-<p><span class="math display">\[\sum_{}^{}{Fuel\ Use}\left( Change\ in\ Energy\ Consumption\ (GWh) \times \ Particulate\ Emissions\ Factors \right)\  \times \ Air\ Quality\ Damage\ Cost\ by\ Pollutant\ Type\  \times \ Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway\  \times \ Share\ of\ Impacts\ to\ Beneficiary\  = Total\ Value\ of\ Avoided\ Damages\ (\pounds)\]</span></p>
+<p><span class="math display">
+\[
+\begin{aligned}
+& \sum_{}^{}{Fuel\ Use} \left( 
+Change\ in\ Energy\ Consumption\ (GWh) \times Particulate\ Emissions\ Factors 
+\right) \\
+& \times\ Air\ Quality\ Damage\ Cost\ by\ Pollutant\ Type \\
+& \times\ Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway \\
+& \times\ Share\ of\ Impacts\ to\ Beneficiary \\
+& = Total\ Value\ of\ Avoided\ Damages\ (£)\
+\end{aligned}
+\]
+
+</span></p>
 <p>Transport <em><strong>–</strong></em> We model the baseline scenario for vehicles driven in a given area, based on per capita assumptions from national and regional travel patterns, estimating travel by vehicle type, road type, and fuel type<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>. This is multiplied by average fuel consumption by vehicle type and per kilometre travelled, which is then multiplied by air pollutant emissions factors to estimate total emitted pollutants (PM<sub>2.5</sub>, SO<sub>2</sub>, NO<sub>x</sub>) from travel in an area from tailpipe emissions. Non-exhaust emissions (PM<sub>2.5</sub>) from wear on tyres, brakes and roads are estimated from distance travelled, using emissions factors from the Air Quality Expert Group<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Damage factors are applied on a per-tonne of pollutant basis, according to pollutant type and rurality bands.</p>
 <blockquote>
 <p>The same process is repeated for the low-carbon interventions; changing the vehicle type and fuel type, modifying distance travelled per capita where applicable, and summing total tailpipe and non-tailpipe pollutants.</p>
 <p>The total value of avoided air pollution is the delta of the two scenarios, calculated annually through to 2050 and discounted accordingly.</p>
 </blockquote>
-<p><span class="math display">\[\left( \left( (Electricity\ Consumption\ by\ EVs\  \times \ Particulate\ Emissions\ Factors) + \ (Fuel\ Consumption\ by\ ICE\ vehicles\  \times \ Particulate\ Emissions\ Factors) \right) \times \ Unit\ Conversions \right)\]</span></p>
-<p><span class="math display">\[\ \ \ \  + \ \left( Particulate\ Emissions\ from\ (Brake\ Wear,\ Tyre\ Wear,\ Road\ Wear) \right)\]</span></p>
-<blockquote>
-<p><span class="math display">\[\times \ Change\ in\ distance\ by\ mode\ (vkm)\]</span></p>
-<p><span class="math display">\[\times Share\ of\ vkm\ travelled\ by\ rural - urban\ classification\ \ \]</span></p>
-<p><span class="math display">\[\times \ Air\ Quality\ Damage\ Costs\ \]</span></p>
-<p><span class="math display">\[\times \ Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway\ \]</span></p>
-<p><span class="math display">\[\times \ Share\ of\ Impacts\ to\ Beneficiary\ \]</span></p>
-<p><span class="math inline">\(= Total\ Value\ of\ Avoided\ Damages\ (\pounds)\)</span></p>
+<p><span class="math inline">
+  \[
+  \begin{aligned}
+  & \left( 
+    \left( 
+      Electricity\ Consumption\ by\ EVs \times Particulate\ Emissions\ Factors 
+    \right) + {} \right. \\
+  & \left. \quad 
+    \left( 
+      Fuel\ Consumption\ by\ ICE\ vehicles \times Particulate\ Emissions\ Factors 
+    \right) 
+  \right) \times Unit\ Conversions \\
+  & + \left( 
+    Particulate\ Emissions\ from\ (Brake\ Wear,\ Tyre\ Wear,\ Road\ Wear) 
+  \right) \\
+  & \times Change\ in\ distance\ by\ mode\ (vkm) \\
+  & \times Share\ of\ vkm\ travelled\ by\ rural - urban\ classification \\
+  & \times Air\ Quality\ Damage\ Costs \\
+  & \times Share\ of\ Damages\ Attributable\ to\ Impact\ Pathway \\
+  & \times Share\ of\ Impacts\ to\ Beneficiary \\
+  & = Total\ Value\ of\ Avoided\ Damages\ (£)
+  \end{aligned}
+  \]
+  
+
+</span></p>
 </blockquote>
 <h3 id="excess-cold">Excess Cold</h3>
 <p>Excess cold co-benefit represents the avoided costs of poor health and NHS costs resulting from individuals living in homes with low internal temperatures.</p>

@@ -40,6 +40,25 @@
             }
         });
 
+        // h3 into glossary style
+        const h3Sections = Array.from(doc.querySelectorAll('h3'));
+        h3Sections.forEach(h3 => {
+          const sectionWrapper = document.createElement('details');
+          const summary = document.createElement('summary');
+          summary.textContent = h3.textContent || '';
+          sectionWrapper.appendChild(summary);
+
+          let node = h3.nextElementSibling;
+          while (node && node.tagName !== 'H3') {
+            const next = node.nextElementSibling;
+            sectionWrapper.appendChild(node); // moves the node
+            node = next;
+          }
+
+          h3.replaceWith(sectionWrapper); // remove original <h3>
+        });
+
+
         htmlContent = doc.body.innerHTML;
 
         await tick();
@@ -80,32 +99,60 @@
   </div>
   
   <style>
-  .pandoc-html {
-  max-width: 1000px;
+
+:global(.pandoc-html) {
+  width: 1000px;
   margin: auto;
   padding: 1rem;
+  font-family: inherit;
+  color: inherit;
   line-height: 1.6;
   font-size: 1rem;
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-/* Ensure math container doesn't overflow */
-.pandoc-html .mjx-container {
-  overflow-x: auto;
-  max-width: 100%;
-  white-space: normal;
-  display: block;
+:global(.pandoc-html ul) {
+  padding-left: 1.5rem;
+  margin: 1em 0;
+  list-style-type: disc;
+  line-height: 1.4;
 }
 
-/* Optional: Soft wrap inside equations */
-.pandoc-html .mjx-mrow {
+:global(.pandoc-html li) {
+  margin: 0.25em 0;
+}
+
+:global(.pandoc-html li p) {
+  margin: 0;
+  display: inline;
+}
+
+:global(.pandoc-html .mjx-container) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: normal;
+  font-size: 1em !important;
+}
+
+:global(.pandoc-html .mjx-mrow) {
   white-space: normal !important;
 }
 
-.pandoc-html blockquote {
-    align-items: start;
-    text-align: start;
+:global(.pandoc-html details) {
+  margin-bottom: 2px;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  border-radius: 4px;
 }
+
+:global(.pandoc-html summary) {
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
   </style>
   
