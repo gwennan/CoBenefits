@@ -29,26 +29,13 @@
 
     import StickyNav from "./StickyNav.svelte"
 
-    // BADGES
-    // import TruncAxisBadge from '$lib/badges/truncatedaxis.png';
-    // import overlapBadge from '$lib/badges/(Can) contain overlapping visual marks.png';
-    // import mouseOverBadge from '$lib/badges/Mouse Over.png';
-    // import roundingBadge from '$lib/badges/Rounding.png';
-    // import aggregationBadge from '$lib/badges/Aggregated data.png';
-    // import zoomBadge from '$lib/badges/Zoom.png';
-    // import normalizedBadge from '$lib/badges/Data normalized.png';
-    // import predictionsBadge from '$lib/badges/Contains predictions.png';
-    // import multipleDataSourceBadge from '$lib/badges/Contains Multiple Data Sources Full.png';
-    // import modeledDataBadge from '$lib/badges/Contains modeled data.png';
-    // import binningBadge from '$lib/badges/Binning applied.png';
-
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {
         getAllCBAllDatazones, getAllCBForOneLAD,
         getAverageCBGroupedByLAD,
         getSUMCBGroupedByLAD, getSUMCBGroupedByLADAndCB,
-        getTableData,
+        getTableData, getTopSelectedLADs,
         getTotalCBAllDatazones, getTotalCBForOneLAD
     } from "$lib/duckdb";
 
@@ -96,6 +83,7 @@
     let totalValue: number;
     let totalValuePerCapita: number;
     let totalValueMax: number;
+    let totalValuePerCapitaMax: number;
 
     let dataLoaded = false;
 
@@ -119,13 +107,13 @@
 
 
         totalValue = (d3.sum(oneLADData, d => d.total) / 1000).toFixed(3);
+        totalValueMax = d3.max(totalCBAllLAD, d => d.val) / 1000;
+
 
         // This is an approximation
-        totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000).toFixed(3);
-
-
-        totalValueMax = d3.max(totalCBAllLAD, d => d.val) / 1000;
-        // totalValueMaxPerCapita = d3.max(totalCBAllLAD, d => d.val) / 1000;
+        totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000000).toFixed(1);
+        totalValuePerCapitaMax = await getTableData(getTopSelectedLADs({limit: 1, sortBy: "per_capita"}));
+        totalValuePerCapitaMax = totalValuePerCapitaMax[0].value_per_capita;
 
         dataLoaded = true;
         removeSpinner(element)
@@ -464,11 +452,9 @@
                     // const totalMap = new Map(totalByLAD);
 
 
-
-
                     // TODO: use only totalCBAllZones and set a variable to split between average and current LAD
                     plot = Plot.plot({
-                        height: height / 2,
+                        height: height / 1.2,
                         ...MARGINS,
                         marginLeft: 100,
                         // x: {label: SEF_SCALE(sef)},
@@ -495,7 +481,7 @@
                 } else {
 
                     plot = Plot.plot({
-                        height: height / 2,
+                        height: height / 1.2,
                         ...MARGINS,
                         // y: {label: "Datazones Frequency"},
                         x: {label: SEF_SCALE(sef)},
@@ -526,8 +512,17 @@
             }
 
             // Using the domain of all data skew too much th plots
-            let domain = d3.extent(oneLADData.map(d => d["total"]));
-            domain[1] = domain[1] * 2.8;
+            // let domain = d3.extent(oneLADData.map(d => d["total"]));
+            // domain[1] = domain[1] * 2.8;
+            // domain[0] = -5;
+
+            let values = totalCBAllZones.map(d => d["total"]);
+            let domain = d3.extent(values);
+            values.sort();
+            var len =  values.length;
+            var index =  Math.floor(len*1) - 1;
+            let quantile = values[index];
+            domain[1] = quantile + 2;
             domain[0] = -5;
 
 
@@ -535,7 +530,7 @@
             if (SEF_CATEGORICAL.includes(sef)) {
                 // console.log(sef, oneLADData.map(d => d[sef]))
                 cbplot = Plot.plot({
-                    height: height / 1,
+                    height: height / 1.2,
                     ...MARGINS,
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
                     x: {label: SEF_SCALE(sef)},
@@ -545,14 +540,25 @@
                     marks: [
                         Plot.density(getRandomSubarray(totalCBAllZones, 15000), {
                             // Plot.density(oneLADData, {
-                            // x: sef,
                             x: d => `${d[sef]}`,
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
                             // thresholds: 10
-                            bandwidth: 9
+                            bandwidth: 3
                         }),
+                        // Plot.boxY(totalCBAllZones, {
+                        //     x: d => `${d[sef]}`,
+                        //     y: "total",
+                        //     // stroke: COBENEFS_SCALE2(coBenefit)[0],
+                        //     fill: (d => {
+                        //         console.log(33, d)
+                        //         return "black"
+                        //     }),
+                        //     r: 0,
+                        //     //strokeOpacity: 0.5,
+                        //     fillOpacity:0.3
+                        // }),
                         Plot.dot(oneLADData, {
                             x: d => `${d[sef]}`,
                             // x: sef,
@@ -572,7 +578,7 @@
 
             } else {
                 cbplot = Plot.plot({
-                    height: height / 1,
+                    height: height / 1.2,
                     ...MARGINS,
                     // y: {label: "Datazones Frequency"},
                     x: {label: SEF_SCALE(sef)},
@@ -1011,10 +1017,10 @@
                         <div class="waffle-value">
                             <!--                    TODO: current placeholder -->
                             {@html
-                                makeLADBarSVG(totalValue, 1000000)
+                                makeLADBarSVG(totalValuePerCapita, totalValuePerCapitaMax)
                             }
                             <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
-                            <span class="small">thousand</span>
+                            <span class="small"></span>
                         </div>
                         {#if totalValue > 0}
                             <div class="waffle-caption">Per capita benefits</div>
