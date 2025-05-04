@@ -185,13 +185,13 @@ export function getSUMCBGroupedByLAD(cobenefits: CoBenefit[], nation="UK", time 
     }
 
     if (cobenefits.length == 0) {
-        query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
+        query = `SELECT scenario, SUM("${time}") as val, SUM("${time}") / SUM(Population) AS value_per_capita, LAD as Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'
                  ${nationConstraint}
                  GROUP BY LAD, scenario`
     } else {
-        query = `SELECT scenario, SUM("${time}") as val, LAD as Lookup_Value
+        query = `SELECT scenario, SUM("${time}") as val, SUM("${time}") / SUM(Population) AS value_per_capita, LAD as Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})
                  ${nationConstraint}
@@ -216,7 +216,6 @@ export function getSUMCBGroupedByLADAndCB(time = "total", nation="UK") {
                  ${nationConstraint}
                  GROUP BY LAD, co_benefit_type`
 
-    console.log(23, query)
     return query
 }
 

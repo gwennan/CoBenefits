@@ -84,6 +84,9 @@
     let totalValuePerCapita: number;
     let totalValueMax: number;
     let totalValuePerCapitaMax: number;
+    let totalValueMean: number;
+    let totalValuePerCapitaMean: number;
+
 
     let dataLoaded = false;
 
@@ -112,11 +115,19 @@
 
         // This is an approximation
         totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000000).toFixed(1);
+
         totalValuePerCapitaMax = await getTableData(getTopSelectedLADs({limit: 1, sortBy: "per_capita"}));
         totalValuePerCapitaMax = totalValuePerCapitaMax[0].value_per_capita;
 
         dataLoaded = true;
         removeSpinner(element)
+    }
+
+    $: {
+        if (totalCBAllLAD) {
+            totalValueMean = d3.mean(totalCBAllLAD.map(d => d.val)) / 1000;
+            totalValuePerCapitaMean = d3.mean(totalCBAllLAD.map(d => d.value_per_capita)) * 100000;
+        }
     }
 
     loadData();
@@ -173,7 +184,7 @@
         window.removeEventListener('scroll', handleScroll); // remove listener
     })
 
-    function makeLADBarSVG(value, max) {
+    function makeLADBarSVG(value, max, fill="black") {
         const plot = Plot.plot({
             width: 80,
             height: 20,
@@ -183,7 +194,7 @@
                 Plot.barX([value], {
                     x: d => d,
                     y: 0,
-                    fill: "#ccc"
+                    fill: fill
                 })
             ]
         });
@@ -1002,31 +1013,46 @@
                     <div class="waffle-stat">
                         <div class="waffle-value">
                             {@html
-                                makeLADBarSVG(totalValue, totalValueMax)
+                                makeLADBarSVG(totalValue, totalValueMax, VIS_COLOR)
                             }
                             <span class="waffle-big">£{totalValue.toLocaleString()}</span>
                             <span class="small">billion</span>
                         </div>
+
+                        <div class="waffle-value">
+                        {@html
+                                makeLADBarSVG(totalValueMean, totalValueMax, AVERAGE_COLOR)
+                            }
+
                         {#if totalValue > 0}
-                            <div class="waffle-caption">Local area benefits</div>
+                            <span class="waffle-caption">Local area benefits</span>
                         {:else}
-                            <div class="waffle-caption">Local area costs</div>
+                            <span class="waffle-caption">Local area costs</span>
                         {/if}
+                            </div>
                     </div>
                     <div class="waffle-stat">
                         <div class="waffle-value">
-                            <!--                    TODO: current placeholder -->
                             {@html
-                                makeLADBarSVG(totalValuePerCapita, totalValuePerCapitaMax)
+                                makeLADBarSVG(totalValuePerCapita, totalValuePerCapitaMax, VIS_COLOR)
                             }
                             <span class="waffle-big">£{totalValuePerCapita.toLocaleString()}</span>
                             <span class="small"></span>
                         </div>
+
+                        <div class="waffle-value">
+
+                            {@html
+                                makeLADBarSVG(totalValuePerCapitaMean, totalValuePerCapitaMax, AVERAGE_COLOR)
+                            }
+
                         {#if totalValue > 0}
-                            <div class="waffle-caption">Per capita benefits</div>
+                            <span class="waffle-caption">Per capita benefits</span>
                         {:else}
-                            <div class="waffle-caption">Per capita costs</div>
+                            <span class="waffle-caption">Per capita costs</span>
                         {/if}
+                        </div>
+
                     </div>
                 </div>
             {/if}
@@ -1465,6 +1491,7 @@
         display: flex;
         align-items: baseline;
         gap: 0.3rem;
+        /*width: 300px;*/
     }
 
     .waffle-big {
@@ -1483,39 +1510,6 @@
         color: black;
         /*float: right;*/
         margin-left: auto;
-        margin-right: 10%;
+        /*margin-right: 10%;*/
     }
-
-.waffle-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.waffle-value {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-}
-
-.waffle-big {
-  font-size: 1.5rem;
-  font-weight: medium;
-}
-
-.small {
-  font-size: 0.9rem;
-  color: black;
-}
-
-.waffle-caption {
-  margin-top: 0.2rem;
-  font-size: 0.85rem;
-  color: black;
-    /*float: right;*/
-    margin-left: auto;
-margin-right: 10%;
-}
-
-
 </style>
