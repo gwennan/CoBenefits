@@ -937,13 +937,13 @@
 
     <div class="section header header-row" id="head">
         <div>
-            <p class="page-subtitle">Data Report</p>
+            <p class="page-subtitle">Local Authority Report</p>
             <h1 class="page-title"> {LADToName[LAD]}</h1>
             <p class="description">Explore how this local authority will benefit from achieving Net Zero and learn about
                 the characteristics of its households.</p>
 
             <div class="radio-set">
-                Compare this Local Authority District (LAD) against:
+                Compare this Local Authority District (LAD) against:<br/>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
                 <label class="nation-label" for="html">UK</label><br>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="England">
