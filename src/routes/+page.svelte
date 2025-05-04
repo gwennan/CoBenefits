@@ -301,6 +301,7 @@ let showDropdown = false;
   
     <div class="hero-content">
       <div class="hero-text">
+        <img src="{base}/atlas-logos/logo-colored-waffle-png.png" alt="Logo" height="0px" />
         <h1 class="hero-title">The Co-Benefits of Reaching <br> Net Zero in the UK</h1>
         <p class="hero-description">
           Climate actions lower greenhouse gas (GHG) emissions but the gains for society reach further. The CO-BENS project models 11 additional benefits based on actions recommended by the Climate Change Committee (CCC) in its Seventh Carbon Budget (2025) across 45,000 communities and regions within the UK.<br>

@@ -17,7 +17,7 @@ let showDropdown = false;
 
 <nav class="navbar">
     <div class="nav-left">
-      <img src="{base}/atlas-logos/logo-black-small.png" alt="Logo" class="logo" />
+      <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" />
     </div>
 
     <div class="nav-center">
@@ -147,13 +147,13 @@ let showDropdown = false;
 
 
   .nav-count {
-  font-size: 1.3em;
+  font-size: 1em;
   color: #555;
   margin-bottom: 2px;
   line-height: 1;
   text-align: center;
   width: 100%;
-  font-weight: 700;
+  font-weight: 1000;
 }
 
   .dropdown {
