@@ -171,7 +171,7 @@
 
         const unitSize = 20;
         const gridWidth = 15;
-        const gridHeight = Math.floor(height / unitSize);
+        const gridHeight = Math.floor(200 / unitSize);
         const gridSize = gridWidth * gridHeight;
 
         const total = aggregationPerBenefit.reduce((sum, d) => sum + d.total, 0);
@@ -254,9 +254,9 @@
                 marginLeft: 90,
                 marginTop: 40,
                 marginRight: 40,
-                y: {label: "Datazones Frequency"},
+                y: {label: "Number of Datazoness"},
                 x: {label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"},
-                style: {fontSize: "18px"},
+                style: {fontSize: "15px"},
                 marks: [
                     Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
                         x: "total",
@@ -266,7 +266,7 @@
                         stroke: COBENEFS_SCALE2(coBenefit)[0],
                         strokeWidth: 3
                     })),
-                    Plot.axisY({anchor: "left", label: 'Datazone frequency',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.axisY({anchor: "left", label: 'Number of datazones',  labelArrow:'none', labelAnchor: "center"}),
                     Plot.ruleX([0],{stroke: "#333", strokeWidth: 0.75}),
                     //Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                 ]
@@ -289,7 +289,7 @@
                 marginRight: 40,
                 marginBottom: 60,
                 marginTop: 40,
-                style: {fontSize: "18px"},
+                style: {fontSize: "15px"},
                 x: {
                     type: "band",
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
@@ -522,7 +522,7 @@
                   <span class="small">%</span>
                 </div>
                 {/if}
-                  <div class="waffle-caption">Contribution</div>
+                  <div class="waffle-caption">Contribution to national benefits</div>
               </div>
             </div>
             </div>
@@ -559,22 +559,28 @@
                     <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
                     </h3>
                     {#if totalValue>0}
-                        <p class="description">The total benefit for each 5 year interval towards 2050. </p>
-                    {:else}
-                        <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p>
+                        <!-- <p class="description">The total benefit for each 5 year interval towards 2050. </p> -->
+                        <p class="description">Each bar shows the total values obtained in that period. </p>
+                        {:else}
+                        <!-- <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p> -->
+                        <p class="description">Each bar shows the total benefits or costs obtained in that period. </p>
                     {/if}
                         <div class="plot" bind:this={plot}></div>
+                    <!-- <p class="explanation">Each bar shows the total benefits obtain within the given period.</p> -->
 
                     <br>
                     <h3 class="component-title"> Distribution of values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
                     {#if totalValue>0}
-                        <p class="description"> The total benefit for each data zone across the UK. </p>
+                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit how much.</p>
                     {:else}
-                        <p class="description"> The total cost/benefit for each data zone across the UK. </p>
-                    {/if}
+                        <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
+                        <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how much.</p>
+                        {/if}
                         <div class="plot" bind:this={plotDist}>
-                    </div>
-                    <br>
+                            
+                        </div>
+                        <br>
+                    <!-- <p class="explanation">``Bumps'' in the chart indicate </p> -->
                 </div>
 
 
@@ -597,10 +603,15 @@
         <p class="section-subtitle">Compare by socio-economic factor</p>
         </div> -->
 
+        <div class="section-header">
+            <p class="section-subtitle">Socio-economic factors</p>
+        </div>
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
                 <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
+                <p class="explanation">Each scatterplot shows the distribution of benefits or costs depending on a given socio-economic factor.</p> 
                 <br>
+
                 <!-- Disclaimer -->
                 <div id="se-disclaimer" class="disclaimer-box">
                     <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
@@ -661,9 +672,11 @@
 
     #se-title {
         /* min-width: 25vw; */
-        width: 30vw;
+        /* width: 30vw; */
+        width: 400px;
         margin-left: 1rem;
-        margin-right: 2rem;
+        /* margin-right: 2rem; */
+        margin-right: 50px;
         position: sticky;
         top: 120px;
         align-self: flex-start;
@@ -697,8 +710,8 @@
 
     #multiple-plots {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
         justify-items: start;
     }
 
@@ -711,13 +724,14 @@
         font-size: 1.2rem;
         font-weight: bold;
         margin: 0;
+        margin-bottom: 10px;
         text-align: left;
     }
     .component-chart-caption {
         font-size: 0.9rem;
-        line-height: 1rem;
+        line-height: 1.1rem;
         color: #555;
-        margin: 0 0 10px 0;
+        margin: 0 0 15px 0;
         text-align: left;
     }
 
@@ -757,8 +771,8 @@
     } */
 
     .heading-icon {
-    width: 5rem;
-    height: 5rem;
+    width: 4rem;
+    height: 4rem;
     }
 
 
@@ -769,23 +783,24 @@
 
     .header-content {
     display: flex;
-    align-items: center;
+    align-items: top;
     justify-content: space-between;
     flex-wrap: wrap;
     }
 
     .header-text {
     max-width: 60%;
+    height :100%;
     }
 
     .page-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #777;
-    margin-bottom: 0.5rem;
+    margin-bottom: 2rcap;
     }
 
     .page-title {
-    font-size: 2rem;
+    font-size: 1.7rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -799,8 +814,8 @@
     }
 
     .description {
-    margin-top: 1rem;
-    font-size: 1rem;
+    margin-top: .9rem;
+    font-size: .9rem;
     color: #333;
     }
 
@@ -809,13 +824,13 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 1rem;
-    min-width: 320px;
+    min-width: 120px;
     }
 
     .header-waffle-wrapper {
     position: relative;
-    min-width: 320px;
-    height: 320px;
+    min-width: 120px;
+    height: 2%;
     }
 
     .waffle-bg {
@@ -839,7 +854,7 @@
     border-radius: 0.5rem;
     padding: 1rem;
     font-size: 0.9rem;
-    line-height: 1.4;
+    line-height: 1.1;
     color: #333;
     text-align: left;
     /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
@@ -903,8 +918,8 @@
 }
 
 .waffle-big {
-  font-size: 1.5rem;
-  font-weight: medium;
+  font-size: 1.3rem;
+  font-weight: 500;
 }
 
 .small {
