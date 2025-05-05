@@ -17,7 +17,7 @@ body {
     /*width: 90%;*/
     box-sizing: border-box;
     margin: auto;
-    /* max-width: 1300px; */
+    max-width: 1300px;
 }
 
 a {

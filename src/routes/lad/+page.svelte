@@ -72,8 +72,8 @@
     <p>Loading local authorities…</p>
 {:else}
     <main>
-        <h1>List of Local Authorities across UK</h1>
-        <p>Click on a local authority for detailed reports.</p>
+        <h1>Browse local authorities</h1>
+        <p>Open the tabs and then click on a local authority for detailed reports.</p>
         {#each nations as nation}
         <details>
             <summary>
