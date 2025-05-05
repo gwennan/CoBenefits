@@ -453,10 +453,12 @@ main {
 }
 
 .hero-description {
-  font-size: 0.8rem;
+  /* font-size: 0.8rem; */
+  font-size: 1rem;
   margin-bottom: 0.5rem;
-  line-height: 1rem;
-  max-width: 620px;
+  /* line-height: 1rem; */
+  /* max-width: 620px; */
+  max-width: 400px;
 }
 
 

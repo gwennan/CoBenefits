@@ -15,6 +15,9 @@
 		"src/routes/cobenefit/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/contact": [
+		"src/routes/+layout.ts"
+	],
 	"/lad": [
 		"src/routes/lad/+layout.ts",
 		"src/routes/+layout.ts",
