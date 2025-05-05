@@ -266,7 +266,7 @@
     <div class="component" id="heaser">
         <h2> MapUK </h2>
 
-        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factor at the local
+        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factors at the local
             authorities and datazones levels.</p>
 
         <!--        <p>-->
