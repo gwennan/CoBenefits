@@ -152,7 +152,7 @@
                 // console.log("currentSection", currentSection);
                 break;
             }
-            }
+        }
     }
 
     function formatLabel(id: string): string {
@@ -184,7 +184,7 @@
         window.removeEventListener('scroll', handleScroll); // remove listener
     })
 
-    function makeLADBarSVG(value, max, fill="black") {
+    function makeLADBarSVG(value, max, fill = "black") {
         const plot = Plot.plot({
             width: 80,
             height: 20,
@@ -212,7 +212,7 @@
             marks: [
                 // Remove too large values otherwise plot is unreadable
                 Plot.areaY(totalCBAllZones.filter(d => d.total < 20), Plot.binX({y: "proportion"}, {
-                // Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
+                    // Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
                     x: "total",
                     tip: true,
                     fill: AVERAGE_COLOR,
@@ -530,7 +530,11 @@
                         x: {label: SEF_SCALE(sef)},
                         style: {fontSize: "18px"},
                         marks: [
-                            Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
+                            Plot.areaY(oneLADData, Plot.binX({
+                                y: (a, bin) => {
+                                    return a.length / oneLADData.length / (bin.x2 - bin.x1);
+                                }
+                            }, {
                                 x: sef,
                                 tip: true,
                                 fill: AVERAGE_COLOR,
@@ -538,7 +542,11 @@
                                 fillOpacity: 0.2,
                                 strokeWidth: 3
                             })),
-                            Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
+                            Plot.areaY(totalCBAllZones, Plot.binX({
+                                y: (a, bin) => {
+                                    return a.length / totalCBAllZones.length / (bin.x2 - bin.x1);
+                                }
+                            }, {
                                 x: sef,
                                 tip: true,
                                 fill: "black",
@@ -561,8 +569,8 @@
             let values = totalCBAllZones.map(d => d["total"]);
             let domain = d3.extent(values);
             values.sort();
-            var len =  values.length;
-            var index =  Math.floor(len*1) - 1;
+            var len = values.length;
+            var index = Math.floor(len * 1) - 1;
             let quantile = values[index];
             domain[1] = quantile + 2;
             domain[0] = -5;
@@ -996,21 +1004,20 @@
 <!-- <StickyNav sectionRefs={sectionRefs}></StickyNav> -->
 
 
-
 <div class="page-container" bind:this={element}>
 
     {#if scrolledPastHeader}
-      <div class="mini-header">
-        <div class="mini-header-content">
+        <div class="mini-header">
+            <div class="mini-header-content">
           <span class="mini-header-text">
-            {LADToName[LAD]} 
-            {#if totalValue}
+            {LADToName[LAD]}
+              {#if totalValue}
             <span class="mini-header-value">(Total: £{totalValue.toLocaleString()} billion)</span>
             {/if}
-            >> {formatLabel(currentSection)}</span>
-          
+              >> {formatLabel(currentSection)}</span>
+
+            </div>
         </div>
-      </div>
     {/if}
 
     <div class="section header header-row" id="head">
@@ -1035,7 +1042,7 @@
             </div>
         </div>
 
-        
+
         <div>
             <!--{d3.sum(totalCBAllZones.map(d => d.total))}-->
             {#if totalValue}
@@ -1051,16 +1058,16 @@
                         </div>
 
                         <div class="waffle-value">
-                        {@html
+                            {@html
                                 makeLADBarSVG(totalValueMean, totalValueMax, AVERAGE_COLOR)
                             }
 
-                        {#if totalValue > 0}
-                            <span class="waffle-caption">Local area benefits</span>
-                        {:else}
-                            <span class="waffle-caption">Local area costs</span>
-                        {/if}
-                            </div>
+                            {#if totalValue > 0}
+                                <span class="waffle-caption">Local area benefits</span>
+                            {:else}
+                                <span class="waffle-caption">Local area costs</span>
+                            {/if}
+                        </div>
                     </div>
                     <div class="waffle-stat">
                         <div class="waffle-value">
@@ -1077,11 +1084,11 @@
                                 makeLADBarSVG(totalValuePerCapitaMean, totalValuePerCapitaMax, AVERAGE_COLOR)
                             }
 
-                        {#if totalValue > 0}
-                            <span class="waffle-caption">Per capita benefits</span>
-                        {:else}
-                            <span class="waffle-caption">Per capita costs</span>
-                        {/if}
+                            {#if totalValue > 0}
+                                <span class="waffle-caption">Per capita benefits</span>
+                            {:else}
+                                <span class="waffle-caption">Per capita costs</span>
+                            {/if}
                         </div>
 
                     </div>
@@ -1187,95 +1194,99 @@
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
             <h2 class="section-title">How will co-benefits change over time?</h2>
-            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of co-benefits.</p>
+            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of
+                co-benefits.</p>
         </div>
         <div id="vis-block">
-        <div id="main-block" class="component column">
-            <div>
-            <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span
-                    class="nation-label">{compareTo}</span> Average)</h3>
-            <p class="description" style="margin-bottom:5px">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
-            
-            <!-- Legend -->
-            <div class="legend-box">
-                <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
-                <ul class="legend-list">
-                    <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
-                        {LADToName[LAD]}</li>
-                    <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
-                        <span class="nation-label">{compareTo}</span></li>
-                </ul>
-            </div>
-            </div>
+            <div id="main-block" class="component column">
+                <div>
+                    <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span
+                            class="nation-label">{compareTo}</span> Average)</h3>
+                    <p class="description" style="margin-bottom:5px">Aggregated values from 2025-2049
+                        in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities
+                        in <span class="nation-label">{compareTo}</span>.</p>
 
-            <div class="plot side" bind:this={CBOverTimePLot}></div>
+                    <!-- Legend -->
+                    <div class="legend-box">
+                        <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
+                        <ul class="legend-list">
+                            <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
+                                {LADToName[LAD]}</li>
+                            <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
+                                <span class="nation-label">{compareTo}</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-            
+                <div class="plot side" bind:this={CBOverTimePLot}></div>
+
 
                 <!-- <div class="row"> -->
-                    <!-- <div class="plot" bind:this={CBOverTimePLot}> -->
-                        <!--                    <div class="badge-container">-->
-                        <!--                            <img class="badge" src={predictionsBadge} />-->
-                        <!--                        </div>-->
-                    <!-- </div> -->
+                <!-- <div class="plot" bind:this={CBOverTimePLot}> -->
+                <!--                    <div class="badge-container">-->
+                <!--                            <img class="badge" src={predictionsBadge} />-->
+                <!--                        </div>-->
                 <!-- </div> -->
-        </div>
-        <div id="main-block" class="component column">
-            <div>
-                <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
-                <p class="description" style="margin-bottom:5px">Total gains and losses are shown at five-year intervals for each co-benefit. The curve between points is smoothed to show the general trends. *Hover over areas for more information.</p>
-
-                <!-- Legend -->
-                <div id="main-legend" class="legend-box" style="margin-bottom: 5px;">
-                    <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
-                    <ul class="horizontal-legend-list" style="margin-bottom:5px">
-                        <li><span class="legend-color" style="background-color: #D3A029"></span>
-                            Diet change
-                        </li>
-                        <li><span class="legend-color" style="background-color: #48773E"></span>
-                            Physical activity
-                        </li>
-                        <li><span class="legend-color" style="background-color: #183668"></span>
-                            Dampness
-                        </li>
-                        <li><span class="legend-color" style="background-color: #00AED9"></span>
-                            Excess cold
-                        </li>
-                        <li><span class="legend-color" style="background-color: #E11484"></span>
-                            Noise
-                        </li>
-                        <li><span class="legend-color" style="background-color: #71C35D"></span>
-                            Air quality
-                        </li>
-                        <li><span class="legend-color" style="background-color: #8F1838"></span>
-                            Congestion
-                        </li>
-                        <li><span class="legend-color" style="background-color: #EF402B"></span>
-                            Excess heat
-                        </li>
-                        <li><span class="legend-color" style="background-color: #F36D25"></span>
-                            Road safety
-                        </li>
-                        <li><span class="legend-color" style="background-color: #F99D26"></span>
-                            Road repairs
-                        </li>
-                        <li><span class="legend-color" style="background-color: #C31F33"></span>
-                            Hassle costs
-                        </li>
-                    </ul>
-
-                </div>
-
-                <!-- Disclaimer -->
-                <div id="main-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0;"><strong>Some areas too small:</strong> Due to the nature of the
-                        co-benefits some values are very small in comparison
-                        to larger values so therefore are not visable on this plot. </p>
-                </div>
+                <!-- </div> -->
             </div>
-            <div class="plot side" bind:this={CBOverTimePerCBPLot}></div>
+            <div id="main-block" class="component column">
+                <div>
+                    <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
+                    <p class="description" style="margin-bottom:5px">Total gains and losses are shown at five-year
+                        intervals for each co-benefit. The curve between points is smoothed to show the general trends.
+                        *Hover over areas for more information.</p>
+
+                    <!-- Legend -->
+                    <div id="main-legend" class="legend-box" style="margin-bottom: 5px;">
+                        <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
+                        <ul class="horizontal-legend-list" style="margin-bottom:5px">
+                            <li><span class="legend-color" style="background-color: #D3A029"></span>
+                                Diet change
+                            </li>
+                            <li><span class="legend-color" style="background-color: #48773E"></span>
+                                Physical activity
+                            </li>
+                            <li><span class="legend-color" style="background-color: #183668"></span>
+                                Dampness
+                            </li>
+                            <li><span class="legend-color" style="background-color: #00AED9"></span>
+                                Excess cold
+                            </li>
+                            <li><span class="legend-color" style="background-color: #E11484"></span>
+                                Noise
+                            </li>
+                            <li><span class="legend-color" style="background-color: #71C35D"></span>
+                                Air quality
+                            </li>
+                            <li><span class="legend-color" style="background-color: #8F1838"></span>
+                                Congestion
+                            </li>
+                            <li><span class="legend-color" style="background-color: #EF402B"></span>
+                                Excess heat
+                            </li>
+                            <li><span class="legend-color" style="background-color: #F36D25"></span>
+                                Road safety
+                            </li>
+                            <li><span class="legend-color" style="background-color: #F99D26"></span>
+                                Road repairs
+                            </li>
+                            <li><span class="legend-color" style="background-color: #C31F33"></span>
+                                Hassle costs
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <!-- Disclaimer -->
+                    <div id="main-disclaimer" class="disclaimer-box">
+                        <p style="margin: 0;"><strong>Some areas too small:</strong> Due to the nature of the
+                            co-benefits some values are very small in comparison
+                            to larger values so therefore are not visable on this plot. </p>
+                    </div>
+                </div>
+                <div class="plot side" bind:this={CBOverTimePerCBPLot}></div>
+            </div>
         </div>
-    </div>
 
     </div>
 
@@ -1289,7 +1300,8 @@
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
-                    <h3 class="component-title">Comparing the Socio-Economic factors distributions of {LADToName[LAD]} and {compareTo}, and their correlation with co-benefits.</h3>
+                <h3 class="component-title">Comparing the Socio-Economic factors distributions of {LADToName[LAD]}
+                    and {compareTo}, and their correlation with co-benefits.</h3>
                 <br>
 
 
@@ -1297,18 +1309,20 @@
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
                     <ul class="legend-list">
-                                                <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
-                                                    {LADToName[LAD]}</li>
-                                                <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
-                                                    {compareTo}</li>
+                        <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
+                            {LADToName[LAD]}</li>
+                        <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
+                            {compareTo}</li>
                     </ul>
                 </div>
 
                 <!-- Interpretation  -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Interpreting the charts:</strong> <br/>
-                    <p> <strong>Barchart:</strong> Each bar represents the normalized frequency of datazones linked to a given social economic factor value. </p>
-                    <p> <strong>Scatterplot:</strong> Each dot represents a datazone inside {LADToName[LAD]}. The cloud shows the distribution for {compareTo}. </p>
+                    <p><strong>Barchart:</strong> Each bar represents the normalized frequency of datazones linked to a
+                        given social economic factor value. </p>
+                    <p><strong>Scatterplot:</strong> Each dot represents a datazone inside {LADToName[LAD]}. The cloud
+                        shows the distribution for {compareTo}. </p>
                 </div>
 
                 <!-- Disclaimer -->
@@ -1440,11 +1454,11 @@
         padding: 1rem 0;
     }
 
-    .side{
+    .side {
         margin-top: 10px;
     }
 
-    .component .column{
+    .component .column {
         /* flex:50% */
         background-color: #fff;
     }
@@ -1462,6 +1476,7 @@
         margin-bottom: 5px;
         text-align: left;
     }
+
     .column-chart-caption {
         font-size: 0.9rem;
         line-height: 1.1rem;
@@ -1505,10 +1520,10 @@
         align-items: center;
     }
 
-    .horizontal-legend-list{
+    .horizontal-legend-list {
         display: grid;
-        grid-template-columns: repeat(5, 1fr); 
-        gap: 0px; 
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0px;
         list-style: none;
         padding: 0;
         margin: 0;
