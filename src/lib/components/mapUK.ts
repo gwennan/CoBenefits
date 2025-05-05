@@ -174,6 +174,10 @@ export class MapUK {
         // console.log(" OK ", this.dataZoneToValue, Object.keys(this.dataZoneToValue).length)
 
 
+        this.makeColorScale(justHighlightArea)
+    }
+
+    makeColorScale(justHighlightArea) {
         let domain;
         if (justHighlightArea) {
             domain = [0, 1]
@@ -182,7 +186,7 @@ export class MapUK {
                 .range(["white", "red"])
 
         } else {
-            domain = d3.extent(data.map(d => d[this.dataKey]));
+            domain = d3.extent(this.data.map(d => d[this.dataKey]));
 
             // for black/white scales
             if (this.colorRange[0] == "red") {
@@ -217,15 +221,11 @@ export class MapUK {
                 .domain(domain)
                 .range(this.colorRange) // You can use any colors you want
 
-            // console.log("DOMAIN ", domain,)
-            console.log("colorscale ", this.colorScale.domain(), this.colorScale.range())
+            // console.log("colorscale ", this.colorScale.domain(), this.colorScale.range())
         }
     }
 
     loadLayers() {
-
-        console.log('addsources')
-
         // Add data source
         this.map.addSource('datazones', {
             type: 'geojson',
@@ -329,11 +329,14 @@ export class MapUK {
         .filter(l => l.type === 'symbol')
         .map(l => l.id);
 
-        console.log(222, labelLayerIds)
+        // console.log(222, labelLayerIds)
 
         // Move each label layer to the top
         for (const id of labelLayerIds) {
-            this.map.moveLayer(id);
+            // Show every text layer on top except motorways
+            if (!id.includes("highway")) {
+                this.map.moveLayer(id);
+            }
         }
 
         this.loaded = true;
