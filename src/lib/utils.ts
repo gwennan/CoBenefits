@@ -170,9 +170,6 @@ export function Legend(color, {
 
   // Ordinal
   else {
-    console.log(454545454)
-
-
     x = d3.scaleBand()
         .domain(color.domain())
         .rangeRound([marginLeft, width - marginRight]);

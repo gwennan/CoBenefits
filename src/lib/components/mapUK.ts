@@ -358,12 +358,12 @@ export class MapUK {
                 if (zone) {
                     // name of LAD or LSOA
                     let name = zone.properties.LAD22NM ?? zone.properties.LSOA21NM;
-
                     let cobenefValue = zone.properties.value;
+
                     this.tooltip.innerHTML = `
                  <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
                  <br>
-                 <strong>Value</strong>: ${cobenefValue}
+                 <strong>Value</strong>: ${cobenefValue.toFixed(2)}
                  `;
                     this.tooltip.style.left = event.point.x + 10 + 'px';
                     this.tooltip.style.top = event.point.y + 10 + 'px';
