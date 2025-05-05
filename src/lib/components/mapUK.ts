@@ -64,7 +64,8 @@ export class MapUK {
         this.map = new maplibregl.Map({
             container: 'map', // container id
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
-            style: {version: 8, sources: {}, layers: []},
+            style: "https://tiles.stadiamaps.com/styles/alidade_smooth.json?api_key=2400b8d8-5e34-491f-87b0-181af8c12f88",
+            // style: {version: 8, sources: {}, layers: []},
             center: this.center, // starting position [lng, lat]
             zoom: zoomLevel, // starting zoom
             preserveDrawingBuffer: true,
@@ -90,17 +91,25 @@ export class MapUK {
         const layers = this.map.getStyle().layers; // Get all layers in the current map style
         if (layers) {
             layers.forEach(layer => {
-                this.map.removeLayer(layer.id); // Remove each layer by its id
+                console.log("LL ", layer);
+
+                // if (layer.source != "openmaptiles") {
+                if (layer.source == "datazones") {
+                    this.map.removeLayer(layer.id); // Remove each layer by its id
+                }
             });
         }
     }
 
     removeSources() {
         // Remove all sources from the map
-        const sources = this.map.getStyle().sources;
-        for (const sourceId in sources) {
-            this.map.removeSource(sourceId); // Remove each source by its id
-        }
+        // const sources = this.map.getStyle().sources;
+        // for (const sourceId in sources) {
+        //     console.log("SS ", sourceId);
+        //     this.map.removeSource(sourceId); // Remove each source by its id
+        // }
+
+        this.map.removeSource("datazones"); // Remove each source by its id
     }
 
     setColorScale(colorScale) {
@@ -121,8 +130,6 @@ export class MapUK {
 
             for (let zone of this.geojson.features) {
                 let zoneId = this.zoneName(zone)
-
-                // this.center = [zone.properties.LAT, zone.properties.LONG]
 
                 if (zoneId == data) {
                     this.center = [zone.properties.LONG, zone.properties.LAT]
@@ -266,32 +273,65 @@ export class MapUK {
         // });
 
         // Tiles
+        // this.map.addSource('raster-tiles', {
+        //         'type': 'raster',
+        //         'tiles': [
+        //             // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+        //             // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        //             "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=2400b8d8-5e34-491f-87b0-181af8c12f88"
+        //         ],
+        //         'tileSize': 256,
+        //         'attribution':
+        //             'MapUK tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+        //     }
+        // );
+        //
+        // this.map.addLayer({
+        //         'id': 'simple-tiles',
+        //         'type': 'raster',
+        //         'source': 'raster-tiles',
+        //         paint: {
+        //             "raster-opacity": 0.35
+        //         },
+        //         // 'minzoom': 0,
+        //         // 'maxzoom': 10
+        //     }
+        // );
 
-        this.map.addSource('raster-tiles', {
-                'type': 'raster',
-                'tiles': [
-                    // 'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-                    // 	"https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=2400b8d8-5e34-491f-87b0-181af8c12f88"
-                ],
-                'tileSize': 256,
-                'attribution':
-                    'MapUK tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-            }
-        );
+        // this.map.addSource('vector-tiles', {
+        //         'type': 'vector',
+        //         'url':
+        //             "https://tiles.stadiamaps.com/tiles/alidade_smooth.json?api_key=2400b8d8-5e34-491f-87b0-181af8c12f88"
+        //         ,
+        //         'attribution':
+        //             'MapUK tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+        //     }
+        // );
+        //
+        // this.map.addLayer({
+        //         'id': 'simple-tiles',
+        //         'type': 'fill',
+        //         'source': 'vector-tiles',
+        //         paint: {
+        //             "fill-opacity": 0.35
+        //         },
+        //     }
+        // );
 
-        this.map.addLayer({
-                'id': 'simple-tiles',
-                'type': 'raster',
-                'source': 'raster-tiles',
-                paint: {
-                    "raster-opacity": 0.35
-                },
-                // 'minzoom': 0,
-                // 'maxzoom': 10
-            }
-        );
 
+        const layers = this.map.getStyle().layers;
+
+        // Find label layers (commonly of type 'symbol')
+        const labelLayerIds = layers
+        .filter(l => l.type === 'symbol')
+        .map(l => l.id);
+
+        console.log(222, labelLayerIds)
+
+        // Move each label layer to the top
+        for (const id of labelLayerIds) {
+            this.map.moveLayer(id);
+        }
 
         this.loaded = true;
     }

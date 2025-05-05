@@ -36,6 +36,7 @@
     let exportButton: HTMLElement;
     let map: MapUK;
     let mapType: "Cobenefit" | "SEF" = "Cobenefit";
+    let loadLayers = true;
 
 
     // Main data
@@ -72,14 +73,15 @@
                 }
             }
 
+            console.log(2323233, loadLayers)
 
             fullData.then((data) => {
 
                 // Load layers again when changing granularity
-                let loadLayers = false;
-                if (map.map.getStyle().layers.length == 0) {
-                    loadLayers = true;
-                }
+                // let loadLayers = false;
+                // if (map.map.getStyle().layers.length == 0) {
+                //     loadLayers = true;
+                // }
 
                 let colorRange;
 
@@ -98,6 +100,7 @@
 
                 map.update(data, mapType, loadLayers, colorRange);
                 updateLegend();
+                loadLayers = false;
             })
 
         }
@@ -240,6 +243,7 @@
             map.border = true;
         }
 
+        loadLayers = true;
     }
 
     function exportMap() {
