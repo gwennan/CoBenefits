@@ -510,15 +510,15 @@
                             //     fx: sef,
                             //     fill: "isPageLAD"
                             // }))),
-                            Plot.barY(totalCBAllZones, Plot.normalizeY(Plot.groupX({y: "count"}, {
+                            Plot.barY(totalCBAllZones, Plot.groupX({y: "proportion"}, {
                                 x: sef,
                                 dx: 20,
                                 fill: AVERAGE_COLOR
-                            }))),
-                            Plot.barY(oneLADData, Plot.normalizeY(Plot.groupX({y: "count"}, {
+                            })),
+                            Plot.barY(oneLADData, Plot.groupX({y: "proportion"}, {
                                 x: sef,
                                 dx: -20
-                            })))
+                            }))
                         ]
                     })
                 } else {
