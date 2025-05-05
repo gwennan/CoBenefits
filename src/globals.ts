@@ -103,6 +103,24 @@ console.log("import seFactors", SEF, SEF_UNITS, SEF_CATEGORICAL)
 
 export const SEF_SCALE = d3.scaleOrdinal(SEF, SEF_UNITS);
 
+export const SEF_LEVEL_LABELS = {
+    EPC: {
+      1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G"
+    },
+    Tenure: {
+      1: "Owner", 2: "Rented (social)", 3: "Rented (private)"
+    },
+    Typology: {
+      1: "Semi-detached", 2: "Detached", 3: "Mid-terrace", 4: "End-terrace", 5: "Enclosed end-terrace", 6: "Enclosed mid-terrace"
+    },
+    Fuel_Type: {
+      1: "Gas boiler", 2: "Electric heating", 3: "Oil heating"
+    },
+    Gas_Flag: {
+      1: "Connected", 0: "Not connected"
+    }
+  };
+
 
 // The years labels have an Y for start otherwise it causes sql issues
 // export const TIMES = ["2025_2029", "2030_2034", "2035_2039", "2040_2044", "2045_2040"]

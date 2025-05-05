@@ -20,7 +20,8 @@
         SEF_UNITS,
         SEF_SCALE,
         DEFINITIONS,
-        SE_FACTORS
+        SE_FACTORS,
+        SEF_LEVEL_LABELS
 
     } from "../../globals";
     import {
@@ -335,6 +336,7 @@
         SEF.forEach(sef => {
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
+                const labelLookup = SEF_LEVEL_LABELS[sef]; 
                 plot = Plot.plot({
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
@@ -343,32 +345,41 @@
                     marginLeft: 60,
                     marginBottom: 60,
                     marginRight: 10,
-                    marginTop: 10,
+                    marginTop: 30,
                     // Very weird it's needed!
-                    x: {label: SEF_SCALE(sef)},
+                    x: {label: SEF_SCALE(sef), tickFormat: d => labelLookup?.[d] ?? d
+                    },
+                    //x: {
+                    //    type: "band",
+                    //    tickFormat: d => SEF_LEV_SCALE(sef)?.[d] ?? d,
+                    //    label: null
+                    //},
                     //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
                     y: {label: '£, billion',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
-                        Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
-                        Plot.dodgeX("middle",{
-                            // fx: "SE",
-                            x: "SE",
-                            y: "total",
-                            r: 1,
-                            padding: -2,
-                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
-                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
-                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
-                                : COBENEFS_SCALE2(coBenefit)[4],})),
+                        //Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
+                        //Plot.dodgeX("middle",{
+                        //    fx: "SE",
+                            //x: "SE",
+                        //    y: "total",
+                        //    r: 1,
+                        //    padding: -2,
+                        //    fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
+                        //        : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
+                        //        : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
+                        //        : COBENEFS_SCALE2(coBenefit)[4],})),
                         
                         Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
-                            // fx: "SE",
+                            //fx: "SE",
                             x: "SE",
                             y: "total",
-                            stroke: COBENEFS_SCALE2(coBenefit)[0],
+                            stroke: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
+                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
+                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
+                                : COBENEFS_SCALE2(coBenefit)[4],
                             fill: COBENEFS_SCALE2(coBenefit)[4],
-                            r: 0,
+                            r: 2,
                             //strokeOpacity: 0.5,
                             fillOpacity:0.3
                         }),
@@ -388,7 +399,7 @@
                     marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
-                    x: {label: SEF_SCALE(sef), labelArrow:false},
+                    x: {label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"},
                     y: {label: '£, billion', labelArrow:false},
                     color: {legend: true},
                     marks: [
@@ -403,7 +414,7 @@
                             r: 2,
                             fillOpacity: 1
                         }),
-                        //Plot.axisX({label: sef,  labelArrow:'none', labelAnchor: "center"}),
+                        Plot.axisX({label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
                         Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
