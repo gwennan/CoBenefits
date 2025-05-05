@@ -286,7 +286,7 @@
         plot?.append(
             Plot.plot({
                 height: height / 1.5,
-                marginLeft: 70,
+                marginLeft: 80,
                 marginRight: 40,
                 marginBottom: 60,
                 marginTop: 40,
@@ -337,24 +337,25 @@
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
                 const labelLookup = SEF_LEVEL_LABELS[sef]; 
+
+                const fullLevels = labelLookup
+                    ? Object.keys(labelLookup).map(Number)
+                    : LADAveragedData.filter(d => d["SEFMAME"] == sef).map(d => d.SE);
+
                 plot = Plot.plot({
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
-                    height: height / 1.2,
-                    width: height/1.1 ,
-                    marginLeft: 60,
+                    height: height/1.4 ,
+                    width: height*1.2,
+                    marginLeft: 70,
                     marginBottom: 60,
-                    marginRight: 10,
-                    marginTop: 30,
-                    // Very weird it's needed!
-                    x: {label: SEF_SCALE(sef), tickFormat: d => labelLookup?.[d] ?? d
-                    },
-                    //x: {
-                    //    type: "band",
-                    //    tickFormat: d => SEF_LEV_SCALE(sef)?.[d] ?? d,
-                    //    label: null
-                    //},
-                    //x: {grid: true, label: null, type: "band", tickFormat: d => Math.floor(d)},
+                    marginRight: 20,
+                    marginTop: 20,
+                    x: {  domain: fullLevels,
+                            label: SEF_SCALE(sef),
+                            tickFormat: d => labelLookup?.[d] ?? d,
+                            // tickRotate: sef === "Typology" ? -20 : 0
+                        },
                     y: {label: '£, billion',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
@@ -392,10 +393,10 @@
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height / 1.4,
-                    marginLeft: 60,
-                    marginBottom: 40,
-                    marginRight: 40,
+                    width: height*1.2,
+                    marginLeft: 70,
+                    marginBottom: 60,
+                    marginRight: 20,
                     marginTop: 20,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
@@ -404,7 +405,9 @@
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
-                            x: "SE",
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d.SE * 100
+                                    : d.SE), // multiply to get appropraite percentage value 
                             y: "total",
                             //stroke: COBENEFS_SCALE(coBenefit),
                             fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
@@ -721,7 +724,7 @@
 
     #multiple-plots {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 2rem;
         justify-items: start;
     }
