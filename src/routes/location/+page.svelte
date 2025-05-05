@@ -501,7 +501,7 @@
                         ...MARGINS,
                         marginLeft: 100,
                         // x: {label: SEF_SCALE(sef)},
-                        x: {grid: true, label: SEF_SCALE(sef), tickFormat: d => Math.floor(d)},
+                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => Math.floor(d)},
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
@@ -512,12 +512,12 @@
                             // }))),
                             Plot.barY(totalCBAllZones, Plot.groupX({y: "proportion"}, {
                                 x: sef,
-                                dx: 20,
+                                dx: 12,
                                 fill: AVERAGE_COLOR
                             })),
                             Plot.barY(oneLADData, Plot.groupX({y: "proportion"}, {
                                 x: sef,
-                                dx: -20
+                                dx: -12
                             }))
                         ]
                     })
