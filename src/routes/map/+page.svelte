@@ -36,7 +36,7 @@
     let exportButton: HTMLElement;
     let map: MapUK;
     let mapType: "Cobenefit" | "SEF" = "Cobenefit";
-    let loadLayers = true;
+    let loadLayers = false;
 
 
     // Main data
@@ -102,6 +102,8 @@
                 updateLegend();
                 loadLayers = false;
             })
+
+            // loadLayers = false;
 
         }
     }

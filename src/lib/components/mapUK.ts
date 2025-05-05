@@ -91,7 +91,7 @@ export class MapUK {
         const layers = this.map.getStyle().layers; // Get all layers in the current map style
         if (layers) {
             layers.forEach(layer => {
-                console.log("LL ", layer);
+                // console.log("LL ", layer);
 
                 // if (layer.source != "openmaptiles") {
                 if (layer.source == "datazones") {
@@ -223,6 +223,9 @@ export class MapUK {
     }
 
     loadLayers() {
+
+        console.log('addsources')
+
         // Add data source
         this.map.addSource('datazones', {
             type: 'geojson',
@@ -391,6 +394,7 @@ export class MapUK {
 
         this.loadData(newData, mapType);
 
+        console.log("UPDATE T")
         // // Add data source
         this.map.getSource('datazones').setData(
             this.geojson
