@@ -204,15 +204,21 @@
     function renderDistributionPlot(totalCBAllZones, oneLADData) {
         if (!totalCBAllZones || !oneLADData) return;
 
+
+        let filtered = totalCBAllZones.filter(d => d.total < 20);
+
         const plot = Plot.plot({
             height: height / 1.6,
             ...MARGINS,
             x: {label: "Cobenefit (millions £)"},
             y: {label: "Frequency of Datazones (Normalized)"},
             marks: [
+
                 // Remove too large values otherwise plot is unreadable
-                Plot.areaY(totalCBAllZones.filter(d => d.total < 20), Plot.binX({y: "proportion"}, {
-                    // Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
+                // Plot.areaY(filtered, Plot.binX({y: "proportion"}, {
+                    Plot.areaY(filtered, Plot.binX({y: (a, bin) => {
+                                    return a.length / filtered.length / (bin.x2 - bin.x1);
+                                }}, {
                     x: "total",
                     tip: true,
                     fill: AVERAGE_COLOR,
@@ -220,7 +226,9 @@
                     fillOpacity: 0.3,
                     strokeWidth: 2
                 })),
-                Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
+                Plot.areaY(oneLADData, Plot.binX({y: (a, bin) => {
+                                    return a.length / oneLADData.length / (bin.x2 - bin.x1);
+                                }}, {
                     x: "total",
                     tip: true,
                     fill: VIS_COLOR,
