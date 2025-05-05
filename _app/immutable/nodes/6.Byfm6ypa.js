@@ -1,0 +1,1 @@
+import"../chunks/CE-kWhyr.js";import"../chunks/CIa2Jov7.js";import{L as l}from"../chunks/CsOIzd2T.js";async function o(){return{}}const r=Object.freeze(Object.defineProperty({__proto__:null,load:o},Symbol.toStringTag,{value:"Module"}));export{l as component,r as universal};
