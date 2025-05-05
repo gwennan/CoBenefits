@@ -112,7 +112,6 @@
         totalValue = (d3.sum(oneLADData, d => d.total) / 1000).toFixed(3);
         totalValueMax = d3.max(totalCBAllLAD, d => d.val) / 1000;
 
-
         // This is an approximation
         totalValuePerCapita = (d3.mean(oneLADData, d => d.totalPerCapita) * 1000000).toFixed(1);
 
@@ -171,7 +170,7 @@
 
     onMount(() => {
         addSpinner(element)
-        map = new MapUK(LAD, "LAD", mapDiv, "val", true);
+        map = new MapUK(LAD, "LAD", mapDiv, "val", true, "Lookup_value", false, null, 8);
         map.initMap(false);
 
         window.addEventListener('scroll', handleScroll); // header scroll listener
@@ -196,6 +195,38 @@
                     y: 0,
                     fill: fill
                 })
+            ]
+        });
+        return plot.outerHTML;
+    }
+
+    function renderDistributionPlot(totalCBAllZones, oneLADData) {
+        if (!totalCBAllZones || !oneLADData) return;
+
+        const plot = Plot.plot({
+            height: height / 1.6,
+            ...MARGINS,
+            x: {label: "Cobenefit (millions £)"},
+            y: {label: "Frequency of Datazones (Normalized)"},
+            marks: [
+                // Remove too large values otherwise plot is unreadable
+                Plot.areaY(totalCBAllZones.filter(d => d.total < 20), Plot.binX({y: "proportion"}, {
+                // Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
+                    x: "total",
+                    tip: true,
+                    fill: AVERAGE_COLOR,
+                    stroke: AVERAGE_COLOR,
+                    fillOpacity: 0.3,
+                    strokeWidth: 2
+                })),
+                Plot.areaY(oneLADData, Plot.binX({y: "proportion"}, {
+                    x: "total",
+                    tip: true,
+                    fill: VIS_COLOR,
+                    stroke: "black",
+                    fillOpacity: 0.3,
+                    strokeWidth: 2
+                })),
             ]
         });
         return plot.outerHTML;
@@ -336,7 +367,7 @@
     function renderPerCobenefPlot() {
         plotPerCb?.append(
             Plot.plot({
-                height: height * 1.4,
+                height: height / 1,
                 width: 811,
                 ...MARGINS,
                 marginBottom: 80,
@@ -505,7 +536,6 @@
                                 stroke: AVERAGE_COLOR,
                                 fillOpacity: 0.2,
                                 strokeWidth: 3
-
                             })),
                             Plot.areaY(totalCBAllZones, Plot.binX({y: "proportion"}, {
                                 x: sef,
@@ -1093,15 +1123,20 @@
             <!--            </div>-->
 
             <div class="component column">
+
+                <h3 class="component-title">Distribution of the cobenefit per datazones compared to <span
+                        class="nation-label">{compareTo}</span> Average)</h3>
+                <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
+                    recieved across all local
+                    authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
+                {@html renderDistributionPlot(totalCBAllZones, oneLADData)}
+
                 <h3 class="component-title">11 types of co-benefit values (vs. <span
                         class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
                     recieved across all local
                     authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
-                    <!--                    <div class="badge-container">-->
-                    <!--                        <img class="badge" src={aggregationBadge} />-->
-                    <!--                    </div>-->
                 </div>
             </div>
 
@@ -1403,7 +1438,7 @@
         width: 100%;
 
         /*TODO: height is given by this currently but better to change at some point*/
-        height: 500px;
+        height: 650px;
         /*flex: 1; !* take the remaining height *!*/
     }
 

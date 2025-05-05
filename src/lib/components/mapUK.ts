@@ -44,7 +44,7 @@ export class MapUK {
     colorRange: Array<any>;
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange=null) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange=null, zoomLevel=4) {
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
@@ -66,7 +66,7 @@ export class MapUK {
             // style: 'https://demotiles.maplibre.org/style.json', // style URL
             style: {version: 8, sources: {}, layers: []},
             center: this.center, // starting position [lng, lat]
-            zoom: 4, // starting zoom
+            zoom: zoomLevel, // starting zoom
             preserveDrawingBuffer: true,
         });
 
@@ -122,9 +122,11 @@ export class MapUK {
             for (let zone of this.geojson.features) {
                 let zoneId = this.zoneName(zone)
 
-                this.center = [zone.properties.LONG, zone.properties.LAT]
+                // this.center = [zone.properties.LAT, zone.properties.LONG]
 
                 if (zoneId == data) {
+                    this.center = [zone.properties.LONG, zone.properties.LAT]
+
                     zone.properties.value = 1
                 } else {
                     zone.properties.value = 0
