@@ -22,7 +22,8 @@
         removeSpinner,
         addSpinner,
         SEF_SCALE,
-        getIconFromCobenef, COBENEFS_SCALE2
+        getIconFromCobenef, COBENEFS_SCALE2,
+        SE_FACTORS
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -848,14 +849,14 @@
         })
 
         let plotPerCB = Plot.plot({
-            height: height * 3,
-            width: 2500,
+            height: height,
+            width: 1000,
             marginRight: 0,
             marginTop: 40,
             marginLeft: 80,
             marginBottom: 80,
             insetTop: 30,
-            style: {fontSize: "30px"},
+            style: {fontSize: "18px"},
             y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow: false},
             x: {
                 label: 'Years',
@@ -1186,57 +1187,48 @@
         <div class="section-header">
             <p class="section-subtitle">Temporal Trends</p>
             <h2 class="section-title">How will co-benefits change over time?</h2>
-            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of
-                co-benefits.</p>
+            <p class="description">Detailed breakdown of temporal trends for total average co-benefits and types of co-benefits.</p>
         </div>
-
-        <div class="component singlevis">
+        <div id="vis-block">
+        <div id="main-block" class="component column">
+            <div>
             <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span
                     class="nation-label">{compareTo}</span> Average)</h3>
-            <p class="description">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of
-                benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
-            <br>
+            <p class="description" style="margin-bottom:5px">Aggregated values from 2025-2049 in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities in <span class="nation-label">{compareTo}</span>.</p>
+            
+            <!-- Legend -->
+            <div class="legend-box">
+                <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
+                <ul class="legend-list">
+                    <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
+                        {LADToName[LAD]}</li>
+                    <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
+                        <span class="nation-label">{compareTo}</span></li>
+                </ul>
+            </div>
+            </div>
 
-            <ul class="legend-list">
-                <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
-                    {LADToName[LAD]}</li>
-                <li><span class="legend-color" style="background-color: {AVERAGE_COLOR}"></span>
-                    <span class="nation-label">{compareTo}</span></li>
+            <div class="plot side" bind:this={CBOverTimePLot}></div>
 
-                <div class="row">
-                    <div class="plot" bind:this={CBOverTimePLot}>
+            
+
+                <!-- <div class="row"> -->
+                    <!-- <div class="plot" bind:this={CBOverTimePLot}> -->
                         <!--                    <div class="badge-container">-->
                         <!--                            <img class="badge" src={predictionsBadge} />-->
                         <!--                        </div>-->
-                    </div>
-                </div>
+                    <!-- </div> -->
+                <!-- </div> -->
         </div>
-
-
-        <!--        <div class="component singlevis">-->
-        <!--            <h3 class="component-title">Total Co-benefits Distribution Across Five Scenarios from 2025-2050</h3>-->
-        <!--            <div class="row">-->
-        <!--                <div class="plot" bind:this={CBOverTimePerScenarioPLot}>-->
-        <!--&lt;!&ndash;                    <div class="badge-container">&ndash;&gt;-->
-        <!--&lt;!&ndash;                        <img class="badge" src={TruncAxisBadge} />&ndash;&gt;-->
-        <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-        <!--                </div>-->
-
-        <!--            </div>-->
-        <!--        </div>-->
-
-
-        <div id="main-block" class="component" style="margin-left: 0.5rem;">
-            <div id="main-title">
+        <div id="main-block" class="component column">
+            <div>
                 <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
-                <br>
+                <p class="description" style="margin-bottom:5px">Total gains and losses are shown at five-year intervals for each co-benefit. The curve between points is smoothed to show the general trends. *Hover over areas for more information.</p>
 
                 <!-- Legend -->
-                <div id="main-legend" class="legend-box">
+                <div id="main-legend" class="legend-box" style="margin-bottom: 5px;">
                     <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
-                    <span>The stacked area plot is coloured by co-benefit:</span>
-                    <br><br/>
-                    <ul class="legend-list">
+                    <ul class="horizontal-legend-list" style="margin-bottom:5px">
                         <li><span class="legend-color" style="background-color: #D3A029"></span>
                             Diet change
                         </li>
@@ -1276,15 +1268,14 @@
 
                 <!-- Disclaimer -->
                 <div id="main-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0 0 0.5rem 0;"><strong>Some areas too small:</strong> Due to the nature of the
+                    <p style="margin: 0;"><strong>Some areas too small:</strong> Due to the nature of the
                         co-benefits some values are very small in comparison
                         to larger values so therefore are not visable on this plot. </p>
-                    <p style="margin: 0 0 0.5rem 0;"> *Hover over areas for more information.</p>
-
                 </div>
             </div>
-            <div class="plot" bind:this={CBOverTimePerCBPLot}></div>
+            <div class="plot side" bind:this={CBOverTimePerCBPLot}></div>
         </div>
+    </div>
 
     </div>
 
@@ -1305,8 +1296,6 @@
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter plots are shaded by nation.</span>
-
                     <ul class="legend-list">
                                                 <li><span class="legend-color" style="background-color: {VIS_COLOR}"></span>
                                                     {LADToName[LAD]}</li>
@@ -1334,35 +1323,33 @@
 
 
             <div id="multiple-comp">
-                {#each SEF as sef}
-                    <div>
-                        <h2>{sef.replaceAll('_', ' ')}</h2>
-                        <!--                <div class="inside-row">-->
+                {#each SE_FACTORS as sef}
+                    <div class="household-column">
+                        <h2 class="column-chart-title">{sef.label}</h2>
+                        <p class="column-chart-caption">{sef.def}</p>
                         <div class="row">
-
-
                             {#if isSEFAggregated}
-                                <div class="component">
-                                    <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                <div class="component column">
+                                    <div class="plot" bind:this={SEFPlotLAD[sef.id]}>
                                     </div>
                                 </div>
                             {:else}
-                                <div class="component">
+                                <div class="component column">
                                     <h3 class="component-title">Data Zones Distribution (vs. <span
                                             class="nation-label">{compareTo}</span> average)</h3>
                                     <p class="description short">The histogram shows the number of data zones
                                         distributed
                                         across
                                         different household social economic factors.</p>
-                                    <div class="plot" bind:this={SEFPlotLAD[sef]}>
+                                    <div class="plot" bind:this={SEFPlotLAD[sef.id]}>
                                     </div>
                                 </div>
 
 
-                                <div class="component">
+                                <div class="component column">
                                     <div>
                                         <h3 class="component-title">Co-benefits Recieved by Data Zones
-                                            across {sef.replaceAll('_', ' ')}
+                                            across {sef.label}
                                             Values</h3>
                                         <p class="description short">Density plot refers to UK distribution while the
                                             scattered points refer to data zones in {LADToName[LAD]}.</p>
@@ -1371,7 +1358,7 @@
                                     </div>
 
                                     <div>
-                                        <div class="plot" bind:this={SEFPlotPerCB[sef]}>
+                                        <div class="plot" bind:this={SEFPlotPerCB[sef.id]}>
                                         </div>
                                     </div>
                                 </div>
@@ -1380,11 +1367,8 @@
                         </div>
                     </div>
                 {/each}
-
             </div>
-
         </div>
-
 
     </div>
 
@@ -1397,7 +1381,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-
+        background-color: #f9f9f9;
     }
 
     #vis-block {
@@ -1414,18 +1398,26 @@
     #main-block {
         display: flex;
         /* width: 100%; */
-        flex-direction: row;
-        min-height: 70vh;
+        flex-direction: column;
+        /* min-height: 70vh; */
     }
 
     #main-title {
-        min-width: 25vw;
+        width: 30vw;
         margin-left: 1rem;
         margin-right: 2rem;
         position: sticky;
         top: 120px;
         align-self: flex-start;
         height: fit-content;
+    }
+
+    #side-title {
+        width: 30vw;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        align-self: flex-start;
+        /* height: fit-content; */
     }
 
 
@@ -1443,13 +1435,41 @@
     }
 
     #multiple-comp {
-        grid-column: span 2 / span 2;
+        /* grid-column: span 2 / span 2; */
+        width: 100%;
+        padding: 1rem 0;
     }
 
-    .inside-row {
-        display: flex;
-        flex-direction: row;
+    .side{
+        margin-top: 10px;
     }
+
+    .component .column{
+        /* flex:50% */
+        background-color: #fff;
+    }
+
+    .household-column {
+        /* width: 100%; */
+        padding: 0;
+        margin-bottom: 30px;
+    }
+
+    .column-chart-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+    .column-chart-caption {
+        font-size: 0.9rem;
+        line-height: 1.1rem;
+        color: #555;
+        margin: 0 0 5px 0;
+        text-align: left;
+    }
+
 
     .nation-label {
         /*color: #90bcca;*/
@@ -1485,6 +1505,15 @@
         align-items: center;
     }
 
+    .horizontal-legend-list{
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); 
+        gap: 0px; 
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
     .legend-color {
         display: inline-block;
         width: 12px;
@@ -1506,7 +1535,7 @@
     }
 
     #se-title {
-        min-width: 25vw;
+        width: 35vw;
         margin-left: 1rem;
         margin-right: 2rem;
         position: sticky;
