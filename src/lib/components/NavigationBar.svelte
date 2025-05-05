@@ -25,7 +25,7 @@ let showDropdown = false;
           on:mouseenter={() => (showDropdown = true)}
           on:mouseleave={() => (showDropdown = false)}
       >
-        <div class="nav-count">17</div>
+        <div class="nav-count">11</div>
         <span
           class="dropdown-label"
           class:active={$page.url.pathname.startsWith(`${base}/cobenefit`)}
@@ -58,7 +58,6 @@ let showDropdown = false;
 
       <div class="nav-item">
         <div class="nav-count">46,000</div>
-        <!-- <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>MapUK</a> -->
         <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
       </div>
     </div>

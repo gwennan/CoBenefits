@@ -136,15 +136,25 @@ export function getAverageSEFGroupedByLAD(sef: SEF) {
     return query
 }
 
+export function getModeSEFGroupedByLAD(sef: SEF) {
+    let query;
+    query = `SELECT mode(${sef}) as val, LAD as Lookup_Value
+             FROM ${DB_TABLE_NAME}
+             WHERE co_benefit_type = 'Total'
+             GROUP BY LAD, scenario`
+    return query
+}
+
+
 export function getCustomCBData(cobenefits: CoBenefit[], scenario: Scenario, time = "total") {
     let query;
 
     if (cobenefits.length == 0) {
-        query = `SELECT "${time}" as val, scenario, Lookup_Value
+        query = `SELECT "${time}" as val, "${time}" / population as value_per_capita, scenario, Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'`
     } else {
-        query = `SELECT "${time}" as val, scenario, Lookup_Value
+        query = `SELECT "${time}" as val, "${time}" / population as value_per_capita, scenario, Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type in (${cobenefits.map(v => `'${v}'`).join(",")})`
     }

@@ -10,7 +10,7 @@
         getAverageCBGroupedByLAD,
         getTableData,
         getTotalPerPathway,
-        getAverageSEFGroupedByLAD, getSEFData, getSUMCBGroupedByLAD
+        getAverageSEFGroupedByLAD, getSEFData, getSUMCBGroupedByLAD, getModeSEFGroupedByLAD
     } from "$lib/duckdb";
     import {
         type CoBenefit,
@@ -19,7 +19,7 @@
         SEF,
         getIconFromCobenef,
         COBENEFS_SCALE2,
-        SEF_SCALE
+        SEF_SCALE, SE_FACTORS, SEF_CATEGORICAL, SEF_LEVEL_LABELS
     } from "../../globals";
     import {Legend} from "$lib/utils";
     import {MapUK} from "$lib/components/mapUK";
@@ -59,6 +59,7 @@
         if (map?.loaded) {
 
             if (mapType == "Cobenefit") {
+                map.dataKey = "value_per_capita";
                 if (granularity == "LAD") {
                     fullData = getTableData(getSUMCBGroupedByLAD(Array.from(coBenefits), "UK", timeSelected))
                     // fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
@@ -66,16 +67,28 @@
                     fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
                 }
             } else if (mapType = "SEF") {
+                map.dataKey = "val";
                 if (granularity == "LAD") {
-                    fullData = getTableData(getAverageSEFGroupedByLAD(selectedSef))
+
+                    if (SEF_CATEGORICAL.includes(selectedSef)) {
+                        fullData = getTableData(getModeSEFGroupedByLAD(selectedSef))
+                    } else {
+                        fullData = getTableData(getAverageSEFGroupedByLAD(selectedSef))
+                    }
                 } else if (granularity == "LSOA") {
                     fullData = getTableData(getSEFData(selectedSef))
                 }
             }
 
-            console.log(2323233, loadLayers)
 
             fullData.then((data) => {
+
+                // Convert from millions to £
+                if (mapType == "Cobenefit") {
+                    data.forEach(d => {
+                        d.value_per_capita = d.value_per_capita * 1000000
+                    })
+                }
 
                 // Load layers again when changing granularity
                 // let loadLayers = false;
@@ -109,6 +122,26 @@
     }
 
     function updateLegend() {
+
+        if (mapType == "SEF") {
+            if (SEF_CATEGORICAL.includes(selectedSef)) {
+
+                // Create a color interpolator from black to white
+                const interpolateGray = d3.interpolateRgb("black", "white");
+
+                let domain = Object.values(SEF_LEVEL_LABELS[selectedSef]);
+
+                // Generate a grayscale range using interpolation
+                const range = domain.map((d, i) => interpolateGray(i / (domain.length - 1)));
+
+                let colorScale = d3.scaleOrdinal()
+                .domain(domain)
+                .range(range)
+
+                map.setColorScale(colorScale);
+            }
+        }
+
         legendSvg = map.legend(mapLegend());
         legendDiv.innerHTML = "";
         legendDiv.append(legendSvg)
@@ -116,20 +149,14 @@
 
     function mapLegend() {
         if (mapType == "SEF") {
-            return `${selectedSef} (${SEF_SCALE(selectedSef)})`;
+            return `${SE_FACTORS.filter(d => d.id == selectedSef)[0].label} (${SEF_SCALE(selectedSef)})`;
         } else if (mapType == "Cobenefit") {
-            return "Cobenefits (Millions of £)"
+            return "Cobenefits (£ per capita)"
         }
     }
 
 
     onMount(async () => {
-
-        // first load of data
-        // fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected));
-        // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
-        // fullData = await getTableData(getAverageCBGroupedByLAD([], scenario, timeSelected))
-
         let fullData;
         if (granularity == "LAD") {
             // fullData = await getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
@@ -138,11 +165,18 @@
             fullData = await getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
         }
 
+        // COnvert from millions to £
+        fullData.forEach(d => {
+            d.value_per_capita = d.value_per_capita * 1000000
+        })
 
-        map = new MapUK(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
+
+        // map = new MapUK(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
+        map = new MapUK(fullData, granularity, mapDiv, "value_per_capita", true, "Lookup_Value", true);
         map.initMap();
 
-        legendSvg = map.legend();
+
+        legendSvg = map.legend(mapLegend());
         legendDiv.append(legendSvg)
 
 
@@ -363,10 +397,10 @@
 
                     <h2> Social Economic Factor </h2>
                     <div id="time">
-                        {#each SEF as sef}
-                            <input type="radio" id="html" name="fav_language" value={sef} on:change={onChangeSEF}
-                                   checked={sef == selectedSef}>
-                            <label for="html">{sef}</label><br>
+                        {#each SE_FACTORS as sef}
+                            <input type="radio" id="html" name="fav_language" value={sef.id} on:change={onChangeSEF}
+                                   checked={sef.id == selectedSef}>
+                            <label for="html">{sef.label}</label><br>
                         {/each}
                     </div>
                 </div>
