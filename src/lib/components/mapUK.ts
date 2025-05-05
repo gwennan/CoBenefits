@@ -42,6 +42,7 @@ export class MapUK {
     zoneKey: string;
     border: boolean
     colorRange: Array<any>;
+    tooltipValueCb: () => string
 
 
     constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange=null, zoomLevel=4) {
@@ -79,6 +80,10 @@ export class MapUK {
         this.tooltip.style.pointerEvents = "none";
         this.tooltip.style.display = "none";
         this.component.append(this.tooltip);
+    }
+
+    setTooltipCb(cb) {
+        this.tooltipValueCb = cb;
     }
 
     reset() {
@@ -363,7 +368,8 @@ export class MapUK {
                     this.tooltip.innerHTML = `
                  <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
                  <br>
-                 <strong>Value</strong>: ${cobenefValue.toFixed(2)}
+<!--                 <strong>Value</strong>: ${cobenefValue.toFixed(2)}-->
+                 <strong>${this.tooltipValueCb(cobenefValue.toFixed(2))}</strong>
                  `;
                     this.tooltip.style.left = event.point.x + 10 + 'px';
                     this.tooltip.style.top = event.point.y + 10 + 'px';

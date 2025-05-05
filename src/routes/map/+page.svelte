@@ -125,7 +125,7 @@
             if (SEF_CATEGORICAL.includes(selectedSef)) {
 
                 // Create a color interpolator from black to white
-                const interpolateGray = d3.interpolateRgb("black", "white");
+                const interpolateGray = d3.interpolateRgb("white", "black");
 
                 let domain = Object.values(SEF_LEVEL_LABELS[selectedSef]);
 
@@ -172,7 +172,7 @@
         // map = new MapUK(fullData, granularity, mapDiv, "val", true, "Lookup_Value", true);
         map = new MapUK(fullData, granularity, mapDiv, "value_per_capita", true, "Lookup_Value", true);
         map.initMap();
-
+        map.setTooltipCb(tooltipValue);
 
         legendSvg = map.legend(mapLegend());
         legendDiv.append(legendSvg)
@@ -278,6 +278,18 @@
         }
 
         loadLayers = true;
+    }
+
+    const tooltipValue = (value) => {
+        if (mapType == "SEF") {
+            if (SEF_CATEGORICAL.includes(selectedSef)) {
+                return `Mode value is ${value}`
+            } else {
+                return `Mean value is ${value}`
+            }
+        } else if (mapType == "Cobenefit") {
+            return `${value}£ per capita`
+        }
     }
 
     function exportMap() {
