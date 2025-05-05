@@ -115,14 +115,12 @@
                 updateLegend();
                 loadLayers = false;
             })
-
-            // loadLayers = false;
-
         }
     }
 
     function updateLegend() {
 
+        map.makeColorScale(false);
         if (mapType == "SEF") {
             if (SEF_CATEGORICAL.includes(selectedSef)) {
 

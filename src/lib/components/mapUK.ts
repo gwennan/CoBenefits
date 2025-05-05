@@ -393,11 +393,10 @@ export class MapUK {
         if (!this.loaded) return;
         this.colorRange = colorRange;
 
-        if (loadLayers) this.loadLayers();
-
         this.loadData(newData, mapType);
 
-        console.log("UPDATE T")
+        if (loadLayers) this.loadLayers();
+
         // // Add data source
         this.map.getSource('datazones').setData(
             this.geojson
