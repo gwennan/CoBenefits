@@ -117,7 +117,7 @@ export const SEF_LEVEL_LABELS = {
       1: "Gas boiler", 2: "Electric heating", 3: "Oil heating"
     },
     Gas_Flag: {
-      1: "Connected", 0: "Not connected"
+      1: "Yes", 0: "No"
     }
   };
 
