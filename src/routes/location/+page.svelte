@@ -1396,6 +1396,7 @@
         justify-content: space-between;
         align-items: center;
         background-color: #f9f9f9;
+        padding: 1% 6%;
     }
 
     #vis-block {
@@ -1522,7 +1523,7 @@
 
     .horizontal-legend-list {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 0px;
         list-style: none;
         padding: 0;

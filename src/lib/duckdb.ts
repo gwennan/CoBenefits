@@ -433,6 +433,15 @@ export function getDistinctNationValues() {
     `;
 }
 
+export function getDistinctLookupValueCount() {
+    return `
+        SELECT COUNT(DISTINCT Lookup_Value) AS distinct_lookup_count
+        FROM ${DB_TABLE_NAME}
+        WHERE Lookup_Value IS NOT NULL
+    `;
+}
+
+
 export function getLADRegion(){
     return `
         SELECT DISTINCT LAD, Nation

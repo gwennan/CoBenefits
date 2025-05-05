@@ -96,7 +96,13 @@ button:focus {
 
 .section {
     background: white;
+    padding: 0 5%;
 }
+
+.section .header {
+    padding: 0 8%;
+}
+
 
 .component {
     background: #F8F8F8;
@@ -114,7 +120,8 @@ button:focus {
     /* border-radius: 15px; */
     padding-left: 1%;
     padding-right: 1%;
-    padding-bottom: 1%;
+    padding-top: 1%;
+    /* padding-bottom: 1%; */
     margin-bottom: 0px;
 }
 
@@ -217,7 +224,7 @@ button:focus {
 }
 
 .singlevis {
-    max-width: 900px;
+    max-width: 600px;
     margin: 10px 20px
 }
 
@@ -259,7 +266,7 @@ button:focus {
 
 .data-table th:first-child,
 .data-table td:first-child {
-  width: 300px;
+  width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
 }

@@ -1,16 +1,10 @@
 <script>
 import {base} from "$app/paths";
 import { page } from '$app/stores';
-import { derived } from 'svelte/store';
 
-import { onMount, onDestroy } from 'svelte';
-import { fade } from 'svelte/transition';
-
-import {COBENEFS} from "../../globals";
+import {COBENEFS, COBENEFS_SCALE} from "../../globals";
 
 let showDropdown = false;
-
-// console.log("links", $page.url.pathname);
 
 </script>
 
@@ -36,7 +30,12 @@ let showDropdown = false;
           <ul class="dropdown-menu">
             {#each COBENEFS as coBenef}
               <li>
-                <a href="{base}/cobenefit?cobenefit={coBenef.id}" data-sveltekit-reload>
+                <a
+                  href="{base}/cobenefit?cobenefit={coBenef.id}"
+                  data-sveltekit-reload
+                  style="--cobenef-color: {COBENEFS_SCALE(coBenef.id)}"
+                  class:selected={$page.url.searchParams.get('cobenefit') === coBenef.id}
+                >
                   {coBenef.label}
                 </a>
               </li>
@@ -57,7 +56,7 @@ let showDropdown = false;
       </div>
 
       <div class="nav-item">
-        <div class="nav-count">46,000</div>
+        <div class="nav-count">46,426</div>
         <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
       </div>
     </div>
@@ -65,6 +64,7 @@ let showDropdown = false;
     <div class="nav-right">
       <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>Home</a>
       <a href="{base}/methods" class="nav-item" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
+      <a href="mailto:cobens@ed.ac.uk" class="nav-item">Contact</a>
       <a href="{base}/about" class="nav-item" class:active={$page.url.pathname === `${base}/about`}>About</a>
     </div>
   </nav>
@@ -81,6 +81,7 @@ let showDropdown = false;
     background-color: #fff;
     z-index: 1000;
     padding-bottom: 4px;
+    padding-right: 15px;
     border-bottom: 1px solid #ddd;
   }
 
@@ -179,19 +180,23 @@ let showDropdown = false;
   }
 
   .nav-center a:hover,
-  .dropdown-label:hover,
-  .nav-right a:hover{
+  .nav-right a:hover {
     color: #0077cc;
     border-bottom: 3px solid #0077cc;
   }
 
   .nav-right a.active,
-  .nav-center a.active,
-  .dropdown-label.active {
+  .nav-center a.active {
     color: #0077cc;
     border-bottom: 3px solid #0077cc;
   }
 
+  .nav-center .dropdown-menu a:hover,
+  .nav-center .dropdown-menu a.selected {
+    color: var(--cobenef-color) !important;
+    border-bottom: 3px solid var(--cobenef-color) !important;
+  }
+ 
 
   .dropdown {
     position: relative;

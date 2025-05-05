@@ -94,7 +94,7 @@
   <table class="data-table">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Name <span style="font-weight:300; color: #545454">(Top 12 in display)</span></th>
         <th style="width: 120px;">{sortBy === 'total' ? 'Total' : 'Per Capita'}</th>
         <th style="width: 80px;">{sortBy === 'total' ? '£, billion' : '£'}</th>
       </tr>

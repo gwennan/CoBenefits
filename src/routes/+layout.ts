@@ -19,7 +19,8 @@ import {
     getTopSelectedLADsPerHousehold,
     getAggregationPerCapitaPerBenefit,
     getDistinctNationValues,
-    getTotalAggregation
+    getTotalAggregation,
+    getDistinctLookupValueCount
 } from "$lib/duckdb";
 
 
@@ -67,6 +68,9 @@ export async function load() {
     // console.log("First 10 rows of cobenefits:", previewData);
     // const distinctNations = await getTableData(getDistinctNationValues());
     // console.log("distinctNations", distinctNations);
+
+    // const distinctLookupValueCount = await getTableData(getDistinctLookupValueCount());
+    // console.log("distinctLookupValueCount", distinctLookupValueCount);
 
 
     // for landing page waffle and COBEN columns

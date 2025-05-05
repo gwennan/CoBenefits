@@ -240,7 +240,7 @@
 
         if (waffleBgEl) {
         waffleBgEl.style.width = `${unitSize * gridWidth}px`;
-        waffleBgEl.style.height = `${height}px`;
+        waffleBgEl.style.height = `${height-100}px`;
         };
 
         waffleEl.innerHTML = "";
@@ -725,10 +725,11 @@
 
     #multiple-plots {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
         justify-items: start;
     }
+
 
     .plot-container {
         width: 100%;
@@ -742,6 +743,7 @@
         margin-bottom: 10px;
         text-align: left;
     }
+
     .component-chart-caption {
         font-size: 0.9rem;
         line-height: 1.1rem;
@@ -792,7 +794,7 @@
 
 
     .section.header {
-    padding: 2rem;
+    padding: 2% 6%;
     background-color: #f9f9f9;
     }
 

@@ -7,17 +7,6 @@
 
     let container: HTMLDivElement;
 
-    // onMount(async () => {
-    // const res = await fetch(`${base}/methods.html`);
-    // const rawHtml = await res.text();
-    // htmlContent = rawHtml;
-
-    // await tick(); // wait for DOM update
-    // if (window.MathJax && container) {
-    //     await window.MathJax.typesetPromise([container]);
-    // }
-    // });
-
     onMount(async () => {
         const res = await fetch(`${base}/methods.html`);
         const rawHtml = await res.text();
@@ -43,8 +32,9 @@
         // h3 into glossary style
         const h3Sections = Array.from(doc.querySelectorAll('h3'));
 
-        h3Sections.forEach(h3 => {
+        h3Sections.forEach((h3, index) => {
           const sectionWrapper = document.createElement('details');
+          if (index === 0) sectionWrapper.setAttribute('open', '');
           const summary = document.createElement('summary');
           summary.textContent = h3.textContent || '';
           sectionWrapper.appendChild(summary);
@@ -89,7 +79,7 @@
       },
       options: {
         renderActions: {
-          addMenu: [] // disable context menu if needed
+          addMenu: [] // disable context menu
         }
       }
     };
@@ -104,7 +94,7 @@
     {@html htmlContent}
   </div>
   
-  <style>
+<style>
 
 :global(.pandoc-html) {
   width: 1000px;
@@ -147,17 +137,22 @@
 }
 
 :global(.pandoc-html details) {
-  margin-bottom: 2px;
-  background-color: #f7f7f7;
-  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  background-color: #fdfdfd;
+  border: 1px solid #f1f1f1;
+  border-left: 5px solid rgb(188, 188, 188);
   padding: 0.5em;
-  border-radius: 4px;
+  /* border-radius: 4px; */
 }
 
 :global(.pandoc-html summary) {
   font-weight: bold;
   font-size: 1.2rem;
   cursor: pointer;
+}
+
+:global(.pandoc-html #footnotes) {
+  margin-top: 5rem;
 }
 
   </style>

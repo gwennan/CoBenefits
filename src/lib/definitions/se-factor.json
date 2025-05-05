@@ -22,7 +22,7 @@
   },
   {
     "id": "Fuel_Type",
-    "label": "Domestic Fuel Type",
+    "label": "Domestic fuel type",
     "units": "Type",
     "type": "categorical",
     "def": "Current most common heating system across all buildings in the area."
