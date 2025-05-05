@@ -296,17 +296,18 @@
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
                     label: "Year Intervals"
                 },
-                y: {grid:true},
+                y: {grid:true, label: 'Total (£, billion)'},
                 marks: [
                     Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
                         x: "time",
                         y: d => d.value / 1000,
                         fill: COBENEFS_SCALE2(coBenefit)[0],
-                        tip: true,
+                        tip:{ format: {y:d => `${d.toFixed(2)}`, x: false}},
                         fillOpacity: 0.8,
                         //ry1: 5,
                         insetLeft: 15,
-                        insetRight: 15
+                        insetRight: 15,
+                        // title: d => `Interval: ${d.time.replace(/^Y/, '').replace('_', '-')}\nTotal: £${'y'} billion`
                     })),
                     Plot.axisY({anchor: "left", grid: true, label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"}),
                 ]
