@@ -43,7 +43,7 @@ export async function load() {
         return d;
     })
 
-    const UKZones = topojson.feature(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
+    // const UKZones = topojson.feature(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
 
     let LADToName = {};
     await csv(LADEngPath).then(data => {
@@ -85,7 +85,7 @@ export async function load() {
     console.log("end root")
 
     return {
-        datazones: UKZones,
+        // datazones: UKZones,
         LADToName,
         aggregationPerBenefit,
         aggregationPerCapitaPerBenefit,

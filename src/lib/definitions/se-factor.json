@@ -28,7 +28,7 @@
     "def": "Current most common heating system across all buildings in the area."
   },
   {
-    "id": "Gas_Flag",
+    "id": "Gas_flag",
     "label": "On gas grid",
     "units": "Connected",
     "type": "categorical",
