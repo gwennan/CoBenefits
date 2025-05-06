@@ -119,6 +119,9 @@ export const SEF_LEVEL_LABELS = {
     },
     Gas_flag: {
       1: "Yes", 0: "No"
+    },
+    Number_cars: {
+        0: 0, 1: 1, 2: 2
     }
   };
 

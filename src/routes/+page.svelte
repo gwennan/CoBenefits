@@ -122,7 +122,7 @@
     let waffleLabelEl: HTMLElement;
     let activeTypeLabel: string;
     let activeValueLabel: string;
-    let activePerCapitaLabel: string;
+    let activePerCapitaLabel: string = "";
     let activePercentLabel: string;
     let activeIcon: string | null = null;
 

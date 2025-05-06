@@ -283,9 +283,9 @@
     const tooltipValue = (value) => {
         if (mapType == "SEF") {
             if (SEF_CATEGORICAL.includes(selectedSef)) {
-                return `Mode value is ${value}`
+                return `Mode value is ${SEF_LEVEL_LABELS[selectedSef][value]}`
             } else {
-                return `Mean value is ${value}`
+                return `Mean value is ${value.toFixed(2)}`
             }
         } else if (mapType == "Cobenefit") {
             return `${value}£ per capita`
