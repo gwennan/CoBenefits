@@ -1,4 +1,4 @@
-import{s as A,e as w,a as $,H as T,D as H,c as g,p as v,f as m,g as C,b as W,E as q,C as I,q as M,h as S,i as b,v as J,F as N,A as P}from"../chunks/scheduler.GkBzG_tJ.js";import{S as j,i as k,c as D,b as L,m as F,t as O,a as R,d as z}from"../chunks/index.puHNmHGV.js";import{b as x}from"../chunks/paths.B69BYf6l.js";import{N as B}from"../chunks/NavigationBar.DIkruH83.js";const V=typeof window<"u"?window:typeof globalThis<"u"?globalThis:global,{document:y}=V;function G(p){let i,h=`window.MathJax = {
+import{s as A,e as w,a as $,H as T,D as H,c as g,p as v,f as m,g as C,b as W,E as q,C as I,q as M,h as S,i as b,v as J,F as N,A as P}from"../chunks/scheduler.GkBzG_tJ.js";import{S as j,i as k,c as D,b as L,m as F,t as O,a as R,d as z}from"../chunks/index.puHNmHGV.js";import{b as x}from"../chunks/paths.CPiWD8rj.js";import{N as B}from"../chunks/NavigationBar.P_46taXB.js";const V=typeof window<"u"?window:typeof globalThis<"u"?globalThis:global,{document:y}=V;function G(p){let i,h=`window.MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
         displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
