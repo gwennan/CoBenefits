@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>methods</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body>
+<h2 id="uk-co-benefits-atlas-methodology">UK Co-Benefits Atlas Methodology</h2>
+<p>This analysis investigates the wider impacts of the UK reaching net-zero using a place-based methodology across 11 different co-benefit types:</p>
+<ul>
+<li><p>Air quality improvements</p></li>
+<li><p>Noise reduction</p></li>
+<li><p>Excess cold reduction</p></li>
+<li><p>Excess heat reduction</p></li>
+<li><p>Dampness reduction</p></li>
+<li><p>Congestion reduction</p></li>
+<li><p>Hassle costs</p></li>
+<li><p>Road repairs reduction</p></li>
+<li><p>Road safety increase</p></li>
+<li><p>Physical activity increase</p></li>
+<li><p>Dietary improvements</p></li>
+</ul>
+<p>Each of the above cobenefit types are modelled against a baseline trajectory for each local area, with the difference between the net-zero and baseline scenarios resulting in the projected co-benefit gains. The co-benefits are modelled and distributed to beneficiaries directly and indirectly, for example to individuals via improved quality of life, or to national bodies like the NHS or the Exchequer in the form of reduced spending requirements.</p>
+<p>Similar social impact modelling has previously been developed and utilised<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> by local authorities and actors in compliance with UK Green Book methodologies. This analysis has built on previous projects developed for the CCC and in conjunction with PwC<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> to quantify impacts on health and society from net-zero interventions.</p>
+<p>It uses reported data at the highest available resolution (data zones or LSOAs) across the UK to aggregate populations into archetypes based on social and economic characteristics. The interventions are modelled and distributed through these archetype groupings, while accounting for local variation by geographic area (congestion bands, population density, EPC ratings, etc.).</p>
+<p>The analysed co-benefits are not exhaustive, and projected estimates are therefore conservative. Due to scoping constraints and data limitations, the 11 co-benefit types were selected as being the most methodologically robust. They cover all central technologies in the CCC’s pathway to reach net-zero<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> in the buildings and transport sector, as well as the impact on human health from shifts to low-carbon, plant-based diets. These interventions include:</p>
+<p><strong>Buildings Sector:</strong></p>
+<ul>
+<li><p>Hybrid heat pump</p></li>
+<li><p>Air source heat pump</p></li>
+<li><p>Ground source heat pump</p></li>
+<li><p>Floor insulation</p></li>
+<li><p>Roof insulation</p></li>
+<li><p>Solid wall insulation</p></li>
+<li><p>Cavity wall insulation</p></li>
+<li><p>Other insulation types</p></li>
+<li><p>More efficient appliances</p></li>
+</ul>
+<p><strong>Transport:</strong></p>
+<ul>
+<li><p>Reduction in transport demand</p></li>
+<li><p>Shifts to low-carbon transport (public transport, electric vehicles, hybrid vehicles, active travel).</p></li>
+</ul>
+<p><strong>Dietary Change:</strong></p>
+<ul>
+<li><p>Shifts to healthier diets (reductions in meat and dairy, replaced with plant-based foods)</p></li>
+</ul>
+<p>The CCC has outlined necessary low-carbon actions for the UK to reach net zero in its 7<sup>th</sup> Carbon Budget<sup>3</sup>. These national-level measures have been redistributed across localities based on each area’s specific characteristics like rurality, age, building types and travel patterns. The subsequent impact of these interventions have been modelled according to the methodology of each specific cobenefit type below.</p>
+<p><img src="./media/media/image1.png" style="width:6.26806in;height:6.27153in" alt="A diagram of a company AI-generated content may be incorrect." /></p>
+<p>Figure 1 – High-level social impact methodology for each small area</p>
+<figure>
+<img src="./media/media/image2.png" style="width:6.97972in;height:3.96992in" alt="A grey and purple diagram AI-generated content may be incorrect." />
+<figcaption><p>Figure 2 – Cobenefit types and respective damage pathways using total UK outputs from CB7 analysis</p></figcaption>
+</figure>
+<p><img src="./media/media/image3.png" style="width:5.33333in;height:3.26389in" alt="A diagram of a venn diagram Description automatically generated" /></p>
+<p>Figure 3 – LSOA/Datazone-level data for archetypal analysis</p>
+
+<h3 id="air-quality">Air Quality </h3>
+<p>The air quality co-benefit measures the reduction in air pollution, primarily as a result of decreased fossil fuel combustion, and quantifies the benefit to individuals and society.</p>
+<p>Air quality improvements are quantified by modelling the delta of energy consumption between the low-carbon intervention (e.g. heat pumps) and the counterfactual (e.g. gas boilers), before estimating the tonnes of pollutants mitigated by type. The reduction in pollutants (PM<sub>2.5</sub>, PM<sub>10</sub>, SO<sub>2</sub>, NO<sub>x</sub>) from fossil fuel combustion are valued according to UK Green Book valuations (developed by Ricardo<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>).</p>
+<p>These avoided damages are allocated according to beneficiary type (health/non-health, productivity, etc.), and distributed to households indirectly according to population density bands. The sum of air quality co-benefits from the buildings and transport sectors represent the total air quality co-benefit estimations.</p>
+<p>These benefits are discounted according to HM Treasury’s Green Book appraisal guidance for social (1.5% p.a.) and central discount rates (3.5%)<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+<p>Buildings – We first calculate the baseline emissions of damaging pollutants by multiplying the deployment of the counterfactual by fuel type (e.g. gas boilers, combi boilers, oil boilers (according to EPC data of the local area)) by energy usage per unit. We multiply the energy usage in kwh/mwh by factors developed by Ricardo<sup>1</sup> according to fuel type to calculate tonnes of emitted pollutant. These estimates are multiplied by damage costs<sup>1</sup> to calculate the total valuation of mitigated air pollution.</p>
+<blockquote>
+<p>These avoided damages cover economic, social and environmental degradation, and are distributed to inhabitants specific to the area in question (improvements in life expectancy, improved health outcomes, etc.), or nationally where appropriate (NHS savings, productivity gains, etc.). Due to constraints in the literature, changes to indoor air quality were not modelled in this analysis.</p>
+<p>The avoided damages (i.e. benefits) are measured annually, accounting for forecasted changes in population growth, fuel usages, and emissions intensities. All costs are discounted through to 2050.</p>
+</blockquote>
+<p><span class="math display">
+  \[
+  \begin{aligned}
+  & \sum_{}^{} \text{Fuel Use} \left( 
+  \text{Change in Energy Consumption (GWh)} \times \text{Particulate Emissions Factors} 
+  \right) \\
+  & \times \text{Air Quality Damage Cost by Pollutant Type} \\
+  & \times \text{Share of Damages Attributable to Impact Pathway} \\
+  & \times \text{Share of Impacts to Beneficiary} \\
+  & = \text{Total Value of Avoided Damages (£)}
+  \end{aligned}
+  \]
+</span></p>
+  
+<p>Transport <em><strong>–</strong></em> We model the baseline scenario for vehicles driven in a given area, based on per capita assumptions from national and regional travel patterns, estimating travel by vehicle type, road type, and fuel type<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>. This is multiplied by average fuel consumption by vehicle type and per kilometre travelled, which is then multiplied by air pollutant emissions factors to estimate total emitted pollutants (PM<sub>2.5</sub>, SO<sub>2</sub>, NO<sub>x</sub>) from travel in an area from tailpipe emissions. Non-exhaust emissions (PM<sub>2.5</sub>) from wear on tyres, brakes and roads are estimated from distance travelled, using emissions factors from the Air Quality Expert Group<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Damage factors are applied on a per-tonne of pollutant basis, according to pollutant type and rurality bands.</p>
+<blockquote>
+<p>The same process is repeated for the low-carbon interventions; changing the vehicle type and fuel type, modifying distance travelled per capita where applicable, and summing total tailpipe and non-tailpipe pollutants.</p>
+<p>The total value of avoided air pollution is the delta of the two scenarios, calculated annually through to 2050 and discounted accordingly.</p>
+</blockquote>
+<p><span class="math display">
+  \[
+  \begin{aligned}
+  & \left( 
+    \left( 
+      \text{Electricity Consumption by EVs} \times \text{Particulate Emissions Factors} 
+    \right) + {} \right. \\
+  & \left. \quad 
+    \left( 
+      \text{Fuel Consumption by ICE vehicles} \times \text{Particulate Emissions Factors} 
+    \right) 
+  \right) \times \text{Unit Conversions} \\
+  & + \left( 
+    \text{Particulate Emissions from (Brake Wear, Tyre Wear, Road Wear)} 
+  \right) \\
+  & \times \text{Change in distance by mode (vkm)} \\
+  & \times \text{Share of vkm travelled by rural-urban classification} \\
+  & \times \text{Air Quality Damage Costs} \\
+  & \times \text{Share of Damages Attributable to Impact Pathway} \\
+  & \times \text{Share of Impacts to Beneficiary} \\
+  & = \text{Total Value of Avoided Damages (£)}
+  \end{aligned}
+  \]
+</span></p>
+</blockquote>
+<h3 id="excess-cold">Excess Cold</h3>
+<p>Excess cold co-benefit represents the avoided costs of poor health and NHS costs resulting from individuals living in homes with low internal temperatures.</p>
+<p>A building physics model is used to estimate internal temperature before and after installation of the low-carbon intervention, based on the household’s physical properties and characteristics. Buildings with temperatures below the excess cold threshold (19<sup>ο</sup> Celsius) are then mapped to damage costs developed by BRE<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> to estimate improvements in health, quality of life, and NHS savings, with seasonal variations in temperature accounted for.</p>
+<p>Damages are more heavily-weighted at the lower end of the temperature spectrum, using a sigmoid function from 10<sup>ο</sup> – 19<sup>ο</sup> Celsius. This allows us to properly quantify the reduction in excess cold damages if a property’s temperature increases from 12<sup>ο</sup> - 18<sup>ο</sup> Celsius; i.e. the most severe health outcomes originate from the lowest-temperature households. All households over 19<sup>ο</sup> Celsius are by definition not at risk of excess cold.</p>
+<p>Quality of life and health improvements are distributed directly to the household implementing the low-carbon measure, with economy and NHS savings attributed indirectly to society.</p>
+<blockquote>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Change in minimum winter temperature by archetype and EPC band } (\Delta^\circ\mathrm{C}) \\
+    & \times 
+      \left( 
+        \text{Change in QALYs per person per increase in temperature} \right. \\
+    & \quad \times \text{Population forecast by archetype} \\
+    & \quad \times \text{Value of Life Year} \\
+    & \left. \quad + \text{NHS and societal savings per change in property temperature} 
+      \right) \\
+    & \times \text{Number of households per archetype by EPC band} \\
+    & \times \text{Share of households with Category 1 excess cold health hazards} \\
+    & \times \text{Share of vulnerable populations per archetype} \\
+    & = \text{Total value of excess cold reduction to individuals and society (£)}
+    \end{aligned}
+    \]
+    </span></p>
+    
+</blockquote>
+<h3 id="dampness">Dampness</h3>
+<p>The reduction in dampness is a co-benefit resulting from decreased excess humidity in buildings, which leads to lower incidence of mould, building damage, and microbial growth; all of which can result in health deficiencies.</p>
+<p>The co-benefit is quantified in a similar manner to excess cold, using the building physics model to map relative humidity to internal temperature<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>, comparing the baseline humidity to the humidity levels after the intervention, and measuring the corresponding reduction in health risk<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a>.</p>
+<p>The co-benefits are distributed directly to the proponent of the low-carbon action as health benefits, with indirect impacts appropriated across relevant households and to the NHS.</p>
+<blockquote>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Change in minimum winter temperature by archetype and EPC band } (\Delta^\circ\mathrm{C}) \\
+    & \times \text{ Unit Conversion } (\Delta RH / \Delta^\circ\mathrm{C}) \\
+    & \times \left( 
+        \text{Change in QALYs per person per increase in temperature} \right. \\
+    & \quad \times \text{ Population forecast by archetype} \\
+    & \quad \times \text{ Value of Life Year} \\
+    & \left. \quad + \text{ NHS and societal savings per change in property relative humidity} 
+      \right) \\
+    & \times \text{ Number of households per archetype by EPC band} \\
+    & \times \text{ Share of households with Category 1 dampness hazards} \\
+    & \times \text{ Share of vulnerable populations per archetype} \\
+    & = \text{Total value of dampness reduction to individuals and society (£)}
+    \end{aligned}
+    \]
+  </p></span>
+</blockquote>
+<h3 id="noise">Noise</h3>
+<p>The reduction of noise co-benefit is a result of decreased levels of noise pollution, which lead to the negative effects on the health and well-being of society and ecosystems.</p>
+<p>Environmental noise pollution is the second-greatest environmental risk in Europe<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a>, leading to declines in quality of life, reduced amenity, sleep disturbances, and increased health risks.</p>
+<p>The co-benefit is quantified by estimating baseline noise in the local area, through mapping noise levels by road type and rural-urban classification, using estimates from the Department for Transport<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a>.</p>
+<p>The change in noise pollution is modelled by using the relationship between vehicle type and noise<sup>11</sup>, to estimate the marginal changes in decibels per vehicular kilometre travelled (either by reduction in vkmt or shifting vkmt to EVs). The benefits are valued using the DfT’s TAG noise assessment databook<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a>, and distributed to populations based on the rural-urban classification in which the reduction in noise occurs, so that avoided damages can be weighted appropriately. This is broken down into distinct damage pathways, like increased amenity and reduced sleep disturbance.</p>
+
+<blockquote>
+  <p><span class="math display">
+    \[
+    \begin{aligned}
+    & \text{Baseline distance travelled by vehicle type and powertrain (vkm)} \\
+    & \times \text{ Share of vkm by road type and rural-urban classification} \\
+    & \times \text{ Typical noise pollution by vehicle and road type} \left( \frac{\mathrm{dB}}{\mathrm{vkm}} \right) \\
+    & \times \left( \text{Baseline modelled noise (dB)} - \text{Net change in modelled noise pollution} \right) \\
+    & \times \text{ Share of population affected} \\
+    & \times \text{ Avoided marginal external costs of noise pollution (£)} \\
+    & \times \text{ Share of impact pathway} \\
+    & = \text{Total value of avoided noise pollution relative to baseline (£)}
+    \end{aligned}
+    \]
+  </span></p>
+</blockquote>
+<h3 id="physical-activity">Physical Activity</h3>
+<h3 id="congestion">Congestion</h3>
+<h3 id="excess-heat">Excess Heat</h3>
+<h3 id="dietary-change">Dietary Change</h3>
+<h3 id="hassle-costs">Hassle Costs</h3>
+<h3 id="road-repairs">Road Repairs</h3>
+<h3 id="road-safety">Road Safety</h3>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<h4>Footnote</h4>
+<ol>
+<li id="fn1"><p>https://www.lse.ac.uk/granthaminstitute/publication/financing-uk-place-based-climate-action-from-westminster-to-cumberland/<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Sudmant, A., Boyle, D., Higgins‐Lavery, R. <em>et al.</em> Climate policy as social policy? A comprehensive assessment of the economic impact of climate action in the UK. <em>J Environ Stud Sci</em> (2024). https://doi.org/10.1007/s13412-024-00955-9<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>https://www.theccc.org.uk/publication/the-seventh-carbon-budget/<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>https://uk-air.defra.gov.uk/assets/documents/reports/cat09/2301090900_Damage_cost_update_2023_Final.pdf<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>https://www.gov.uk/government/collections/the-green-book-and-accompanying-guidance-and-documents<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>https://www.gov.uk/guidance/transport-analysis-guidance-tag<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>https://uk-air.defra.gov.uk/assets/documents/reports/cat09/1907101151_20190709_Non_Exhaust_Emissions_typeset_Final.pdf<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>https://www.brebookshop.com/details.jsp?id=327671<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>https://files.bregroup.com/research/BRE_Report_the_cost_of_poor_housing_2021.pdf<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>https://www.sciencedirect.com/science/article/pii/S0360132321009756<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>https://files.bregroup.com/research/BRE_Report_the_cost_of_poor_housing_2021.pdf<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>https://www.eea.europa.eu/articles/noise-pollution-is-a-major#:~:text=In%20fact%2C%20according%20to%20some,air%20pollution%20(particulate%20matter).<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>https://www.bradford.gov.uk/Documents/Hard%20Ings%20Road%20improvement%20scheme/2b%20Compulsory%20Purchase%20Order%20and%20Side%20Road%20Order/5%20Supporting%20documents/Calculation%20of%20Road%20Traffic%20Noise%201988.pdf<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>https://www.gov.uk/government/publications/tag-environmental-impacts-worksheets<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
