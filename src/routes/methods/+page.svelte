@@ -8,10 +8,10 @@
     let container: HTMLDivElement;
 
     onMount(async () => {
-        const res = await fetch(`${base}/methods.html`);
+        const res = await fetch(`${base}/methods-doc.html`);
         const rawHtml = await res.text();
-        console.log('rawHtml fetch', `${base}/methods.html`);
-        console.log('rawHtml', rawHtml);
+        // console.log('rawHtml fetch', `${base}/methods.html`);
+        // console.log('rawHtml', rawHtml);
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(rawHtml, 'text/html');
