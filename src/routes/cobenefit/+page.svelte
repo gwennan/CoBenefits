@@ -376,11 +376,8 @@
                             //fx: "SE",
                             x: "SE",
                             y: "total",
-                            stroke: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
-                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
-                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
-                                : COBENEFS_SCALE2(coBenefit)[4],
-                            fill: COBENEFS_SCALE2(coBenefit)[4],
+                            stroke: COBENEFS_SCALE2(coBenefit)[0],
+                            fill: COBENEFS_SCALE2(coBenefit)[0],
                             r: 2,
                             //strokeOpacity: 0.5,
                             fillOpacity:0.3

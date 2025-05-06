@@ -369,7 +369,7 @@ export class MapUK {
                  <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
                  <br>
 <!--                 <strong>Value</strong>: ${cobenefValue.toFixed(2)}-->
-                 <strong>${this.tooltipValueCb(cobenefValue.toFixed(2))}</strong>
+                 <strong>${this.tooltipValueCb(cobenefValue)}</strong>
                  `;
                     this.tooltip.style.left = event.point.x + 10 + 'px';
                     this.tooltip.style.top = event.point.y + 10 + 'px';

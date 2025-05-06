@@ -64,7 +64,14 @@
                     fullData = getTableData(getSUMCBGroupedByLAD(Array.from(coBenefits), "UK", timeSelected))
                     // fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
                 } else if (granularity == "LSOA") {
-                    fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+                    let cbs;
+                    if (coBenefits.length == 11) {
+                        cbs = []
+                    } else {
+                        cbs = coBenefits
+                    }
+                    // fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+                    fullData = getTableData(getCustomCBData(cbs, scenario, timeSelected))
                 }
             } else if (mapType = "SEF") {
                 map.dataKey = "val";
@@ -283,12 +290,12 @@
     const tooltipValue = (value) => {
         if (mapType == "SEF") {
             if (SEF_CATEGORICAL.includes(selectedSef)) {
-                return `Mode value is ${value}`
+                return `Mode value is ${SEF_LEVEL_LABELS[selectedSef][value]}`
             } else {
-                return `Mean value is ${value}`
+                return `Mean value is ${value.toFixed(2)}`
             }
         } else if (mapType == "Cobenefit") {
-            return `${value}£ per capita`
+            return `${value.toFixed(2)}£ per capita.`
         }
     }
 

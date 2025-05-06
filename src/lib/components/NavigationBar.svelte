@@ -61,10 +61,11 @@ let showDropdown = false;
       </div>
     </div>
 
-    <div class="nav-right">
+    <div class="nav-right" style="gap: 1rem;">
       <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>Home</a>
       <a href="{base}/methods" class="nav-item" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
       <a href="mailto:cobens@ed.ac.uk" class="nav-item">Contact</a>
+      <a href="https://groups.google.com/g/ukcobenefitsatlas" class="nav-item">Newsletter</a>
       <a href="{base}/about" class="nav-item" class:active={$page.url.pathname === `${base}/about`}>About</a>
     </div>
   </nav>
@@ -101,7 +102,7 @@ let showDropdown = false;
 
   .nav-left {
     flex: 1;
-    max-width: 350px;
+    max-width: 250px;
   }
 
   .nav-center {

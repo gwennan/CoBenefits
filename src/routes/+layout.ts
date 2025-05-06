@@ -82,8 +82,6 @@ export async function load() {
     // let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
     // let totalAggregation = await getTableData(getTotalAggregation());
 
-    console.log("end root")
-
     return {
         // datazones: UKZones,
         LADToName,
