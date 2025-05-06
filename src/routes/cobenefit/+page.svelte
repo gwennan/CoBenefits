@@ -349,13 +349,13 @@
                     height: height/1.4 ,
                     width: height*1.2,
                     marginLeft: 70,
-                    marginBottom: 60,
+                    marginBottom: sef === "Typology" ? 80 : 60,
                     marginRight: 20,
                     marginTop: 20,
                     x: {  domain: fullLevels,
                             label: SEF_SCALE(sef),
                             tickFormat: d => labelLookup?.[d] ?? d,
-                            // tickRotate: sef === "Typology" ? -20 : 0
+                            tickRotate: sef === "Typology" ? -20 : 0
                         },
                     y: {label: '£, billion',  labelArrow:'none'},
                     color: {legend: true},

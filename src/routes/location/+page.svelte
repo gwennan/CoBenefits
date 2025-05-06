@@ -510,8 +510,11 @@
                         ...MARGINS,
                         marginLeft: 100,
                         marginTop:40,
+                        marginBottom: sef === "Typology" ? 100 : 60,
                         // x: {label: SEF_SCALE(sef)},
-                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
+                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d,
+                            tickRotate: sef === "Typology" ? -20 : 0
+                        },
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
