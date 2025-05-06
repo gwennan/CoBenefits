@@ -36,8 +36,8 @@
   },
   {
     "id": "Number_cars",
-    "label": "Number of cars",
-    "units": "Number of cars",
+    "label": "No. cars",
+    "units": "No. cars",
     "type": "categorical",
     "def": "Mean number of cars per household in the area."
   },
