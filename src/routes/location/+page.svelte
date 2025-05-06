@@ -509,6 +509,7 @@
                         height: height / 1.2,
                         ...MARGINS,
                         marginLeft: 100,
+                        marginTop:40,
                         // x: {label: SEF_SCALE(sef)},
                         x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
                         style: {fontSize: "18px"},
@@ -544,7 +545,10 @@
                                     return a.length / oneLADData.length / (bin.x2 - bin.x1);
                                 }
                             }, {
-                                x: sef,
+                                //x: sef,
+                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                                 tip: true,
                                 fill: AVERAGE_COLOR,
                                 stroke: AVERAGE_COLOR,
@@ -556,7 +560,10 @@
                                     return a.length / totalCBAllZones.length / (bin.x2 - bin.x1);
                                 }
                             }, {
-                                x: sef,
+                                //x: sef,
+                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                                 tip: true,
                                 fill: "black",
                                 stroke: "black",
@@ -592,7 +599,7 @@
                     height: height / 1.2,
                     ...MARGINS,
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
-                    x: {label: SEF_SCALE(sef)},
+                    x: {label: SEF_SCALE(sef), type: "point", tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
                     y: {domain: domain, grid: true, label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     color: {range: ["#e6e6e6", AVERAGE_COLOR]},
@@ -649,14 +656,20 @@
                     marks: [
                         Plot.density(getRandomSubarray(totalCBAllZones, 20000), {
                             // Plot.density(oneLADData, {
-                            x: sef,
+                            // x: sef,
+                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
                             thresholds: 10
                         }),
                         Plot.dot(oneLADData, {
-                            x: sef,
+                            //x: sef,
+                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                             y: "total",
                             fill: "black",
                             r: 2
