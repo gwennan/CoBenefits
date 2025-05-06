@@ -75,8 +75,11 @@
     window.MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      chtml: {
         displayAlign: 'left',
+        displayIndent: '0em',
         linebreaks: { automatic: true }
       },
       options: {
