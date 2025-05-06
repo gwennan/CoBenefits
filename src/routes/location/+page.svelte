@@ -640,7 +640,7 @@
                         //     y: "total"
                         // }),
                         // Declaring the axes so they are on top of the densities
-                        Plot.axisY({label: "Datazone Co-Benefit (£)"}),
+                        Plot.axisY({label: "Datazone Co-Benefit (millions £)"}),
                         Plot.axisX({anchor: "bottom"}),
                     ]
                 })
