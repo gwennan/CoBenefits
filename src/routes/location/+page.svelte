@@ -590,7 +590,7 @@
             let quantile = values[index];
             domain[1] = quantile + 2;
             domain[0] = -5;
-            console.log(typeof oneLADData[0][sef]);
+
 
             let cbplot;
             if (SEF_CATEGORICAL.includes(sef)) {
@@ -606,8 +606,7 @@
                     marks: [
                         Plot.density(getRandomSubarray(totalCBAllZones, 15000), {
                             // Plot.density(oneLADData, {
-                            // x: d => `${d[sef]}`,
-                            x: d => d[sef],
+                            x: d => `${d[sef]}`,
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
@@ -627,9 +626,8 @@
                         //     fillOpacity:0.3
                         // }),
                         Plot.dot(oneLADData, {
-                            // x: d => `${d[sef]}`,
+                            x: d => `${d[sef]}`,
                             // x: sef,
-                            x: d => d[sef],
                             y: "total",
                             fill: "black",
                             r: 2
