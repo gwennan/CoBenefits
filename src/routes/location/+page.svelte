@@ -23,7 +23,7 @@
         addSpinner,
         SEF_SCALE,
         getIconFromCobenef, COBENEFS_SCALE2,
-        SE_FACTORS
+        SE_FACTORS, SEF_LEVEL_LABELS
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -400,7 +400,6 @@
                     //     fill: AVERAGE_COLOR,
                     //     tip: true
                     // })),
-
                     Plot.barY(allCBAllLADSUM, Plot.groupX({y: "mean"}, {
                         y: "val",
                         x: "co_benefit_type",
@@ -503,13 +502,15 @@
                     // const totalMap = new Map(totalByLAD);
 
 
+                    console.log(999, sef)
+                    console.log(new Set(totalCBAllZones.map(d => d[sef])))
                     // TODO: use only totalCBAllZones and set a variable to split between average and current LAD
                     plot = Plot.plot({
                         height: height / 1.2,
                         ...MARGINS,
                         marginLeft: 100,
                         // x: {label: SEF_SCALE(sef)},
-                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => Math.floor(d)},
+                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
@@ -931,12 +932,6 @@
 
 
     $: {
-        // plot?.firstChild?.remove(); // remove old chart, if any
-        // plotPerCb?.firstChild?.remove(); // remove old chart, if any
-        // CBOverTimePLot?.firstChild?.remove(); // remove old chart, if any
-        // CBOverTimePerScenarioPLot?.firstChild?.remove();
-        // CBOverTimePerCBPLot?.firstChild?.remove();
-
         // remove old chart, if any
         if (plotDist) {
             removeChart(plotDist)

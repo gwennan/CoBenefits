@@ -112,12 +112,12 @@ export const SEF_LEVEL_LABELS = {
     },
     Typology: {
       1: "Semi-detached", 2: "Detached", 3: "Mid-terrace", 
-      // 4: "End-terrace", 5: "Enclosed end-terrace", 6: "Enclosed mid-terrace"
+      4: "End-terrace", 5: "Enclosed end-terrace", 6: "Enclosed mid-terrace"
     },
     Fuel_Type: {
       1: "Gas boiler", 2: "Electric heating", 3: "Oil heating"
     },
-    Gas_Flag: {
+    Gas_flag: {
       1: "Yes", 0: "No"
     }
   };
