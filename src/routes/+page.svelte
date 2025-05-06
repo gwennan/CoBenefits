@@ -26,9 +26,18 @@
         getTotalAggregation
     } from '$lib/duckdb';
     import {getTableData} from '$lib/duckdb';
+    import {csv} from "d3";
+
+    // const LADEngPath = `${base}/LAD/Eng_Wales_LSOA_LADs.csv`
+    // const LADNIPath = `${base}/LAD/NI_DZ_LAD.csv`
+    // const LADScotlandPath = `${base}/LAD/Scotland_DZ_LA.csv`
+
+    // let LADToName = {};
 
 
     export let data;
+    let LADToName = data.LADToName;
+
     let element: HTMLElement;
 
     let aggregationPerBenefit;
@@ -41,6 +50,7 @@
     let maxHHCoBenefValue;
     let dataLoading = true;
 
+
     async function loadData() {
         aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
         // console.log("aggregationPerBenefit", aggregationPerBenefit);
@@ -49,15 +59,31 @@
         aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
         totalAggregation = await getTableData(getTotalAggregation());
 
-        aggregationPerBenefit = [...data.aggregationPerBenefit].sort((a, b) => b.total - a.total);
-        aggregationPerCapitaPerBenefit = [...data.aggregationPerCapitaPerBenefit].sort((a, b) => b.total_value - a.total_value);
+        aggregationPerBenefit = [...aggregationPerBenefit].sort((a, b) => b.total - a.total);
+        aggregationPerCapitaPerBenefit = [...aggregationPerCapitaPerBenefit].sort((a, b) => b.total_value - a.total_value);
         console.log("aggregationPerCapitaPerBenefit", aggregationPerCapitaPerBenefit);
-        aggregationPerCapita = data.totalAggregation[0].total_value_per_capita;
+        aggregationPerCapita = totalAggregation[0].total_value_per_capita;
 
         maxCoBenefValue = Math.max(...aggregationPerCapitaPerBenefit.map(d => d.total_value));
         minCoBenefValue = Math.min(...aggregationPerCapitaPerBenefit.map(d => d.total_value));
         minHHCoBenefValue = Math.min(...aggregationPerCapitaPerBenefit.map(d => d.value_per_capita));
         maxHHCoBenefValue = Math.max(...aggregationPerCapitaPerBenefit.map(d => d.value_per_capita));
+
+        // await csv(LADEngPath).then(data => {
+        //     for (let lad of data) {
+        //         LADToName[lad.LAD22CD] = lad.LAD22NM;
+        //     }
+        // })
+        // await csv(LADNIPath).then(data => {
+        //     for (let lad of data) {
+        //         LADToName[lad.LGD2014_code] = lad.LGD2014_name;
+        //     }
+        // })
+        // await csv(LADScotlandPath).then(data => {
+        //     for (let lad of data) {
+        //         LADToName[lad.LA_Code] = lad.LA_Name;
+        //     }
+        // })
 
         dataLoading = false;
 
@@ -70,7 +96,7 @@
     let sortBy = 'total';
     let maxLADValue = 0;
     let maxHHLADValue = 0;
-    let LADToName = data.LADToName;
+    // let LADToName = data.LADToName;
 
     async function fetchLADData() {
         const sql = getTopSelectedLADs({region, sortBy});
@@ -341,144 +367,147 @@
 <!--<div class="page-container" bind:this={element}>-->
 <div bind:this={element}>
 
-<NavigationBar></NavigationBar>
+    <NavigationBar></NavigationBar>
 
-<section class="hero-container" bind:this={heroEl}>
-    {#each slides as slide, index}
-        <!-- <div
-          class="hero-slide"
-          style="background-image: url({slide.image});"
-          class:active={index === currentIndex}
-          class:previous={index === previousIndex}
-        /> -->
-        <div
-                class="hero-slide"
-                class:active={index === currentIndex}
-                class:previous={index === previousIndex}
-        >
-            <img class="slide-image" src={slide.image} alt={slide.label}/>
-            <img class="slide-map" src={slide.mapImage} alt="Map overlay"/>
-        </div>
-    {/each}
+    <section class="hero-container" bind:this={heroEl}>
+        {#each slides as slide, index}
+            <!-- <div
+              class="hero-slide"
+              style="background-image: url({slide.image});"
+              class:active={index === currentIndex}
+              class:previous={index === previousIndex}
+            /> -->
+            <div
+                    class="hero-slide"
+                    class:active={index === currentIndex}
+                    class:previous={index === previousIndex}
+            >
+                <img class="slide-image" src={slide.image} alt={slide.label}/>
+                <img class="slide-map" src={slide.mapImage} alt="Map overlay"/>
+            </div>
+        {/each}
 
-    <div class="hero-content">
-        <div class="hero-text">
-            <img src="{base}/atlas-logos/logo-colored-waffle-png.png" alt="Logo" height="0px"/>
-            <h1 class="hero-title">The Co-Benefits of Reaching <br> Net Zero in the UK</h1>
-            <p class="hero-description">
-                Climate actions lower greenhouse gas (GHG) emissions but the gains for society reach further. The
-                CO-BENS project models 11 additional benefits based on actions recommended by the Climate Change
-                Committee (CCC) in its Seventh Carbon Budget (2025) across 45,000 communities and regions within the UK.<br>
-            </p>
-            <p class="hero-description">
-                Explore how, when and for whom benefits emerge to further understand connections between a wide range of
-                social, economic and environmental priorities, and drive more effective decision-making.
-            </p>
-            <p class="hero-description">
-                To understand more about the analysis or if you would like bespoke co-benefit modelling please get in
-                touch by emailing <a href="mailto:cobens@ed.ac.uk">cobens@ed.ac.uk</a>
-            </p>
-        </div>
-
-        <div class="waffle-overlay">
-            <div class="waffle-label" bind:this={waffleLabelEl}>
-
-                <div class="waffle-header">
-                    {#if activeIcon}
-                        <div class="waffle-icon">
-                            <img src="{activeIcon}" alt="Icon"/>
-                        </div>
-                    {/if}
-                    <div class="waffle-title">{activeTypeLabel}</div>
-                </div>
-
-                <div class="waffle-stats">
-                    <div class="waffle-stat">
-                        <div class="waffle-value">
-                            <span class="waffle-big">£{activeValueLabel}</span>
-                            <span class="small">billion</span>
-                        </div>
-                        {#if activeValueLabel > 0}
-                            <div class="waffle-caption">National benefits</div>
-                        {:else}
-                            <div class="waffle-caption">National costs</div>
-                        {/if}
-                    </div>
-                    <div class="waffle-stat">
-                        <div class="waffle-value">
-                            <span class="waffle-big">£{activePerCapitaLabel}</span>
-                            <!-- <span class="small">thousand</span> -->
-                        </div>
-                        {#if activePerCapitaLabel > 0}
-                            <div class="waffle-caption">Per capita benefits</div>
-                        {:else}
-                            <div class="waffle-caption">Per capita costs</div>
-                        {/if}
-                    </div>
-                    {#if activeType !== null}
-                        <div class="waffle-stat">
-                            <div class="waffle-value">
-                                <span class="waffle-big">{activePercentLabel}</span>
-                                <span class="small">%</span>
-                            </div>
-                            <div class="waffle-caption">Contribution</div>
-                        </div>
-                    {/if}
-                </div>
-
-
+        <div class="hero-content">
+            <div class="hero-text">
+                <img src="{base}/atlas-logos/logo-colored-waffle-png.png" alt="Logo" height="0px"/>
+                <h1 class="hero-title">The Co-Benefits of Reaching <br> Net Zero in the UK</h1>
+                <p class="hero-description">
+                    Climate actions lower greenhouse gas (GHG) emissions but the gains for society reach further. The
+                    CO-BENS project models 11 additional benefits based on actions recommended by the Climate Change
+                    Committee (CCC) in its Seventh Carbon Budget (2025) across 45,000 communities and regions within the
+                    UK.<br>
+                </p>
+                <p class="hero-description">
+                    Explore how, when and for whom benefits emerge to further understand connections between a wide
+                    range of
+                    social, economic and environmental priorities, and drive more effective decision-making.
+                </p>
+                <p class="hero-description">
+                    To understand more about the analysis or if you would like bespoke co-benefit modelling please get
+                    in
+                    touch by emailing <a href="mailto:cobens@ed.ac.uk">cobens@ed.ac.uk</a>
+                </p>
             </div>
 
-            <div class="waffle-bg" bind:this={waffleBgEl}></div>
-            <div bind:this={waffleEl}></div>
-        </div>
-</section>
+            <div class="waffle-overlay">
+                <div class="waffle-label" bind:this={waffleLabelEl}>
 
-<section class="search-section">
-    <h1>Find My Place</h1>
-    <LADSearch
-            items={LADToName}
-            on:search={(e) => handleSearch(e.detail)}
-    />
-    <!-- {#if selectedLAD}
-      <h2>Total Cobenefits</h2>
-      <h2>Cobenefits Over Time</h2>
+                    <div class="waffle-header">
+                        {#if activeIcon}
+                            <div class="waffle-icon">
+                                <img src="{activeIcon}" alt="Icon"/>
+                            </div>
+                        {/if}
+                        <div class="waffle-title">{activeTypeLabel}</div>
+                    </div>
 
-    {/if} -->
-</section>
+                    <div class="waffle-stats">
+                        <div class="waffle-stat">
+                            <div class="waffle-value">
+                                <span class="waffle-big">£{activeValueLabel}</span>
+                                <span class="small">billion</span>
+                            </div>
+                            {#if activeValueLabel > 0}
+                                <div class="waffle-caption">National benefits</div>
+                            {:else}
+                                <div class="waffle-caption">National costs</div>
+                            {/if}
+                        </div>
+                        <div class="waffle-stat">
+                            <div class="waffle-value">
+                                <span class="waffle-big">£{activePerCapitaLabel}</span>
+                                <!-- <span class="small">thousand</span> -->
+                            </div>
+                            {#if activePerCapitaLabel > 0}
+                                <div class="waffle-caption">Per capita benefits</div>
+                            {:else}
+                                <div class="waffle-caption">Per capita costs</div>
+                            {/if}
+                        </div>
+                        {#if activeType !== null}
+                            <div class="waffle-stat">
+                                <div class="waffle-value">
+                                    <span class="waffle-big">{activePercentLabel}</span>
+                                    <span class="small">%</span>
+                                </div>
+                                <div class="waffle-caption">Contribution</div>
+                            </div>
+                        {/if}
+                    </div>
 
 
-<section class="side-by-side-section">
-    <div class="side-box">
-        <h2>Explore by Local Authority</h2>
-        {#if !dataLoading}
-            <LADTable
-                    {ladData}
-                    {region}
-                    {sortBy}
-                    {maxLADValue}
-                    {maxHHLADValue}
-                    {LADToName}
-                    on:filterChange={handleFilterChange}
-            />
-        {/if}
-    </div>
+                </div>
 
-    <div class="side-box">
-        <h2>Explore by Co-Benefit</h2>
-        {#if !dataLoading}
-        <CoBenefitTable
-                {aggregationPerCapitaPerBenefit}
-                {minCoBenefValue}
-                {maxCoBenefValue}
-                {minHHCoBenefValue}
-                {maxHHCoBenefValue}
-                {COBENEFS_SCALE}
+                <div class="waffle-bg" bind:this={waffleBgEl}></div>
+                <div bind:this={waffleEl}></div>
+            </div>
+    </section>
+
+    <section class="search-section">
+        <h1>Find My Place</h1>
+        <LADSearch
+                items={LADToName}
+                on:search={(e) => handleSearch(e.detail)}
         />
-            {/if}
-    </div>
+        <!-- {#if selectedLAD}
+          <h2>Total Cobenefits</h2>
+          <h2>Cobenefits Over Time</h2>
 
-</section>
+        {/if} -->
+    </section>
+
+
+    <section class="side-by-side-section">
+        <div class="side-box">
+            <h2>Explore by Local Authority</h2>
+            {#if !dataLoading}
+                <LADTable
+                        {ladData}
+                        {region}
+                        {sortBy}
+                        {maxLADValue}
+                        {maxHHLADValue}
+                        {LADToName}
+                        on:filterChange={handleFilterChange}
+                />
+            {/if}
+        </div>
+
+        <div class="side-box">
+            <h2>Explore by Co-Benefit</h2>
+            {#if !dataLoading}
+                <CoBenefitTable
+                        {aggregationPerCapitaPerBenefit}
+                        {minCoBenefValue}
+                        {maxCoBenefValue}
+                        {minHHCoBenefValue}
+                        {maxHHCoBenefValue}
+                        {COBENEFS_SCALE}
+                />
+            {/if}
+        </div>
+
+    </section>
 </div>
 
 

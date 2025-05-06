@@ -28,7 +28,7 @@ import {
 // const zonesPath = '/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.geojson';
 // topojson
 // const zonesPath = '/maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
-const zonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
+// const zonesPath = 'maps/Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824.json';
 
 const LADEngPath = `${base}/LAD/Eng_Wales_LSOA_LADs.csv`
 const LADNIPath = `${base}/LAD/NI_DZ_LAD.csv`
@@ -36,12 +36,12 @@ const LADScotlandPath = `${base}/LAD/Scotland_DZ_LA.csv`
 
 
 export async function load() {
-    await initDB();
+    // await initDB();
     // const db = await initDB();
 
-    const zones = await json(zonesPath, (d) => {
-        return d;
-    })
+    // const zones = await json(zonesPath, (d) => {
+    //     return d;
+    // })
 
     // const UKZones = topojson.feature(zones, zones.objects["Lower_layer_Super_Output_Areas_2021_EW_BGC_V3_-6823567593069184824"]);
 
@@ -74,22 +74,22 @@ export async function load() {
 
 
     // for landing page waffle and COBEN columns
-    let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
+    // let aggregationPerBenefit = await getTableData(getAggregationPerBenefit());
     // console.log("aggregationPerBenefit", aggregationPerBenefit);
     // for landing page LAD columns
 
 
-    let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
-    let totalAggregation = await getTableData(getTotalAggregation());
+    // let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
+    // let totalAggregation = await getTableData(getTotalAggregation());
 
     console.log("end root")
 
     return {
         // datazones: UKZones,
         LADToName,
-        aggregationPerBenefit,
-        aggregationPerCapitaPerBenefit,
-        totalAggregation
+        // aggregationPerBenefit,
+        // aggregationPerCapitaPerBenefit,
+        // totalAggregation
     }
 }
 
