@@ -502,8 +502,8 @@
                     // const totalMap = new Map(totalByLAD);
 
 
-                    console.log(999, sef)
-                    console.log(new Set(totalCBAllZones.map(d => d[sef])))
+                    // console.log(999, sef)
+                    // console.log(new Set(totalCBAllZones.map(d => d[sef])))
                     // TODO: use only totalCBAllZones and set a variable to split between average and current LAD
                     plot = Plot.plot({
                         height: height / 1.2,
@@ -597,12 +597,13 @@
 
             let cbplot;
             if (SEF_CATEGORICAL.includes(sef)) {
-                // console.log(sef, oneLADData.map(d => d[sef]))
                 cbplot = Plot.plot({
                     height: height / 1.2,
                     ...MARGINS,
+                    marginBottom: sef === "Typology" ? 100 : 60,
+                        marginLeft: 100,
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
-                    x: {label: SEF_SCALE(sef), type: "point", tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
+                    x: {label: SEF_SCALE(sef), type: "point", tickFormat: d => {return SEF_LEVEL_LABELS[sef]?.[d] ?? d},  tickRotate: sef === "Typology" ? -20 : 0},
                     y: {domain: domain, grid: true, label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     color: {range: ["#e6e6e6", AVERAGE_COLOR]},
@@ -641,7 +642,7 @@
                         // }),
                         // Declaring the axes so they are on top of the densities
                         Plot.axisY({label: "Datazone Co-Benefit (millions £)"}),
-                        Plot.axisX({anchor: "bottom"}),
+                        // Plot.axisX({anchor: "bottom"}),
                     ]
                 })
 
