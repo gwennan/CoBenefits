@@ -1,0 +1,14 @@
+import{s as H,d as m,b as $,i as g,B as A,p as v,D as T,c as b,q as C,g as M,e as W,E as j,h as x,j as S,H as q,v as J,F as N,A as P}from"../chunks/ChnDNINx.js";import{S as I,i as k,d as D,t as L,a as B,m as F,c as O,b as R}from"../chunks/BjCzwqlE.js";import{b as w}from"../chunks/B9UVyzk4.js";import{N as z}from"../chunks/DSptniI9.js";const V=typeof window<"u"?window:typeof globalThis<"u"?globalThis:global,{document:y}=V;function G(h){let i,p=`window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+        displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+        displayAlign: 'left',
+        linebreaks: { automatic: true }
+      },
+      options: {
+        renderActions: {
+          addMenu: [] // disable context menu
+        }
+      }
+    };
+  `,n,l="",_,r,o,u,a,d,s;return o=new z({}),{c(){i=x("script"),i.textContent=p,n=x("script"),n.innerHTML=l,r=S(),R(o.$$.fragment),u=S(),a=x("div"),d=new q(!1),this.h()},l(t){const e=T("svelte-1e8m2m",y.head);i=b(e,"SCRIPT",{"data-svelte-h":!0}),C(i)!=="svelte-1dydvi"&&(i.textContent=p),n=b(e,"SCRIPT",{src:!0,"data-svelte-h":!0}),C(n)!=="svelte-1jz3o7s"&&(n.innerHTML=l),e.forEach(m),r=M(t),O(o.$$.fragment,t),u=M(t),a=b(t,"DIV",{class:!0});var f=W(a);d=j(f,!1),f.forEach(m),this.h()},h(){A(n.src,_="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js")||v(n,"src",_),d.a=null,v(a,"class","pandoc-html")},m(t,e){$(y.head,i),$(y.head,n),g(t,r,e),F(o,t,e),g(t,u,e),g(t,a,e),d.m(h[0],a),h[2](a),s=!0},p(t,[e]){(!s||e&1)&&d.p(t[0])},i(t){s||(B(o.$$.fragment,t),s=!0)},o(t){L(o.$$.fragment,t),s=!1},d(t){t&&(m(r),m(u),m(a)),m(i),m(n),D(o,t),h[2](null)}}}function K(h,i,p){let n="",l;J(async()=>{const o=await(await fetch(`${w}/methods.html`)).text();console.log("rawHtml fetch",`${w}/methods.html`),console.log("rawHtml",o);const a=new DOMParser().parseFromString(o,"text/html");a.querySelectorAll("img[src]").forEach(s=>{const t=s.getAttribute("src");t&&!t.startsWith("http://")&&!t.startsWith("https://")&&!t.startsWith("//")&&!t.startsWith(w)&&!t.startsWith("/")&&s.setAttribute("src",`${w}/${t}`)}),Array.from(a.querySelectorAll("h3")).forEach((s,t)=>{const e=document.createElement("details");t===0&&e.setAttribute("open","");const f=document.createElement("summary");f.textContent=s.textContent||"",e.appendChild(f);let c=s.nextElementSibling;for(;c&&c.tagName!=="H3"&&!(c.tagName==="SECTION"&&c.id==="footnotes");){const E=c.nextElementSibling;e.appendChild(c),c=E}s.replaceWith(e)}),p(0,n=a.body.innerHTML),await N(),window.MathJax&&typeof window.MathJax.startup?.promise?.then=="function"&&(await window.MathJax.startup.promise,await window.MathJax.typesetPromise([l]))});function _(r){P[r?"unshift":"push"](()=>{l=r,p(1,l)})}return[n,l,_]}class Z extends I{constructor(i){super(),k(this,i,K,G,H,{})}}export{Z as component};
