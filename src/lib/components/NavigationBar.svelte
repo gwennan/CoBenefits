@@ -11,7 +11,8 @@ let showDropdown = false;
 
 <nav class="navbar">
     <div class="nav-left">
-      <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" />
+      <!-- <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" /> -->
+      <img src="{base}/atlas-logos/logo-beta.png" alt="Logo" class="logo" />
     </div>
 
     <div class="nav-center">
@@ -118,7 +119,8 @@ let showDropdown = false;
   .logo {
     height: 100%;
     max-height: 100%;
-    object-fit: contain;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   /* .nav-right {
