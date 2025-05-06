@@ -12,7 +12,8 @@ let showDropdown = false;
 <nav class="navbar">
     <div class="nav-left">
       <!-- <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" /> -->
-      <img src="{base}/atlas-logos/logo-beta.png" alt="Logo" class="logo" />
+      <!-- <img src="{base}/atlas-logos/logo-beta.png" alt="Logo" class="logo" /> -->
+      <img src="{base}/atlas-logos/logo-grid-black-beta.png" alt="Logo" class="logo" />
     </div>
 
     <div class="nav-center">
