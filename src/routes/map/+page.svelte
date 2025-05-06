@@ -288,7 +288,7 @@
                 return `Mean value is ${value.toFixed(2)}`
             }
         } else if (mapType == "Cobenefit") {
-            return `${value}£ per capita`
+            return `${value.toFixed(2)}£ per capita.`
         }
     }
 
