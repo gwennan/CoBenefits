@@ -64,7 +64,14 @@
                     fullData = getTableData(getSUMCBGroupedByLAD(Array.from(coBenefits), "UK", timeSelected))
                     // fullData = getTableData(getAverageCBGroupedByLAD(Array.from(coBenefits), scenario, timeSelected))
                 } else if (granularity == "LSOA") {
-                    fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+                    let cbs;
+                    if (coBenefits.length == 11) {
+                        cbs = []
+                    } else {
+                        cbs = coBenefits
+                    }
+                    // fullData = getTableData(getCustomCBData(Array.from(coBenefits), scenario, timeSelected))
+                    fullData = getTableData(getCustomCBData(cbs, scenario, timeSelected))
                 }
             } else if (mapType = "SEF") {
                 map.dataKey = "val";
