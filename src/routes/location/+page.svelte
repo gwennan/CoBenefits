@@ -1109,6 +1109,7 @@
                                 <span class="waffle-caption">Per capita costs</span>
                             {/if}
                         </div>
+                        <span class="waffle-caption"><i>Gray bars indicate values for the comparator</i></span>
 
                     </div>
                 </div>
