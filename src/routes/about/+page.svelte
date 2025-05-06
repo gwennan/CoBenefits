@@ -115,6 +115,7 @@ Visualization atlases are online platforms making large and complex data sets ac
 <li><a href="https://edinburghcentre.org/team/ruaidhri-higgins-lavery" target="_blank">Ruaidhri Higgins-Lavery</a>, <i>University of Edinburgh</i></li>
 <li><a href="https://www.climateintelligenceservice.scot/about-us/meet-the-team" target="_blank">Sarah Bissett</a>, <i>University of Edinburgh</i></li>
 <li><a href="https://energyethics.st-andrews.ac.uk/people/sean-field/" target="_blank">Sean Field</a>, <i>University of St Andrews</i></li>
+<li><a href="https://edinburghcentre.org/team/clare-wharmby" target="_blank">Clare Wharmby</a>, <i>University of St Andrews</i></li>
 </ul>
  
 <h3>The visualization team</h3> 
