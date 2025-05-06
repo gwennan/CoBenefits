@@ -23,7 +23,8 @@
         addSpinner,
         SEF_SCALE,
         getIconFromCobenef, COBENEFS_SCALE2,
-        SE_FACTORS
+        SE_FACTORS,
+        SEF_LEVEL_LABELS
     } from "../../globals";
     import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
@@ -508,8 +509,9 @@
                         height: height / 1.2,
                         ...MARGINS,
                         marginLeft: 100,
+                        marginTop:40,
                         // x: {label: SEF_SCALE(sef)},
-                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => Math.floor(d)},
+                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
                         style: {fontSize: "18px"},
                         color: {legend: true},
                         marks: [
@@ -543,7 +545,10 @@
                                     return a.length / oneLADData.length / (bin.x2 - bin.x1);
                                 }
                             }, {
-                                x: sef,
+                                //x: sef,
+                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                                 tip: true,
                                 fill: AVERAGE_COLOR,
                                 stroke: AVERAGE_COLOR,
@@ -555,7 +560,10 @@
                                     return a.length / totalCBAllZones.length / (bin.x2 - bin.x1);
                                 }
                             }, {
-                                x: sef,
+                                //x: sef,
+                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                                 tip: true,
                                 fill: "black",
                                 stroke: "black",
@@ -582,7 +590,7 @@
             let quantile = values[index];
             domain[1] = quantile + 2;
             domain[0] = -5;
-
+            console.log(typeof oneLADData[0][sef]);
 
             let cbplot;
             if (SEF_CATEGORICAL.includes(sef)) {
@@ -591,14 +599,15 @@
                     height: height / 1.2,
                     ...MARGINS,
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
-                    x: {label: SEF_SCALE(sef)},
+                    x: {label: SEF_SCALE(sef), type: "point", tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d},
                     y: {domain: domain, grid: true, label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     color: {range: ["#e6e6e6", AVERAGE_COLOR]},
                     marks: [
                         Plot.density(getRandomSubarray(totalCBAllZones, 15000), {
                             // Plot.density(oneLADData, {
-                            x: d => `${d[sef]}`,
+                            // x: d => `${d[sef]}`,
+                            x: d => d[sef],
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
@@ -618,8 +627,9 @@
                         //     fillOpacity:0.3
                         // }),
                         Plot.dot(oneLADData, {
-                            x: d => `${d[sef]}`,
+                            // x: d => `${d[sef]}`,
                             // x: sef,
+                            x: d => d[sef],
                             y: "total",
                             fill: "black",
                             r: 2
@@ -648,14 +658,20 @@
                     marks: [
                         Plot.density(getRandomSubarray(totalCBAllZones, 20000), {
                             // Plot.density(oneLADData, {
-                            x: sef,
+                            // x: sef,
+                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
                             thresholds: 10
                         }),
                         Plot.dot(oneLADData, {
-                            x: sef,
+                            //x: sef,
+                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                    ? d[sef] * 100
+                                    : d[sef]),
                             y: "total",
                             fill: "black",
                             r: 2
