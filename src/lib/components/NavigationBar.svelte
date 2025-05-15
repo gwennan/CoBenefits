@@ -11,7 +11,9 @@ let showDropdown = false;
 
 <nav class="navbar">
     <div class="nav-left">
-      <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" />
+      <!-- <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" /> -->
+      <!-- <img src="{base}/atlas-logos/logo-beta.png" alt="Logo" class="logo" /> -->
+      <img src="{base}/atlas-logos/logo-grid-black-beta.png" alt="Logo" class="logo" />
     </div>
 
     <div class="nav-center">
@@ -61,10 +63,11 @@ let showDropdown = false;
       </div>
     </div>
 
-    <div class="nav-right">
+    <div class="nav-right" style="gap: 1rem;">
       <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>Home</a>
       <a href="{base}/methods" class="nav-item" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
       <a href="mailto:cobens@ed.ac.uk" class="nav-item">Contact</a>
+      <a href="https://groups.google.com/g/ukcobenefitsatlas" class="nav-item">Newsletter</a>
       <a href="{base}/about" class="nav-item" class:active={$page.url.pathname === `${base}/about`}>About</a>
     </div>
   </nav>
@@ -101,7 +104,7 @@ let showDropdown = false;
 
   .nav-left {
     flex: 1;
-    max-width: 350px;
+    max-width: 250px;
   }
 
   .nav-center {
@@ -117,7 +120,8 @@ let showDropdown = false;
   .logo {
     height: 100%;
     max-height: 100%;
-    object-fit: contain;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   /* .nav-right {
