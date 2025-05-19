@@ -1126,13 +1126,13 @@
             <p class="section-subtitle">Overview</p>
             <h2 class="section-title">What co-benefits would this area receive?</h2>
             <p class="description">We model 11 types of co-benefits, based on the Climate Change Committee’s
-                Sixth Carbon Budget, from 2025 to 2050 at the data zone level across the UK.</p>
+                Seventh Carbon Budget, from 2025 to 2050 at the data zone level across the UK.</p>
         </div>
 
         <div id="vis-block">
             <!--            <div class="component column" bind:clientHeight={height}>-->
             <!--                <h3 class="component-title">Total Co-benefits Values Across Five Pathways (vs. UK Average)</h3>-->
-            <!--                <p class="description">Aggregated values from 2025-2050 in {LADToName[LAD]} verus average value of benefits recieved across all local authorities in UK.</p>-->
+            <!--                <p class="description">Aggregated values from 2025-2050 in {LADToName[LAD]} verus average value of benefits received across all local authorities in UK.</p>-->
 
             <!--                <div class="radio-set">-->
             <!--                    <input type="radio" on:change={onChange} name="visType" value="barchart" checked>-->
@@ -1156,14 +1156,14 @@
                 <h3 class="component-title">Distribution of the cobenefit per datazones compared to <span
                         class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
-                    recieved across all local
+                    received across all local
                     authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 {@html renderDistributionPlot(totalCBAllZones, oneLADData)}
 
                 <h3 class="component-title">11 types of co-benefit values (vs. <span
                         class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
-                    recieved across all local
+                    received across all local
                     authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
                 <div class="plot" bind:this={plotPerCb}>
                 </div>
@@ -1224,7 +1224,7 @@
                     <h3 class="component-title">Total co-benefit distribution from 2025-2049 (vs. <span
                             class="nation-label">{compareTo}</span> Average)</h3>
                     <p class="description" style="margin-bottom:5px">Aggregated values from 2025-2049
-                        in {LADToName[LAD]} compared to average value of benefits recieved across all local authorities
+                        in {LADToName[LAD]} compared to average value of benefits received across all local authorities
                         in <span class="nation-label">{compareTo}</span>.</p>
 
                     <!-- Legend -->
@@ -1316,7 +1316,7 @@
             <p class="section-subtitle">Households</p>
             <h2 class="section-title">{LADToName[LAD]} social-economic factors</h2>
             <p class="description">We describe the distribution of household economic factors aggregated on the data
-                zone level and the different level of co-benefits recieved by those data zones.</p>
+                zone level and the different level of co-benefits received by those data zones.</p>
         </div>
 
         <div id="se-block" class="component" style="margin-left: 1rem;">
@@ -1383,7 +1383,7 @@
 
                                 <div class="component column">
                                     <div>
-                                        <h3 class="component-title">Co-benefits Recieved by Data Zones
+                                        <h3 class="component-title">Co-benefits Received by Data Zones
                                             across {sef.label}
                                             Values</h3>
                                         <p class="description short">Density plot refers to UK distribution while the

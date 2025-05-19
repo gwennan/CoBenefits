@@ -583,7 +583,7 @@
                     <br>
                     <h3 class="component-title"> Distribution of values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
                     {#if totalValue>0}
-                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit how much.</p>
+                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit by how much.</p>
                     {:else}
                         <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
                         <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how much.</p>
