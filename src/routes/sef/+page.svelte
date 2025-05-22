@@ -15,7 +15,8 @@
     // Data from load function
     export let data;
 
-    const coBenefit = data.SEF;
+    const SEF = data.SEF;
+    console.log("SEF ", SEF)
 
     loadData().then(() => {
 
@@ -64,7 +65,8 @@
 
 
     async function loadData() {
-        fullData = await getTableData(getSEFData())
+        fullData = await getTableData(getSEFData(SEF))
+        console.log(fullData)
         dataLoaded = true;
     }
 
