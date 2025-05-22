@@ -210,8 +210,10 @@
         const plot = Plot.plot({
             height: height / 1.6,
             ...MARGINS,
-            x: {label: "Cobenefit (millions £)"},
-            y: {label: "Frequency of Datazones (Normalized)"},
+            marginBottom: 20,
+            style: {fontSize: "15px"},
+            //x: {label: "Cobenefit (millions £)"},
+            //y: {label: "Frequency of Datazones (Normalized)", grid:true},
             marks: [
 
                 // Remove too large values otherwise plot is unreadable
@@ -236,6 +238,9 @@
                     fillOpacity: 0.3,
                     strokeWidth: 2
                 })),
+                Plot.ruleX([0],{stroke: "#1E1E1E", strokeWidth: 1}),
+                Plot.axisY({label: "Frequency of Datazones (Normalized)", labelAnchor: "top", labelArrow: false}),
+                Plot.axisX({label: "Cobenefit (millions £)", labelAnchor: "center", labelArrow: false}),
             ]
         });
         return plot.outerHTML;
@@ -417,7 +422,7 @@
                         tipoffset: 10,
                         fillOpacity: 0.8
                     })),
-                    Plot.axisY({label: 'Total Co-Benefit (£million)', labelAnchor: "center"}),
+                    Plot.axisY({label: 'Total Co-Benefit (£million)', labelAnchor: "center", labelArrow: false}),
                     Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25, labelAnchor: "center", labelArrow: false}),
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
