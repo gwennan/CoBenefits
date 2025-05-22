@@ -118,16 +118,16 @@ export function getTotalPerPathway() {
             WHERE co_benefit_type = 'Total'`
 }
 
-export function getSEFData(sef: SEF) {
+export function getSEFData(sef: SEFactor) {
     // Select total line because the value is repeated for one LSOA
-    let query = `SELECT ${sef} as val, Lookup_Value
+    let query = `SELECT ${sef} as val, total, Lookup_Value
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type = 'Total'`
     return query
 }
 
 // CAST(25.65 AS int);
-export function getAverageSEFGroupedByLAD(sef: SEF) {
+export function getAverageSEFGroupedByLAD(sef: SEFactor) {
     let query;
     query = `SELECT AVG(${sef}) as val, LAD as Lookup_Value
              FROM ${DB_TABLE_NAME}
@@ -136,7 +136,7 @@ export function getAverageSEFGroupedByLAD(sef: SEF) {
     return query
 }
 
-export function getModeSEFGroupedByLAD(sef: SEF) {
+export function getModeSEFGroupedByLAD(sef: SEFactor) {
     let query;
     query = `SELECT mode(${sef}) as val, LAD as Lookup_Value
              FROM ${DB_TABLE_NAME}

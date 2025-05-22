@@ -18,21 +18,24 @@ export const nodes = [
 	() => import('./nodes/14'),
 	() => import('./nodes/15'),
 	() => import('./nodes/16'),
-	() => import('./nodes/17')
+	() => import('./nodes/17'),
+	() => import('./nodes/18'),
+	() => import('./nodes/19')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
-		"/": [9],
-		"/about": [10,[2]],
-		"/cobenefit": [11,[3]],
-		"/contact": [12],
-		"/lad": [13,[4]],
-		"/location": [14,[5]],
-		"/map": [15,[6]],
-		"/methods": [16,[7]],
-		"/overview": [17,[8]]
+		"/": [10],
+		"/about": [11,[2]],
+		"/cobenefit": [12,[3]],
+		"/contact": [13],
+		"/lad": [14,[4]],
+		"/location": [15,[5]],
+		"/map": [16,[6]],
+		"/methods": [17,[7]],
+		"/overview": [18,[8]],
+		"/sef": [19,[9]]
 	};
 
 export const hooks = {
