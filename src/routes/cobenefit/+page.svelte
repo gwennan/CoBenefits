@@ -256,7 +256,7 @@
                 marginLeft: 90,
                 marginTop: 40,
                 marginRight: 40,
-                y: {label: "Number of Datazoness", grid: true},
+                y: {label: "Number of Datazones", grid: true},
                 x: {label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "15px"},
                 marks: [
