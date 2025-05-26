@@ -51,10 +51,10 @@ let showDropdown = false;
         <a href="{base}/lad" class:active={$page.url.pathname === `${base}/lad`}>Local Authorities</a>
       </div>
 
-      <div class="nav-item inactive">
+      <div class="nav-item">
         <div class="nav-count">17</div>
         <!-- <a>Households</a> -->
-        <a>Factors</a>
+        <a href="{base}/sefs" class:active={$page.url.pathname === `${base}/sefs`}>Socio-Economic Factors</a>
       </div>
 
       <div class="nav-item">

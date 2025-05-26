@@ -3,6 +3,11 @@
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
 
+    import {
+        SEF_LABEL,
+        SEF_DEF
+    } from "../../globals";
+
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {getSEFData, getTableData, getTotalPerOneCoBenefit} from "$lib/duckdb";
@@ -17,6 +22,8 @@
 
     const SEF = data.SEF;
     console.log("SEF ", SEF)
+    const sefLabel = SEF_LABEL.find(d => d.id === SEF)?.label ?? SEF;
+    const sefDef = SEF_DEF.find(d => d.id === SEF)?.def ?? SEF;
 
     loadData().then(() => {
 
@@ -82,11 +89,22 @@
             <div class="header-text">
                 <p class="page-subtitle">SEF Report</p>
                 <div class="title-container">
-                    <h1 class="page-title"></h1>
+                    <h1 class="page-title">{sefLabel}</h1>
+                    <p class='definition'> {sefDef} </p>
                 </div>
             </div>
         </div>
     </div>
+
+    {#if scrolledPastHeader}
+    <div class="mini-header">
+      <div class="mini-header-content">
+        <span class="mini-header-text">
+          {sefLabel} >> 
+        </span>     
+      </div>
+    </div>
+  {/if}
 
     <div class="section">
 
@@ -94,5 +112,35 @@
 </div>
 
 <style>
+    .section.header {
+    padding: 2% 6%;
+    background-color: #f9f9f9;
+    }
+
+    .header-content {
+    display: flex;
+    align-items: top;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    }
+
+    .header-text {
+    max-width: 60%;
+    height :100%;
+    }
+
+    .page-subtitle {
+    font-size: 1.2rem;
+    color: #777;
+    margin-bottom: 2rcap;
+    }
+
+    .page-title {
+    font-size: 1.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    }
 
 </style>
