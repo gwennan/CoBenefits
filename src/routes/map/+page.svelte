@@ -19,7 +19,7 @@
         SEF,
         getIconFromCobenef,
         COBENEFS_SCALE2,
-        SEF_SCALE, SE_FACTORS, SEF_CATEGORICAL, SEF_LEVEL_LABELS
+        SEF_SCALE, SE_FACTORS, SEF_CATEGORICAL, SEF_LEVEL_LABELS, type SEFactor
     } from "../../globals";
     import {Legend} from "$lib/utils";
     import {MapUK} from "$lib/components/mapUK";
@@ -51,7 +51,7 @@
     let granularity: "LSOA" | "LAD" = "LAD";
     // let granularity: "LSOA" | "LAD" = "LSOA";
 
-    let selectedSef: SEF = "EPC";
+    let selectedSef: SEFactor = "EPC";
     let fullData;
 
 
@@ -342,7 +342,6 @@
             <button id="export-button" on:click={exportMap} bind:this={exportButton}>
                 Export
             </button>
-            <div id="tooltip" class="tooltip"></div>
         </div>
 
         <div class="component column" id="control-panel">
@@ -473,7 +472,6 @@
         background-color: black;
         font-size: 10px;
         color: white;
-
     }
 
     #control-panel {
@@ -506,16 +504,6 @@
     #time .time-radio {
         /*background-color: #FFCC00;*/
         color: #333;
-    }
-
-    .tooltip {
-        position: absolute;
-        background-color: white;
-        padding: 5px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        pointer-events: none;
-        display: none;
     }
 
     /* Style the tab */
