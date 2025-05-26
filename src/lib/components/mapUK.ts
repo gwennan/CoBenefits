@@ -77,7 +77,7 @@ export class MapUK {
         this.tooltip.style.backgroundColor = "white";
         this.tooltip.style.padding = "5px";
         this.tooltip.style.border = "1px solid black";
-        this.tooltip.style.pointerEvents = "none";
+        // this.tooltip.style.pointerEvents = "none";
         this.tooltip.style.display = "none";
         this.component.append(this.tooltip);
     }
@@ -366,13 +366,12 @@ export class MapUK {
                     let cobenefValue = zone.properties.value;
 
                     this.tooltip.innerHTML = `
-                 <strong>Zone</strong>: ${name} (${this.zoneName(zone)})
+                 <strong>Zone</strong>: <a href="/location?location=${this.zoneName(zone)}">${name}</a> (${this.zoneName(zone)})
                  <br>
-<!--                 <strong>Value</strong>: ${cobenefValue.toFixed(2)}-->
                  <strong>${this.tooltipValueCb(cobenefValue)}</strong>
                  `;
-                    this.tooltip.style.left = event.point.x + 10 + 'px';
-                    this.tooltip.style.top = event.point.y + 10 + 'px';
+                    this.tooltip.style.left = event.point.x + 5 + 'px';
+                    this.tooltip.style.top = event.point.y + 5 + 'px';
                     this.tooltip.style.display = 'block';
                 } else {
                     this.tooltip.style.display = 'none';
