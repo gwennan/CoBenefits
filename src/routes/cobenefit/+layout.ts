@@ -14,6 +14,8 @@ export async function load({ data, url }) {
     //     SEFData[SE] = +SEFData[SE];
     // })
 
+    console.log("CB ", coBenefit)
+
     return {
         // data: await getTableData(getTotalPerOneCoBenefit(coBenefit)),
         // SEFData: SEFData,

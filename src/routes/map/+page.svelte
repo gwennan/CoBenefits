@@ -380,7 +380,11 @@
                                 <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef.id}
                                        checked>
                                 <!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
-                                <label for="css">{coBenef.label}</label>
+                                <a class="link" href="/cobenefit?cobenefit={coBenef.id}">
+<!--                                    <label>-->
+                                        {coBenef.label}
+<!--                                    </label>-->
+                                </a>
                                 <br>
                             </div>
                         {/each}
@@ -547,5 +551,16 @@
 
     .icon {
         height: 2em;
+    }
+
+    .link {
+        color: black;
+        /*cursor: pointer;*/
+    }
+
+    .link:hover {
+        color: #0077cc;
+        border-bottom: 3px solid #0077cc;
+        cursor: pointer;
     }
 </style>
