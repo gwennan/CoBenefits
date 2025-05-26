@@ -95,6 +95,10 @@ export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innova
 export let SE_FACTORS = seFactors.map(f => ({ id: f.id, label: f.label, def: f.def })); 
 
 export let SEF = seFactors.map(f => f.id);
+
+export const SEF_LABEL = seFactors.map(d => ({ id: d.id, label: d.label }));
+export const SEF_DEF = seFactors.map(d => ({ id: d.id, def: d.def }));
+
 export let SEF_UNITS = seFactors.map(f => f.units ?? '?');
 export let SEF_CATEGORICAL = seFactors
                                 .filter(f => f.type === 'categorical')
