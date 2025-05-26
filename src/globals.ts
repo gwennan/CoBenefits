@@ -167,9 +167,6 @@ export const COBENEFS_RANGE = ['#71C35D', '#E11484', '#00AED9', '#EF402B', '#007
 // export const COBENEFS_SCALE =  d3.scaleOrdinal(COBENEFS, COBENEFS_RANGE);
 export const COBENEFS_SCALE = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE);
 export const COBENEFS_RANGE2 = [['#71C35D', '#244a1b', '#499437', '#7cc76a', '#bde3b4'],
-// export const COBENEFS_RANGE = ['#5DBB46', '#E11484', '#00AED9', '#EF402B', '#007DBC', '#8F1838', '#C31F33', '#CF8D2A', '#F36D25', '#48773E', '#D3A029'];
-
-// export const COBENEFS_RANGE2 =[['#007DBC', '#004366', '#0087cc', '#33baff',  '#99dcff'],
     ['#E11484', '#5d0836', '#bb106d', '#ee43a0', '#f6a1cf'],
     ['#00AED9', '#005166', '#00a3cc', '#33d6ff', '#99eaff'],
     ['#EF402B', '#5e1007', '#bd210e', '#f05441', '#f7a9a0'],
@@ -181,6 +178,19 @@ export const COBENEFS_RANGE2 = [['#71C35D', '#244a1b', '#499437', '#7cc76a', '#b
     ['#48773E', '#284322', '#518645', '#84b978', '#c1dcbb'],
     ['#D3A029', '#554010', '#aa8121', '#ddb454', '#eed9a9']];
 export const COBENEFS_SCALE2 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE2);
+
+export const COBENEFS_RANGE3 = [['#00718E', '#0098AC', '#009DEB', '#0056A2'],
+    ['#AF2164', '#E84086', '#FF057C', '#DC0FB3'],
+    ['#2CB8B2', '#00B3D0', '#00CAFF', '#0084CC'],
+    ['#FF6E3F', '#C3603C', '#BE2742', '#FE1B21'],
+    ['#11364F', '#2F255B', '#002172', '#2656A5'],
+    ['#B72511', '#9E0B3A', '#780652', '#793542'],
+    ['#E34E61', '#B71F64', '#9D002B', '#C3472A'],
+    ['#FFC307', '#FFAF40', '#FF8C39', '#F86D36'],
+    ['#FF9754', '#FF802B', '#FF554B', '#FF4000'],
+    ['#5F6742', '#769029', '#5E934F', '#357D12'],
+    ['#F77C1C', '#F7A240', '#E5BD1B', '#B48F00']];
+export const COBENEFS_SCALE3 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE3);
 
 
   

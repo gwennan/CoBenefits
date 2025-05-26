@@ -17,6 +17,7 @@
         COBENEFS_SCALE,
         type CoBenefit,
 		COBENEFS_SCALE2,
+        COBENEFS_SCALE3,
         SEF_UNITS,
         SEF_SCALE,
         DEFINITIONS,
@@ -255,7 +256,7 @@
                 marginLeft: 90,
                 marginTop: 40,
                 marginRight: 40,
-                y: {label: "Number of Datazoness"},
+                y: {label: "Number of Datazoness", grid: true},
                 x: {label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "15px"},
                 marks: [
@@ -265,11 +266,10 @@
                         tip: true,
                         fillOpacity: 0.5,
                         stroke: COBENEFS_SCALE2(coBenefit)[0],
-                        strokeWidth: 3
+                        strokeWidth: 2
                     })),
                     Plot.axisY({anchor: "left", label: 'Number of datazones',  labelArrow:'none', labelAnchor: "center"}),
-                    Plot.ruleX([0],{stroke: "#333", strokeWidth: 0.75}),
-                    //Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
+                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
                 ]
             })
         );
@@ -307,9 +307,9 @@
                         //ry1: 5,
                         insetLeft: 15,
                         insetRight: 15,
-                        // title: d => `Interval: ${d.time.replace(/^Y/, '').replace('_', '-')}\nTotal: £${'y'} billion`
                     })),
                     Plot.axisY({anchor: "left", grid: true, label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"}),
+                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75})
                 ]
             })
         );
@@ -395,7 +395,7 @@
                     marginLeft: 70,
                     marginBottom: 60,
                     marginRight: 20,
-                    marginTop: 20,
+                    marginTop: 30,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"},
@@ -408,10 +408,10 @@
                                     : d.SE), // multiply to get appropraite percentage value 
                             y: "total",
                             //stroke: COBENEFS_SCALE(coBenefit),
-                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
-                                : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
-                                : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
-                                : COBENEFS_SCALE2(coBenefit)[4],
+                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE3(coBenefit)[0]
+                                : d.LAD.startsWith("N") ? COBENEFS_SCALE3(coBenefit)[1]
+                                : d.LAD.startsWith("E") ? COBENEFS_SCALE3(coBenefit)[2]
+                                : COBENEFS_SCALE3(coBenefit)[3],
                             r: 2,
                             fillOpacity: 1
                         }),
@@ -637,12 +637,12 @@
                     <span>The scatter plots are shaded by nation.</span>
 
                     <ul class="legend-list">
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[1]}"></span>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}"></span>
                             Scotland</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[2]}"></span>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}"></span>
                             Northern Ireland</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[3]}"></span>England</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE2(coBenefit)[4]}"></span>Wales</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[2]}"></span>England</li>
+                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[3]}"></span>Wales</li>
                     </ul>
                     
                 </div>

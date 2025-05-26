@@ -210,17 +210,15 @@
         const plot = Plot.plot({
             height: height / 1.6,
             ...MARGINS,
-            x: {label: "Cobenefit (millions £)"},
-            y: {label: "Frequency of Datazones (Normalized)"},
+            marginBottom: 40,
+            marginTop: 40,
+            style: {fontSize: "15px"},
+            y: {grid:true},
             marks: [
-
-                // Remove too large values otherwise plot is unreadable
-                // Plot.areaY(filtered, Plot.binX({y: "proportion"}, {
                     Plot.areaY(filtered, Plot.binX({y: (a, bin) => {
                                     return a.length / filtered.length / (bin.x2 - bin.x1);
                                 }}, {
                     x: "total",
-                    tip: true,
                     fill: AVERAGE_COLOR,
                     stroke: AVERAGE_COLOR,
                     fillOpacity: 0.3,
@@ -236,6 +234,9 @@
                     fillOpacity: 0.3,
                     strokeWidth: 2
                 })),
+                Plot.ruleX([0],{stroke: "#1E1E1E", strokeWidth: 1}),
+                Plot.axisY({label: "Frequency of Datazones (Normalized)", labelAnchor: "top", labelArrow: false}),
+                Plot.axisX({label: "Cobenefit (millions £)", labelAnchor: "center", labelArrow: false}),
             ]
         });
         return plot.outerHTML;
@@ -417,7 +418,7 @@
                         tipoffset: 10,
                         fillOpacity: 0.8
                     })),
-                    Plot.axisY({label: 'Total Co-Benefit (£million)', labelAnchor: "center"}),
+                    Plot.axisY({label: 'Total Co-Benefit (£million)', labelAnchor: "center", labelArrow: false}),
                     Plot.axisX({label: 'Co-Benefit Type', tickRotate: 25, labelAnchor: "center", labelArrow: false}),
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
@@ -882,28 +883,28 @@
             })
         })
 
+        console.log("dataCBs", dataCBs)
+
         let plotPerCB = Plot.plot({
             height: height,
             width: 1000,
             marginRight: 0,
-            marginTop: 40,
+            marginTop: 20,
             marginLeft: 80,
             marginBottom: 80,
             insetTop: 30,
-            style: {fontSize: "18px"},
-            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow: false},
+            style: {fontSize: "20px"},
+            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow: false, title: ([d]) => `Cobenefit ${d.cobenefit}`},
             x: {
                 label: 'Years',
-                tickFormat: d => d.replace(/^Y/, '').split("_")[1],
+                tickFormat: d => d.replace(/^Y/, '').replace("_","-")
             },
-            // x: {tickSize: 0, label: null, ticks: []},
             color: {legend: false, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
                 Plot.areaY(dataCBs, Plot.groupX({y: "mean"},
                     {
                         x: "time",
                         y: "value",
-                        tip: true,
                         fill: "cobenefit",
                         curve: "basis",
                         order: [
@@ -918,11 +919,15 @@
                             "Physical activity",
                             "Diet change",
                             "Hassle costs"],
-                        // offset:
+                            tip: {
+                                format: {
+                                y: (d) => `${(+d).toFixed(3)}`,
+                                x: (d) => `${d.replace(/^Y/, '').replace("_", "-")}`,
+                                fill: (d) => `${d}`,
+                                }
+                            }
                     })),
-                //Plot.ruleY([0], {strokeWidth: 8, stroke: 'white', opacity: 1, strokeLinecap: 'round'}),
                 Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 0.5, strokeLinecap: 'round'}),
-
             ]
         })
 
@@ -1110,7 +1115,7 @@
                                 <span class="waffle-caption">Per capita costs</span>
                             {/if}
                         </div>
-                        <span class="waffle-caption"><i>Gray bars indicate values for the comparator</i></span>
+                        <span class="waffle-caption"><i>Grey bars indicate average value for <span class="nation-label">{compareTo}</span></i></span>
 
                     </div>
                 </div>
@@ -1158,6 +1163,7 @@
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
                     received across all local
                     authorities in <span class="nation-label">{compareTo}</span> (grey).</p>
+                <br>
                 {@html renderDistributionPlot(totalCBAllZones, oneLADData)}
 
                 <h3 class="component-title">11 types of co-benefit values (vs. <span
@@ -1254,8 +1260,7 @@
                 <div>
                     <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
                     <p class="description" style="margin-bottom:5px">Total gains and losses are shown at five-year
-                        intervals for each co-benefit. The curve between points is smoothed to show the general trends.
-                        *Hover over areas for more information.</p>
+                        intervals for each co-benefit. The curve between points is smoothed to show the general trends.</p>
 
                     <!-- Legend -->
                     <div id="main-legend" class="legend-box" style="margin-bottom: 5px;">
@@ -1298,14 +1303,14 @@
 
                     </div>
 
-                    <!-- Disclaimer -->
-                    <div id="main-disclaimer" class="disclaimer-box">
-                        <p style="margin: 0;"><strong>Some areas too small:</strong> Due to the nature of the
-                            co-benefits some values are very small in comparison
-                            to larger values so therefore are not visable on this plot. </p>
-                    </div>
                 </div>
                 <div class="plot side" bind:this={CBOverTimePerCBPLot}></div>
+                <!-- Disclaimer -->
+                <div id="main-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0;"><strong>Some areas too small:</strong> Due to the nature of the
+                        co-benefits some values are very small in comparison
+                        to larger values so therefore are not visable on this plot. </p>
+                </div>
             </div>
         </div>
 
