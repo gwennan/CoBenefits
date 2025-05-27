@@ -9,18 +9,22 @@
         SEF_LABEL,
         SEF_DEF,
         SEF_CATEGORICAL,
+        COBENEFS,
+        CBS
     } from "../../globals";
 
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
-    import {getSEFData, getTableData, getTotalPerOneCoBenefit} from "$lib/duckdb";
+    import {getSEFData, getTableData, getSEFbyCobenData, getSefForOneCoBenefit} from "$lib/duckdb";
 
     let element: HTMLElement;
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
+    let plotSmallMult: HTMLElement;
     let plot: HTMLElement;
     let height = 400;
     let fullData;
+    let SEFData;
     let dataLoaded = false;
     let averageValue;
     let maxValue;
@@ -94,8 +98,10 @@
 
 
     async function loadData() {
-        fullData = await getTableData(getSEFData(SEF))
-        console.log(fullData)
+        fullData = await getTableData(getSEFData(SEF));
+        console.log("totals", fullData);
+        SEFData = await getTableData(getSEFbyCobenData(SEF));
+        console.log("by cobens", SEFData);
         averageValue = (
             d3.mean(fullData, d => d.val) ?? 0).toLocaleString('en-US', 
             {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -112,6 +118,10 @@
         minValue = (
             fullData[minIndex]?.val ?? 0).toLocaleString('en-US', {
                 minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+        CBS.forEach(CB => {
+            SEFData[CB] = +SEFData[CB];
+        })
 
         dataLoaded = true;
     }
@@ -162,11 +172,37 @@
                         fillOpacity: 0.5,
                         tip: true,
                     }),
-                    // Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
                 ]
             })
         );
     }
+
+    function renderSmallMultPlot() {
+        CBS.forEach(CB => {
+            let plot;
+            plot = Plot.plot({
+                height: height*1.5,
+                width: height*2,
+                marginLeft: 60,
+                marginTop: 10,
+                marginRight: 10,
+                marginBottom: 40,
+                x: {label:null},
+                y: {label:null},
+                style: {fontSize: "16px"},
+                marks: [
+                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
+                        x: "val",
+                        y: "total",
+                        fill: "black",
+                        fillOpacity: 0.5,
+                        tip: true,
+                    }),
+                ]
+            });
+        plotSmallMult[CB]?.append()
+    })
+}
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
@@ -175,6 +211,7 @@
 
             renderDistPlot();
             renderDotPlot();
+            renderSmallMultPlot();
         }
     }
 
@@ -217,6 +254,16 @@
     </div>
   {/if}
 
+  <div class="section">
+  <div class="radio-set">
+    Select which level of data you'd like to view:<br/>
+    <input type="radio" name="compare" value="LSOA" checked>
+    <label class="nation-label" for="html">Data Zone (LSOA)</label><br>
+    <input type="radio" name="compare" value="LAD">
+    <label class="nation-label" for="html">Local Authority (LAD)</label><br>
+</div>
+</div>
+
     <div class="section">
         <div id="overview">
             <div class="section-header">
@@ -238,6 +285,34 @@
 </div>
 </div>
 </div>
+
+<div class="section">
+    <div id="compare">
+        <div class="section-header">
+            <p class="section-subtitle">Comparison</p>
+        </div>
+        <div id="vis-block">
+            <div class="component column">
+                <h3 class="component-title">{sefLabel} against co-benefit values (£, billion)</h3>
+                <p class="description">By Co-Benefit. </p>
+    <div class="plot" bind:this={plotSmallMult}></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="multiple-comp">
+    <div id="multiple-plots">
+        {#each COBENEFS as CB}
+            <div class="plot-container">                         
+                <h3 class="component-chart-title">{CB.label}</h3>
+                <p class="component-chart-caption"> </p>
+                  <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
+            </div>
+        {/each}
+    </div>
+</div>
+
 </div>
 
 <style>
@@ -299,5 +374,17 @@
         padding-left: 1%;
         padding-right: 1%;
         padding-bottom: 1%;
+    }
+
+    .radio-set {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.nation-label {
+        /*color: #90bcca;*/
+        color: #777;
     }
 </style>

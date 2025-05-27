@@ -19,6 +19,7 @@ import seFactors from '$lib/definitions/se-factor.json'
 
 // export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
 
+export let CBS = coBenefits.map(f => f.id);
 export const COBENEFS = coBenefits.map(d => ({ id: d.id, label: d.label }));
 export const DEFINITIONS = coBenefits.map(d => ({ id: d.id, def: d.def }));
 
