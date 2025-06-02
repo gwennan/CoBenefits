@@ -8,23 +8,28 @@
     import {
         SEF_LABEL,
         SEF_DEF,
+        SEF_UNITS,
+        SEF_DESCR,
         SEF_CATEGORICAL,
         COBENEFS,
-        CBS
+        type CoBenefit,
+        CBS,
+        CO_BEN
     } from "../../globals";
 
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
-    import {getSEFData, getTableData, getSEFbyCobenData, getSefForOneCoBenefit} from "$lib/duckdb";
+    import {getSEFData, getTableData, getSEFbyCobenData, getSefForOneCoBenefit, getAggregationPerCapitaPerBenefit} from "$lib/duckdb";
 
     let element: HTMLElement;
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
-    let plotSmallMult: HTMLElement;
+    let plotSmallMult: Record<string, HTMLElement> = {};
     let plot: HTMLElement;
     let height = 400;
     let fullData;
     let SEFData;
+    let PCData;
     let dataLoaded = false;
     let averageValue;
     let maxValue;
@@ -41,6 +46,8 @@
     console.log("SEF ", SEF)
     const sefLabel = SEF_LABEL.find(d => d.id === SEF)?.label ?? SEF;
     const sefDef = SEF_DEF.find(d => d.id === SEF)?.def ?? SEF;
+    const sefUnits = SEF_UNITS.find(d => d.id === SEF)?.units ?? SEF;
+    const sefdescr = SEF_DESCR.find(d => d.id === SEF)?.description?? SEF;
 
     let map: MapUK;
 
@@ -79,6 +86,8 @@
         }
     }
 
+    
+
 
     onMount(() => {
         // map = new MapUK(LADAveragedData, "LAD", mapDiv, "total");
@@ -90,6 +99,7 @@
 
         handleScroll(); // initialize
         return () => window.removeEventListener('scroll', handleScroll);
+
     })
 
     onDestroy(() => {
@@ -102,6 +112,8 @@
         console.log("totals", fullData);
         SEFData = await getTableData(getSEFbyCobenData(SEF));
         console.log("by cobens", SEFData);
+        PCData = await getTableData(getAggregationPerCapitaPerBenefit());
+        console.log("per_capita_data", PCData);
         averageValue = (
             d3.mean(fullData, d => d.val) ?? 0).toLocaleString('en-US', 
             {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -122,6 +134,7 @@
         CBS.forEach(CB => {
             SEFData[CB] = +SEFData[CB];
         })
+        
 
         dataLoaded = true;
     }
@@ -132,21 +145,22 @@
                 height: height / 2,
                 width: height*2,
                 marginLeft: 60,
-                marginTop: 10,
+                marginTop: 30,
                 marginRight: 10,
-                marginBottom: 40,
+                marginBottom: 50,
                 x: {label:null},
-                y: {label:null},
+                y: {label:'No. of datazones/LADs', labelArrow: false},
                 style: {fontSize: "16px"},
                 marks: [
-                    Plot.areaY(fullData, Plot.binX({y: "count"}, {
-                        x: "val",
+                    Plot.rectY(fullData, Plot.binX({y: "count"}, {
+                        x: {value:"val", thresholds: 20},
                         fill: "black",
                         fillOpacity: 0.5,
                         stroke: "black",
                         srokeWidth: 4,
                     })),
                     // Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
+                    Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
                 ]
             })
         );
@@ -157,27 +171,32 @@
             Plot.plot({
                 height: height*1.5,
                 width: height*2,
-                marginLeft: 60,
-                marginTop: 10,
+                marginLeft: 80,
+                marginTop: 40,
                 marginRight: 10,
-                marginBottom: 40,
-                x: {label:null},
-                y: {label:null},
+                marginBottom: 60,
+                x: {grid:false},
+                y: {grid:true},
                 style: {fontSize: "16px"},
                 marks: [
                     Plot.dot(fullData, {
                         x: "val",
-                        y: "total",
-                        fill: "black",
-                        fillOpacity: 0.5,
+                        y: d => d.total_per_capita*1000,
+                        fill: d => d.total_per_capita<0 ? '#BD210E'
+                                : '#242424',
+                        r: 0.9,
+                        fillOpacity: 0.75,
                         tip: true,
                     }),
+                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
+                    Plot.axisY({label: "Per capita co-benefit value (£, thousand)",  labelArrow:false, labelAnchor: "center"}),
+                    Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
                 ]
             })
         );
     }
 
-    function renderSmallMultPlot() {
+    function renderplotSmallMult() {
         CBS.forEach(CB => {
             let plot;
             plot = Plot.plot({
@@ -206,12 +225,15 @@
 
     $: {
         plot?.firstChild?.remove(); // remove old chart, if any
+        Object.values(plotSmallMult).forEach(multPlot => {
+            multPlot.firstChild?.remove();
+        })
 
         if (height && dataLoaded) {
 
             renderDistPlot();
             renderDotPlot();
-            renderSmallMultPlot();
+            renderplotSmallMult();
         }
     }
 
@@ -227,7 +249,7 @@
           <div class="header-text">
             <p class="page-subtitle">SEF Report</p>
             <div class="title-container">
-              <h1 class="page-title">{sefLabel}</h1>
+              <h1 class="page-title">{sefdescr}</h1>
               <p class="definition">{sefDef}</p>
             </div>
           </div>
@@ -237,9 +259,9 @@
           </div>
 
           <div class="header-stats">
-            <p class="definition">Max Value: {maxValue} [{maxLookupValue}]</p>
-            <p class="definition">Average Value: {averageValue}</p>
-            <p class="definition">Min Value: {minValue} [{minLookupValue}]</p>
+            <p class="definition">Max value: <strong>{maxValue} ({maxLookupValue})</strong></p>
+            <p class="definition">Average value: <strong>{averageValue}</strong></p>
+            <p class="definition">Min value: <strong>{minValue} in ({minLookupValue})</strong></p>
           </div>
         </div>
       </div>
@@ -271,8 +293,8 @@
             </div>
             <div id="vis-block">
                 <div class="component column">
-                    <h3 class="component-title">{sefLabel} against total co-benefit values (£, billion)</h3>
-                    <p class="description">Each point represent a data zone. </p>
+                    <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
+                    <p class="description">Each point in the chart below represents a UK data zone (LSOA). </p>
         <div class="plot" bind:this={plotDot}></div>
     </div>
     <div class="component column">
@@ -293,7 +315,7 @@
         </div>
         <div id="vis-block">
             <div class="component column">
-                <h3 class="component-title">{sefLabel} against co-benefit values (£, billion)</h3>
+                <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
                 <p class="description">By Co-Benefit. </p>
     <div class="plot" bind:this={plotSmallMult}></div>
 </div>
@@ -303,10 +325,13 @@
 
 <div id="multiple-comp">
     <div id="multiple-plots">
-        {#each COBENEFS as CB}
+        {#each CO_BEN as CB}
             <div class="plot-container">                         
                 <h3 class="component-chart-title">{CB.label}</h3>
                 <p class="component-chart-caption"> </p>
+                {#if plotSmallMult[CB.id] === undefined}
+                    {console.log("Missing key in plotSmallMult:", CB.id)}
+                {/if}
                   <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
             </div>
         {/each}
@@ -337,7 +362,7 @@
     text-align: left;
     flex: 1;
     margin-left: auto;        /* pushes it to the far right */
-    margin-top: 2rem;         /* moves it down slightly */
+    margin-top: 2.5rem;         /* moves it down slightly */
     padding-right: 0rem;  
     padding-left: 5rem;    /* adds space from the right edge */
     }

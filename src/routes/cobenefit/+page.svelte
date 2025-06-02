@@ -152,6 +152,7 @@
         // console.log("coben type", coBenefit);
 
         LADAveragedData = await getTableData(getSefForOneCoBenefitAveragedByLAD(coBenefit))
+        console.log("data", LADAveragedData);
         totalBenefits = await getTableData(getTotalAggregation())
         totalBenefitsValue = totalBenefits[0].total_value
 
@@ -357,7 +358,7 @@
                             tickFormat: d => labelLookup?.[d] ?? d,
                             tickRotate: sef === "Typology" ? -20 : 0
                         },
-                    y: {label: '£, billion',  labelArrow:'none'},
+                    y: {label: '£, thousand',  labelArrow:'none'},
                     color: {legend: true},
                     marks: [
                         //Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
@@ -375,7 +376,7 @@
                         Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
                             //fx: "SE",
                             x: "SE",
-                            y: "total",
+                            y: d => d.total*1000,
                             stroke: COBENEFS_SCALE2(coBenefit)[0],
                             fill: COBENEFS_SCALE2(coBenefit)[0],
                             r: 2,
@@ -399,14 +400,14 @@
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
                     // x: {grid: true, label: sef},
                     x: {label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"},
-                    y: {label: '£, billion', labelArrow:false},
+                    y: {label: '£, thousand', labelArrow:false},
                     color: {legend: true},
                     marks: [
                         Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
                             x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
                                     ? d.SE * 100
                                     : d.SE), // multiply to get appropraite percentage value 
-                            y: "total",
+                            y: d => d.total*1000,
                             //stroke: COBENEFS_SCALE(coBenefit),
                             fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE3(coBenefit)[0]
                                 : d.LAD.startsWith("N") ? COBENEFS_SCALE3(coBenefit)[1]
@@ -621,7 +622,7 @@
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
                 <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
-                <p class="explanation">Each scatterplot shows the distribution of benefits or costs depending on a given socio-economic factor.</p> 
+                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p> 
                 <br>
 
                 <!-- Disclaimer -->
@@ -634,9 +635,10 @@
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter plots are shaded by nation.</span>
-
+                    <span>The scatter plots are shaded by nation. </span>
+                    
                     <ul class="legend-list">
+                        <br>
                         <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}"></span>
                             Scotland</li>
                         <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}"></span>
@@ -901,13 +903,14 @@
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
+    font-size: 1rem;
 }
 
 .legend-color {
     display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
     border-radius: 2px;
 }
 
