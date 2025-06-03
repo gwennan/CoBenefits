@@ -8,7 +8,7 @@
     import {
         SEF_LABEL,
         SEF_DEF,
-        SEF_UNITS,
+        SEF_SHORT_UNITS,
         SEF_DESCR,
         SEF_CATEGORICAL,
         COBENEFS,
@@ -20,6 +20,9 @@
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {getSEFData, getTableData, getSEFbyCobenData, getSefForOneCoBenefit, getAggregationPerCapitaPerBenefit} from "$lib/duckdb";
+
+    import per_capita from '$lib/icons/per_capita.png';
+    import total from '$lib/icons/total.png';
 
     let element: HTMLElement;
     let plotDist: HTMLElement;
@@ -46,8 +49,8 @@
     console.log("SEF ", SEF)
     const sefLabel = SEF_LABEL.find(d => d.id === SEF)?.label ?? SEF;
     const sefDef = SEF_DEF.find(d => d.id === SEF)?.def ?? SEF;
-    const sefUnits = SEF_UNITS.find(d => d.id === SEF)?.units ?? SEF;
     const sefdescr = SEF_DESCR.find(d => d.id === SEF)?.description?? SEF;
+    const sefShortUnits = SEF_SHORT_UNITS.find(d => d.id === SEF)?.short_units ?? SEF;
 
     let map: MapUK;
 
@@ -140,13 +143,19 @@
     }
 
     function renderDistPlot() {
+        const average = d3.mean(fullData, d => d.val) ?? 0;
+        const maxY = d3.max(
+                d3.bin().thresholds(20).value(d => d.val)(fullData),
+                bin => bin.length
+                );
+
         plotDist?.append(
             Plot.plot({
-                height: height / 2,
-                width: height*2,
+                height: height / 1.9,
+                width: height*1.7,
                 marginLeft: 60,
                 marginTop: 30,
-                marginRight: 10,
+                marginRight: 20,
                 marginBottom: 50,
                 x: {label:null},
                 y: {label:'No. of datazones/LADs', labelArrow: false},
@@ -157,9 +166,21 @@
                         fill: "black",
                         fillOpacity: 0.5,
                         stroke: "black",
-                        srokeWidth: 4,
+                        srokeWidth: 5,
                     })),
-                    // Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
+                    Plot.ruleX([average], {
+                                stroke: "#BD210E",
+                                strokeWidth: 4,
+                                channels: {average: {value:average, label: "Average"}},
+                                tip: {format: {average:true, x:false}},
+                            }),
+                    Plot.dot(fullData, {
+                        x: {value:average, thresholds: 20},
+                        y:maxY + 0.1*maxY,
+                        r:5,
+                        fill: "#BD210E"
+                        
+                    }),
                     Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
                 ]
             })
@@ -171,14 +192,16 @@
             Plot.plot({
                 height: height*1.5,
                 width: height*2,
-                marginLeft: 80,
-                marginTop: 40,
+                marginLeft: 60,
+                marginTop: 60,
                 marginRight: 10,
                 marginBottom: 60,
                 x: {grid:false},
                 y: {grid:true},
                 style: {fontSize: "16px"},
                 marks: [
+                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 1.25}),
+                    Plot.ruleX([0],{stroke: "#333", strokeWidth: 0.75}),
                     Plot.dot(fullData, {
                         x: "val",
                         y: d => d.total_per_capita*1000,
@@ -186,9 +209,14 @@
                                 : '#242424',
                         r: 0.9,
                         fillOpacity: 0.75,
-                        tip: true,
+                        channels: {
+                            location: {value: "Lookup_Value", label: "Location"},
+                            sef: {value: "val", label: "SEF Value"},
+                            value: {value:d => d.total_per_capita*1000, label: "Per Capita Co-Benefit Value"},
+                        },
+                        tip: {format: {location:true, sef:true, value:true, x:false, y:false}},
                     }),
-                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
+                    
                     Plot.axisY({label: "Per capita co-benefit value (£, thousand)",  labelArrow:false, labelAnchor: "center"}),
                     Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
                 ]
@@ -221,6 +249,10 @@
             });
         plotSmallMult[CB]?.append()
     })
+}
+
+function formatValue(value, unit) {
+  return unit === "£" ? `${unit}${value}` : `${value} ${unit}`;
 }
 
     $: {
@@ -259,9 +291,9 @@
           </div>
 
           <div class="header-stats">
-            <p class="definition">Max value: <strong>{maxValue} ({maxLookupValue})</strong></p>
-            <p class="definition">Average value: <strong>{averageValue}</strong></p>
-            <p class="definition">Min value: <strong>{minValue} in ({minLookupValue})</strong></p>
+            <p class="definition-stat">Max value: <strong>{formatValue(maxValue, sefShortUnits)}</strong> ({maxLookupValue})</p>
+            <p class="definition-stat">Average value: <strong style="color: #BD210E;">{formatValue(averageValue, sefShortUnits)}</strong></p>
+            <p class="definition-stat">Min value: <strong>{formatValue(minValue, sefShortUnits)}</strong> ({minLookupValue})</p>
           </div>
         </div>
       </div>
@@ -295,7 +327,13 @@
                 <div class="component column">
                     <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
                     <p class="description">Each point in the chart below represents a UK data zone (LSOA). </p>
-        <div class="plot" bind:this={plotDot}></div>
+                    <div class="aggregation-icon-container">
+                        <div class="tooltip-wrapper">
+                          <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                          <span class="tooltip-text">This chart uses per capita values. i.e. shows the cost/benefit per person in each AREA.</span>
+                        </div>
+                      </div>
+        <div class="plot-dot" bind:this={plotDot}></div>
     </div>
     <div class="component column">
         <h3 class="component-title">{sefLabel} </h3>
@@ -345,35 +383,51 @@
     padding: 2% 6%;
     background-color: #f9f9f9;
     }
+    .section-subtitle {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    margin-top: 0px;
+}
 
     .header-content {
     display: flex;
     align-items: top;
     justify-content: space-between;
     flex-wrap: wrap;
+    flex-direction: row;  /* or column, depending on your layout */
+    gap: 2rem;            /* adjust spacing between children */
+    align-items: flex-start;
     }
 
     .header-text {
-    max-width: 60%;
+    max-width: 30%;
     height :100%;
     }
 
     .header-vis {
     text-align: left;
     flex: 1;
-    margin-left: auto;        /* pushes it to the far right */
-    margin-top: 2.5rem;         /* moves it down slightly */
+    margin-left: 0rem;        /* pushes it to the far right */
+    margin-top: 1rem;         /* moves it down slightly */
     padding-right: 0rem;  
-    padding-left: 5rem;    /* adds space from the right edge */
+    padding-left: 0rem;    /* adds space from the right edge */
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
+    max-width: 40%;
     }
 
     .header-stats {
     text-align: left;
     flex: 1;
-    margin-left: auto;        /* pushes it to the far right */
+    margin-left: 0rem;        /* pushes it to the far right */
     margin-top: 2rem;         /* moves it down slightly */
     padding-right: 0rem;  
-    padding-left: 5rem;    /* adds space from the right edge */
+    padding-left: 0rem;    /* adds space from the right edge */
+    line-height: 2;
     }
 
     .page-subtitle {
@@ -402,7 +456,7 @@
     }
 
     .radio-set {
-    margin: 10px 0;
+    margin: 10px 10px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -412,4 +466,64 @@
         /*color: #90bcca;*/
         color: #777;
     }
+
+.aggregation-icon-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 99%; 
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.aggregation-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  position: absolute;
+  top: 35px;
+  right: -60px;
+  left: -60px;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  max-width: 200px;          /* control width */
+  white-space: normal;       /* allow wrapping */
+  word-break: break-word;    /* instead of word-wrap */
+  display: inline-block;     /* important for width + wrapping */
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.plot {
+  margin-top: 0px; /* pull it upward */
+}
+
+.plot-dot {
+  margin-top: -80px; /* pull it upward */
+}
+
+.definition-stat {
+  font-size: 18px;
+  font-weight: semibold;
+  color: #555;
+  max-width: 800px;
+  margin: 0;
+}
 </style>

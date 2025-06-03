@@ -38,6 +38,8 @@
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
 
+    import total from '$lib/icons/total.png';
+
     let element: HTMLElement
     let plotDist: HTMLElement
     let plot: HTMLElement
@@ -578,7 +580,13 @@
                         <!-- <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p> -->
                         <p class="description">Each bar shows the total benefits or costs obtained in that period. </p>
                     {/if}
-                        <div class="plot" bind:this={plot}></div>
+                    <div class="aggregation-icon-container">
+                        <div class="tooltip-wrapper">
+                          <img class="aggregation-icon" src="{total}" alt="icon" />
+                          <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                        </div>
+                      </div>
+                        <div class="plot-bar" bind:this={plot}></div>
                     <!-- <p class="explanation">Each bar shows the total benefits obtain within the given period.</p> -->
 
                     <br>
@@ -954,6 +962,54 @@
     max-width: 550px;
     font-size: 1rem;
     line-height: 1.25rem;
+}
+
+.aggregation-icon-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 99%; 
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.aggregation-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  position: absolute;
+  top: 35px;
+  right: -60px;
+  left: -60px;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  max-width: 200px;          /* control width */
+  white-space: normal;       /* allow wrapping */
+  word-break: break-word;    /* instead of word-wrap */
+  display: inline-block;     /* important for width + wrapping */
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.plot-bar {
+  margin-top: -60px; /* pull it upward */
 }
 
 </style>

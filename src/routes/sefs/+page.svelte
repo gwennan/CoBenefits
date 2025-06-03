@@ -131,7 +131,7 @@
         font-size: 1.2em;
     }
     .sef-link:hover {
-    color: #ECECEC;
+    color: #F8F8F8;
     background: #404040
 }
     .heading-container {
