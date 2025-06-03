@@ -28,6 +28,7 @@
     let element: HTMLElement;
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
+    let plotMultDot: HTMLElement;
     let plotSmallMult: Record<string, HTMLElement> = {};
     let plot: HTMLElement;
     let height = 400;
@@ -227,6 +228,31 @@
     }
 
     function renderplotSmallMult() {
+        plotMultDot.append(
+        Plot.plot({
+                height: height*1.5,
+                width: height*2,
+                marginLeft: 60,
+                marginTop: 10,
+                marginRight: 10,
+                marginBottom: 40,
+                x: {label:null},
+                y: {label:null},
+                style: {fontSize: "16px"},
+                marks: [
+                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == "Noise"), {
+                        x: "val",
+                        y: "total",
+                        fill: "black",
+                        fillOpacity: 0.5,
+                        tip: true,
+                    }),
+                ]
+            })
+        );
+    }
+
+function renderMultPlotDot() {
         CBS.forEach(CB => {
             let plot;
             plot = Plot.plot({
@@ -240,7 +266,7 @@
                 y: {label:null},
                 style: {fontSize: "16px"},
                 marks: [
-                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == "noise"), {
+                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
                         x: "val",
                         y: "total",
                         fill: "black",
@@ -357,7 +383,7 @@ function formatValue(value, unit) {
             <div class="component column">
                 <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
                 <p class="description">By Co-Benefit. </p>
-    <div class="plot" bind:this={plotSmallMult}></div>
+    <div class="plot" bind:this={plotMultDot}></div>
 </div>
 </div>
 </div>
