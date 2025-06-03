@@ -102,6 +102,7 @@ export const SEF_LABEL = seFactors.map(d => ({ id: d.id, label: d.label }));
 export const SEF_DEF = seFactors.map(d => ({ id: d.id, def: d.def }));
 export const SEF_DESCR = seFactors.map(d => ({ id: d.id, description: d.description }));
 export const SEF_SHORT_UNITS = seFactors.map(d => ({ id: d.id, short_units: d.short_units }));
+export const SEF_UNITS2 = seFactors.map(d => ({ id: d.id, units: d.units }));
 
 export let SEF_UNITS = seFactors.map(f => f.units ?? '?');
 export let SEF_CATEGORICAL = seFactors

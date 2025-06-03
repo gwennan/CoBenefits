@@ -123,7 +123,7 @@ export function getSEFData(sef: SEFactor) {
     const valExpression = multiplyBy100 ? `(${sef} * 100)` : sef;
   
     const query = `
-      SELECT ${valExpression} as val, total, total/Households as total_per_capita, Lookup_Value
+      SELECT ${valExpression} as val, total, total/population as total_per_capita, Lookup_Value
       FROM ${DB_TABLE_NAME}
       WHERE co_benefit_type = 'Total'
     `;

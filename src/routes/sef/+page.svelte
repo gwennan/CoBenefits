@@ -14,7 +14,8 @@
         COBENEFS,
         type CoBenefit,
         CBS,
-        CO_BEN
+        CO_BEN,
+        SEF_UNITS2 
     } from "../../globals";
 
 
@@ -51,6 +52,7 @@
     const sefDef = SEF_DEF.find(d => d.id === SEF)?.def ?? SEF;
     const sefdescr = SEF_DESCR.find(d => d.id === SEF)?.description?? SEF;
     const sefShortUnits = SEF_SHORT_UNITS.find(d => d.id === SEF)?.short_units ?? SEF;
+    const sefUnits = SEF_UNITS2.find(d => d.id === SEF)?.units ?? SEF;
 
     let map: MapUK;
 
@@ -157,7 +159,7 @@
                 marginTop: 30,
                 marginRight: 20,
                 marginBottom: 50,
-                x: {label:null},
+                x: {label: `${sefUnits}`},
                 y: {label:'No. of datazones/LADs', labelArrow: false},
                 style: {fontSize: "16px"},
                 marks: [
@@ -181,7 +183,7 @@
                         fill: "#BD210E"
                         
                     }),
-                    Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
+                    Plot.axisX({label: `${sefUnits}`,  labelArrow:false, labelAnchor: "center"}),
                 ]
             })
         );
@@ -190,7 +192,7 @@
     function renderDotPlot() {
         plotDot?.append(
             Plot.plot({
-                height: height*1.5,
+                height: height*2,
                 width: height*2,
                 marginLeft: 60,
                 marginTop: 60,
@@ -218,7 +220,7 @@
                     }),
                     
                     Plot.axisY({label: "Per capita co-benefit value (£, thousand)",  labelArrow:false, labelAnchor: "center"}),
-                    Plot.axisX({label: "{sefdef}",  labelArrow:false, labelAnchor: "center"}),
+                    Plot.axisX({label: `${sefUnits}`,  labelArrow:false, labelAnchor: "center"}),
                 ]
             })
         );
@@ -238,7 +240,7 @@
                 y: {label:null},
                 style: {fontSize: "16px"},
                 marks: [
-                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
+                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == "noise"), {
                         x: "val",
                         y: "total",
                         fill: "black",
@@ -370,7 +372,7 @@ function formatValue(value, unit) {
                 {#if plotSmallMult[CB.id] === undefined}
                     {console.log("Missing key in plotSmallMult:", CB.id)}
                 {/if}
-                  <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
+                  <div class="plot" bind:this={plotSmallMult[CB]}></div>
             </div>
         {/each}
     </div>
