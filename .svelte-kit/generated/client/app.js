@@ -20,22 +20,25 @@ export const nodes = [
 	() => import('./nodes/16'),
 	() => import('./nodes/17'),
 	() => import('./nodes/18'),
-	() => import('./nodes/19')
+	() => import('./nodes/19'),
+	() => import('./nodes/20'),
+	() => import('./nodes/21')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
-		"/": [10],
-		"/about": [11,[2]],
-		"/cobenefit": [12,[3]],
-		"/contact": [13],
-		"/lad": [14,[4]],
-		"/location": [15,[5]],
-		"/map": [16,[6]],
-		"/methods": [17,[7]],
-		"/overview": [18,[8]],
-		"/sef": [19,[9]]
+		"/": [11],
+		"/about": [12,[2]],
+		"/cobenefit": [13,[3]],
+		"/contact": [14],
+		"/lad": [15,[4]],
+		"/location": [16,[5]],
+		"/map": [17,[6]],
+		"/methods": [18,[7]],
+		"/overview": [19,[8]],
+		"/sefs": [21,[10]],
+		"/sef": [20,[9]]
 	};
 
 export const hooks = {

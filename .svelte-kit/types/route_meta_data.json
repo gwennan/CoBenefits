@@ -48,6 +48,12 @@
 		"src/routes/overview/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/sefs": [
+		"src/routes/sefs/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/sefs/+layout.ts",
+		"src/routes/+layout.ts"
+	],
 	"/sef": [
 		"src/routes/sef/+layout.ts",
 		"src/routes/+layout.ts",
