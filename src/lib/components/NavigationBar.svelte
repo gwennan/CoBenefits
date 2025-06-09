@@ -55,6 +55,7 @@ async function goToSection(id: string) {
                   data-sveltekit-reload
                   style="--cobenef-color: {COBENEFS_SCALE(coBenef.id)}"
                   class:selected={$page.url.searchParams.get('cobenefit') === coBenef.id}
+                  target="_blank"
                 >
                   {coBenef.label}
                 </a>
@@ -77,7 +78,7 @@ async function goToSection(id: string) {
 
       <div class="nav-item">
         <div class="nav-count">46,426</div>
-        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
+        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`} target="_blank">Data Zones</a>
       </div>
     </div>
 

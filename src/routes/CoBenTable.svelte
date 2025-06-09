@@ -73,7 +73,7 @@
         <td>
             <div class="coben-content">
               <img src={getIconFromCobenef(coBenef.co_benefit_type)} alt="Icon" class="in-table-icon" />
-              <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}">
+              <a href="{base}/cobenefit?cobenefit={coBenef.co_benefit_type}" target="_blank">
                 {getCoBenefLabel(coBenef.co_benefit_type)}
               </a>
             </div>

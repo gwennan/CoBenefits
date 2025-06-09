@@ -4,7 +4,7 @@
     import { onMount } from 'svelte';
 
   onMount(() => {
-    const hash = window.location.hash?.substring(1); // remove the `#`
+    const hash = window.location.hash?.substring(1);
     if (hash) {
       setTimeout(() => {
         const el = document.getElementById(hash);
