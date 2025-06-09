@@ -1,4 +1,4 @@
-import{s as A,d as m,b as y,i as w,B as H,p as v,D as T,c as g,q as C,g as M,e as W,E as j,h as x,j as S,H as q,r as I,F as J,A as N}from"../chunks/BevTp-kf.js";import{S as P,i as k,d as D,t as L,a as B,m as F,c as O,b as R}from"../chunks/C7e0BwVj.js";import{g as z}from"../chunks/D0QH3NT1.js";import{b}from"../chunks/BUyocZkq.js";import{N as V}from"../chunks/YlWUd1ax.js";const{document:$}=z;function G(d){let r,h=`window.MathJax = {
+import{s as A,d as m,b as y,i as w,B as H,p as v,D as T,c as g,q as C,g as M,e as W,E as j,h as x,j as S,H as q,r as I,F as J,A as N}from"../chunks/BevTp-kf.js";import{S as P,i as k,d as D,t as L,a as B,m as F,c as O,b as R}from"../chunks/C7e0BwVj.js";import{g as z}from"../chunks/D0QH3NT1.js";import{b}from"../chunks/BuDYK3tB.js";import{N as V}from"../chunks/DvHzCNfM.js";const{document:$}=z;function G(d){let r,h=`window.MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
         displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
