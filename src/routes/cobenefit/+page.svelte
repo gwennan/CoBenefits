@@ -39,6 +39,7 @@
     import NavigationBar from "$lib/components/NavigationBar.svelte";
 
     import total from '$lib/icons/total.png';
+    import per_capita from '$lib/icons/per_capita.png';
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -92,6 +93,8 @@
     let scrolledPastHeader = false;
     let currentSection = '';
     const sectionIds = ['overview', 'compare'];
+
+    let selectedNation = null;
 
     function handleScroll() {
         const scrollY = window.scrollY;
@@ -319,6 +322,10 @@
     }
 
     function renderSEFPlot() {
+        const nationCode = d => d.LAD.startsWith("S") ? "S"
+                    : d.LAD.startsWith("N") ? "N"
+                    : d.LAD.startsWith("E") ? "E"
+                    : "W";
         // FACETED CHART
         // SEFPlotLAD?.append(
         //     Plot.plot({
@@ -336,7 +343,6 @@
         //         ]
         //     })
         // )
-
         SEF.forEach(sef => {
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
@@ -354,7 +360,7 @@
                     marginLeft: 70,
                     marginBottom: sef === "Typology" ? 80 : 60,
                     marginRight: 20,
-                    marginTop: 20,
+                    marginTop: 30,
                     x: {  domain: fullLevels,
                             label: SEF_SCALE(sef),
                             tickFormat: d => labelLookup?.[d] ?? d,
@@ -405,17 +411,32 @@
                     y: {label: '£, thousand', labelArrow:false},
                     color: {legend: true},
                     marks: [
-                        Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
-                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
-                                    ? d.SE * 100
-                                    : d.SE), // multiply to get appropraite percentage value 
-                            y: d => d.total*1000,
-                            //stroke: COBENEFS_SCALE(coBenefit),
-                            fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE3(coBenefit)[0]
-                                : d.LAD.startsWith("N") ? COBENEFS_SCALE3(coBenefit)[1]
-                                : d.LAD.startsWith("E") ? COBENEFS_SCALE3(coBenefit)[2]
-                                : COBENEFS_SCALE3(coBenefit)[3],
+                        Plot.dot(LADAveragedData.filter(d =>
+                            d["SEFMAME"] === sef &&
+                            (selectedNation === null || nationCode(d) !== selectedNation)
+                        ), {
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
+                            y: d => d.total * 1000,
+                            fill: d => {
+                            const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
+                            return COBENEFS_SCALE3(coBenefit)[index];
+                            },
                             r: 2,
+                            fillOpacity: 0.1
+                        }),
+
+                        // Second: selected points (drawn second, appear on top)
+                        Plot.dot(LADAveragedData.filter(d =>
+                            d["SEFMAME"] === sef &&
+                            (selectedNation === null || nationCode(d) === selectedNation)
+                        ), {
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
+                            y: d => d.total * 1000,
+                            fill: d => {
+                            const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
+                            return COBENEFS_SCALE3(coBenefit)[index];
+                            },
+                            r: 3.5,
                             fillOpacity: 1
                         }),
                         Plot.axisX({label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"}),
@@ -447,27 +468,18 @@
         })
     }
 
+    $: if (height && dataLoaded) {
+        plot?.firstChild?.remove();       
+        renderDistPlot();
+        renderPlot();                     
+        renderWaffle(300, coBenefit);
+    }
 
-    $: {
-        plot?.firstChild?.remove(); // remove old chart, if any
+    $: if (height && dataLoaded && selectedNation !== undefined) {
         Object.values(SEFPlot).forEach(sefPlot => {
             sefPlot.firstChild?.remove();
-        })
-
-        //ugly hack for reactivity
-        if (chartType) {
-        }
-
-
-        // loadData()
-
-        if (height && dataLoaded) {
-
-            renderDistPlot();
-            renderPlot();
-            renderSEFPlot();
-            renderWaffle(300, coBenefit);
-        }
+        });
+        renderSEFPlot(); 
     }
 
     $: textColor = COBENEFS_SCALE2(coBenefit)[0];
@@ -480,6 +492,27 @@
         chartType = event.currentTarget.value;
     }
 
+    function resetSelection() {
+        selectedNation = null;
+    }
+
+
+    onMount(() => {
+        document.querySelectorAll(".nation-button").forEach(button => {
+            button.addEventListener("click", () => {
+                const nation = button.getAttribute("data-nation");
+                
+                if (selectedNation === nation) {
+                    selectedNation = null;
+                    button.classList.remove("active");
+                } else {
+                    selectedNation = nation;
+                    document.querySelectorAll(".nation-button").forEach(btn => btn.classList.remove("active"));
+                    button.classList.add("active");
+                }
+            });
+        });
+    });
 
 </script>
 
@@ -630,7 +663,13 @@
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
                 <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
-                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p> 
+                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p>
+                <div class="aggregation-icon-container2">
+                <div class="tooltip-wrapper">
+                    <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LSOA.</span>
+                </div> 
+            </div>
                 <br>
 
                 <!-- Disclaimer -->
@@ -643,17 +682,17 @@
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter plots are shaded by nation. </span>
+                    <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
                     
-                    <ul class="legend-list">
+                    <div class="legend-buttons">
                         <br>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}"></span>
-                            Scotland</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}"></span>
-                            Northern Ireland</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[2]}"></span>England</li>
-                        <li><span class="legend-color" style="background-color: {COBENEFS_SCALE3(coBenefit)[3]}"></span>Wales</li>
-                    </ul>
+                        <button class="nation-button" data-nation="S" style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}">Scotland</button>
+                        <button class="nation-button" data-nation="N" style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}">Northern Ireland</button>
+                        <button class="nation-button" data-nation="E" style="background-color: {COBENEFS_SCALE3(coBenefit)[2]}">England</button>
+                        <button class="nation-button" data-nation="W" style="background-color: {COBENEFS_SCALE3(coBenefit)[3]}">Wales</button>
+                        <br>
+                        <button class="reset-button" on:click={resetSelection}>Reset</button>
+                    </div>
                     
                 </div>
             </div>
@@ -922,8 +961,6 @@
     border-radius: 2px;
 }
 
-
-
 .waffle-stats {
   display: flex;
   flex-direction: column;
@@ -964,52 +1001,63 @@
     line-height: 1.25rem;
 }
 
-.aggregation-icon-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  width: 99%; 
-  margin-top: 20px;
-  margin-right: 10px;
-}
-
-.tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.aggregation-icon {
-  width: 40px;
-  height: 40px;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  background-color: #333;
-  color: #fff;
-  font-size: 12px;
-  padding: 5px 8px;
-  border-radius: 4px;
-  position: absolute;
-  top: 35px;
-  right: -60px;
-  left: -60px;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  max-width: 200px;          /* control width */
-  white-space: normal;       /* allow wrapping */
-  word-break: break-word;    /* instead of word-wrap */
-  display: inline-block;     /* important for width + wrapping */
-}
-
-.tooltip-wrapper:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
 .plot-bar {
   margin-top: -60px; /* pull it upward */
 }
+
+.legend-buttons {
+  /*display: flex;*/
+  gap: 0px; 
+  /*flex-wrap: wrap;*/
+  margin-bottom: 0px;
+  margin-top: -20px;
+}
+
+.nation-button {
+    gap: 0px; 
+    margin-top: 0.5rem;
+    margin-bottom: 0rem;
+    margin-right: 0.2rem;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #F8F8F8;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 1;
+}
+
+.nation-button:hover {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.reset-button {
+  margin-top: 1rem;
+  margin-left: 0rem;
+  padding: 0.5rem 1rem;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.reset-button:hover {
+  background-color: #ddd;
+}
+
+.aggregation-icon-container2 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 92%; 
+    margin-top: -25px;
+    margin-bottom: -25px;
+    margin-right: 10px;
+  }
 
 </style>
