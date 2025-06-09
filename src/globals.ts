@@ -19,7 +19,9 @@ import seFactors from '$lib/definitions/se-factor.json'
 
 // export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
 
+export let CBS = coBenefits.map(f => f.id);
 export const COBENEFS = coBenefits.map(d => ({ id: d.id, label: d.label }));
+export let CO_BEN = coBenefits.map(d => ({ id: d.id, label: d.label }));
 export const DEFINITIONS = coBenefits.map(d => ({ id: d.id, def: d.def }));
 
 // export const COBENEFS = [
@@ -98,6 +100,9 @@ export let SEF = seFactors.map(f => f.id);
 
 export const SEF_LABEL = seFactors.map(d => ({ id: d.id, label: d.label }));
 export const SEF_DEF = seFactors.map(d => ({ id: d.id, def: d.def }));
+export const SEF_DESCR = seFactors.map(d => ({ id: d.id, description: d.description }));
+export const SEF_SHORT_UNITS = seFactors.map(d => ({ id: d.id, short_units: d.short_units }));
+export const SEF_UNITS2 = seFactors.map(d => ({ id: d.id, units: d.units }));
 
 export let SEF_UNITS = seFactors.map(f => f.units ?? '?');
 export let SEF_CATEGORICAL = seFactors
@@ -183,7 +188,7 @@ export const COBENEFS_RANGE2 = [['#71C35D', '#244a1b', '#499437', '#7cc76a', '#b
     ['#D3A029', '#554010', '#aa8121', '#ddb454', '#eed9a9']];
 export const COBENEFS_SCALE2 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE2);
 
-export const COBENEFS_RANGE3 = [['#00718E', '#0098AC', '#009DEB', '#0056A2'],
+export const COBENEFS_RANGE3 = [['#719634','#9FC035','#84DB82','#3FD24C'],
     ['#AF2164', '#E84086', '#FF057C', '#DC0FB3'],
     ['#2CB8B2', '#00B3D0', '#00CAFF', '#0084CC'],
     ['#FF6E3F', '#C3603C', '#BE2742', '#FE1B21'],

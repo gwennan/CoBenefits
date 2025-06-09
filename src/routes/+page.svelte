@@ -335,7 +335,8 @@
     let selectedLAD: string | null = null;
 
     function handleSearch(code: string) {
-        goto(`${base}/location?location=${code}`);
+        // goto(`${base}/location?location=${code}`);
+        window.open(`${base}/location?location=${code}`, '_blank');
     }
 
     let isLoading = true;
@@ -466,8 +467,8 @@
     <section class="search-section">
         <h1>Find My Place</h1>
         <LADSearch
-                items={LADToName}
-                on:search={(e) => handleSearch(e.detail)}
+            items={LADToName}
+            on:search={(e) => handleSearch(e.detail)}
         />
         <!-- {#if selectedLAD}
           <h2>Total Cobenefits</h2>
@@ -480,6 +481,8 @@
     <section class="side-by-side-section">
         <div class="side-box">
             <h2>Explore by Local Authority</h2>
+            <p>Click to see local authority data report.</p>
+
             {#if !dataLoading}
                 <LADTable
                         {ladData}
@@ -495,6 +498,7 @@
 
         <div class="side-box">
             <h2>Explore by Co-Benefit</h2>
+            <p>Click to see each co-benefit data report.</p>
             {#if !dataLoading}
                 <CoBenefitTable
                         {aggregationPerCapitaPerBenefit}
@@ -722,8 +726,15 @@
 
 
     .side-box h2 {
-        margin-bottom: 1rem;
+        margin-bottom: 0rem;
+        padding-bottom: 0;
         font-size: 1.5rem;
+        color: #333;
+    }
+
+    .side-box p {
+        margin-top: 0rem;
+        padding-bottom: 0;
         color: #333;
     }
 

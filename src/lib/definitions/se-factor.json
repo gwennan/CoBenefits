@@ -2,119 +2,153 @@
   {
     "id": "EPC",
     "label": "EPC Band",
+    "description":"Domestic Energy Performance Certificate (EPC) Band",
     "units": "Band",
+    "short_units": "",
     "type": "categorical",
     "def": "Energy efficiency rating for homes, from Band A (most efficient) to Band G (least efficient)."
  },
   {
     "id": "Tenure",
     "label": "Tenure",
+    "description": "Housing Tenure",
     "units": "Type",
+    "short_units": "",
     "type": "categorical",
     "def": "Relationship of occupant to the dwelling's ownership."
   },
   {
     "id": "Typology",
     "label": "Typology",
+    "description":"Building Type",
     "units": "Type",
+    "short_units": "",
     "type": "categorical",
     "def": "Type of building."
   },
   {
     "id": "Fuel_Type",
     "label": "Domestic fuel type",
+    "description": "Domestic ful type",
     "units": "Type",
+    "short_units": "",
     "type": "categorical",
     "def": "Current most common heating system across all buildings in the area."
   },
   {
     "id": "Gas_flag",
     "label": "On gas grid",
+    "description": "Gas grid connection",
     "units": "Connected",
+    "short_units": "",
     "type": "categorical",
     "def": "Whether most buildings in the area are connected to the gas network."
   },
   {
     "id": "Number_cars",
-    "label": "No. cars",
+    "label": "Number of cars",
+    "description": "Car ownership",
     "units": "No. cars",
+    "short_units": "cars",
     "type": "categorical",
     "def": "Mean number of cars per household in the area."
   },
   {
     "id": "Under_35",
-    "label": "% inhabitants under 35",
+    "label": "Percentage of inhabitants under 35",
+    "description": "Age - under 35",
     "units": "Percentage (%)",
+    "short_units": "%",
     "type": "numeric",
     "def": "Proportion of population under 35 years of age."
   },
   {
     "id": "Over_65",
-    "label": "% inhabitants over 65",
+    "label": "Percentage of inhabitants over 65",
+    "description": "Age - over 65",
     "units": "Percentage (%)",
+    "short_units": "%",
     "type": "numeric",
     "def": "Proportion of population over 65 years of age."
   },
   {
     "id": "Median_Income",
     "label": "Median income",
+    "description": "Income",
     "units": "Pounds (£)",
+    "short_units": "£",
     "type": "numeric",
     "def": "Median income (£ per capita per year)."
   },
   {
     "id": "Unemployment",
     "label": "Unemployment rate",
+    "description": "Unemployment",
     "units": "Percentage (%)",
+    "short_units": "%",
     "type": "numeric",
     "def": "Unemployment rate."
   },
   {
     "id": "Rurality",
     "label": "Rurality",
+    "description": "Rurality",
     "units": "Density",
+    "short_units": "",
     "type": "numeric",
     "def": "How urban or rural is a given area, based on population density, from 0 (most rural) to 1 (most urban)."
   },
   {
     "id": "House_value",
     "label": "House value",
+    "description":"House value",
     "units": "Pounds (£)",
+    "short_units": "£",
     "type": "numeric",
     "def": "Median value of household per area."
   },
   {
     "id": "Fuel_consumption_total",
     "label": "Annual fuel consumption ",
+    "description": "Fuel consumption",
     "units": "Kilowatt-hour (kwh)",
+    "short_units": "kwh",
     "type": "numeric",
     "def": "Annual mean energy consumption per household."
   },
   {
     "id": "Floor_area",
     "label": "Floor area",
+    "description": "Floor area",
     "units": "Metres squared (m²)",
+    "short_units": "m²",
     "type": "numeric",
     "def": "Mean floor area per household."
   },
   {
     "id": "Urban_trips",
     "label": "No. urban trips",
+    "description": "Number of urban trips",
     "units": "No. trips",
+    "short_units": "trips",
     "type": "numeric",
     "def": "Mean number of car trips per household per year in urban areas."
   },
   {
     "id": "Total_vkm",
     "label": "Total car travel",
+    "description": "Car travel",
     "units": "Kilometres (km)",
+    "short_units": "km",
     "type": "numeric",
     "def": "Mean vehicular kilometres driven per household per year."
   },
   {
     "id": "Urban_vkm",
     "label": "Urban car travel",
+    "description": "Urban car travel",
     "units": "Kilometres (km)",
+    "short_units": "km",
     "type": "numeric",
     "def": "Mean vehicular kilometres driven per household in urban areas per year."
   }

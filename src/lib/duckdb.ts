@@ -119,10 +119,24 @@ export function getTotalPerPathway() {
 }
 
 export function getSEFData(sef: SEFactor) {
+    const multiplyBy100 = ["Under_35", "Over_65", "Unemployment"].includes(sef);
+    const valExpression = multiplyBy100 ? `(${sef} * 100)` : sef;
+  
+    const query = `
+      SELECT ${valExpression} as val, total, total/population as total_per_capita, Lookup_Value
+      FROM ${DB_TABLE_NAME}
+      WHERE co_benefit_type = 'Total'
+    `;
+  
+    return query;
+  }
+  
+
+export function getSEFbyCobenData(sef: SEFactor) {
     // Select total line because the value is repeated for one LSOA
-    let query = `SELECT ${sef} as val, total, Lookup_Value
+    let query = `SELECT ${sef} as val, total, total/Households as total_per_capita, Lookup_Value, co_benefit_type
                  FROM ${DB_TABLE_NAME}
-                 WHERE co_benefit_type = 'Total'`
+                 WHERE co_benefit_type != 'Total'`
     return query
 }
 
@@ -353,7 +367,7 @@ export function getSefForOneCoBenefitAveragedByLAD(cobenefit: CoBenefit) {
   
       return `
         SELECT 
-          AVG(total) AS total, 
+          AVG(total/Households) AS total,
           LAD, 
           ${aggregation} AS SE, 
           '${SE}' AS SEFMAME

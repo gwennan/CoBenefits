@@ -102,7 +102,7 @@
     <tbody>
       {#each ladData as LAD}
         <tr>
-          <td><a href="{base}/location?location={LAD.LAD}">{LADToName[LAD.LAD] ?? LAD.LAD}</a></td>
+          <td><a href="{base}/location?location={LAD.LAD}" target="_blank">{LADToName[LAD.LAD] ?? LAD.LAD}</a></td>
           <td>
             <div class="bar-cell">
               {@html sortBy === 'total'

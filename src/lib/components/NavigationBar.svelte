@@ -1,10 +1,28 @@
-<script>
+<script lang="ts">
 import {base} from "$app/paths";
 import { page } from '$app/stores';
+import { goto } from '$app/navigation';
+import { get } from 'svelte/store';
 
 import {COBENEFS, COBENEFS_SCALE} from "../../globals";
 
 let showDropdown = false;
+let showDropdownContact = false;
+
+
+async function goToSection(id: string) {
+    const currentPath = get(page).url.pathname;
+
+    if (currentPath === '/contact') {
+      const el = document.getElementById(id);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    } else {
+      await goto(`/contact#${id}`);
+    }
+  }
 
 </script>
 
@@ -37,6 +55,7 @@ let showDropdown = false;
                   data-sveltekit-reload
                   style="--cobenef-color: {COBENEFS_SCALE(coBenef.id)}"
                   class:selected={$page.url.searchParams.get('cobenefit') === coBenef.id}
+                  target="_blank"
                 >
                   {coBenef.label}
                 </a>
@@ -59,15 +78,27 @@ let showDropdown = false;
 
       <div class="nav-item">
         <div class="nav-count">46,426</div>
-        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`}>Data Zones</a>
+        <a href="{base}/map" class:active={$page.url.pathname === `${base}/map`} target="_blank">Data Zones</a>
       </div>
     </div>
 
     <div class="nav-right" style="gap: 1rem;">
       <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>Home</a>
       <a href="{base}/methods" class="nav-item" class:active={$page.url.pathname === `${base}/methods`}>Methods</a>
-      <a href="mailto:cobens@ed.ac.uk" class="nav-item">Contact</a>
-      <a href="https://groups.google.com/g/ukcobenefitsatlas" class="nav-item">Newsletter</a>
+      <!-- <a href="mailto:cobens@ed.ac.uk" class="nav-item">Contact</a> -->
+      <div class="dropdown nav-item" style="margin-top: 0;"
+          on:mouseenter={() => (showDropdownContact = true)}
+          on:mouseleave={() => (showDropdownContact = false)}
+          >
+        <a href="{base}/contact" class="nav-item">Contact</a>
+        {#if showDropdownContact}
+          <ul class="dropdown-menu" style="min-width: 150px;">
+            <li><a href="{base}/contact" on:click|preventDefault={() => goToSection("email")}>Email</a></li>
+            <li><a href="{base}/contact" on:click|preventDefault={() => goToSection("newsletter")}>Newsletter</a></li>
+            <li><a href="{base}/contact" on:click|preventDefault={() => goToSection("training")}>Training</a></li>
+          </ul>
+        {/if}
+      </div>
       <a href="{base}/about" class="nav-item" class:active={$page.url.pathname === `${base}/about`}>About</a>
     </div>
   </nav>
