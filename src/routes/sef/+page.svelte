@@ -60,13 +60,6 @@
     let mapDiv: HTMLElement;
     let mapLegendDiv: HTMLElement;
 
-    loadData().then(() => {
-        map = new MapUK(fullData, "Lookup_Value", mapDiv, "total", false, "Lookup_Value", false);
-        map.initMap();
-
-        let legendSvg = map.legend();
-        mapLegendDiv.append(legendSvg)
-    });
 
     let scrolledPastHeader = false;
     let currentSection = '';
@@ -91,20 +84,12 @@
         }
     }
 
-    
-
 
     onMount(() => {
-        // map = new MapUK(LADAveragedData, "LAD", mapDiv, "total");
-        // map.initMap();
-        //
-        // let legendSvg = map.legend();
-        // mapLegendDiv.append(legendSvg)
         window.addEventListener('scroll', handleScroll); // header scroll listener
 
         handleScroll(); // initialize
         return () => window.removeEventListener('scroll', handleScroll);
-
     })
 
     onDestroy(() => {
@@ -142,6 +127,14 @@
 
         dataLoaded = true;
     }
+
+    loadData().then(() => {
+        map = new MapUK(fullData, "LSOA", mapDiv, "val", false, "Lookup_Value", false);
+        map.initMap();
+
+        // let legendSvg = map.legend();
+        // mapLegendDiv.append(legendSvg)
+    });
 
     function renderDistPlot() {
         const average = d3.mean(fullData, d => d.val) ?? 0;
@@ -365,8 +358,8 @@ function formatValue(value, unit) {
     <div class="component column">
         <h3 class="component-title">{sefLabel} </h3>
         <p class="description">Scroll for zooming in and out.</p>
-        <p> MAP </p>
-        <!-- <div id="map" bind:this={mapDiv}> </div> -->
+<!--        <p> MAP </p>-->
+         <div id="map" bind:this={mapDiv}> </div>
         
     </div>
 </div>
@@ -553,4 +546,9 @@ function formatValue(value, unit) {
   max-width: 800px;
   margin: 0;
 }
+
+ #map {
+        width: 100%;
+     height: 90%;
+    }
 </style>

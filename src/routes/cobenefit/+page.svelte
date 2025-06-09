@@ -81,7 +81,6 @@
         map.initMap();
 
 
-
         let legendSvg = map.legend();
         mapLegendDiv.append(legendSvg)
     });
