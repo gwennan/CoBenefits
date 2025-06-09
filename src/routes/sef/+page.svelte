@@ -66,7 +66,6 @@
 
         let legendSvg = map.legend();
         mapLegendDiv.append(legendSvg)
-
     });
 
     let scrolledPastHeader = false;
@@ -140,7 +139,6 @@
         CBS.forEach(CB => {
             SEFData[CB] = +SEFData[CB];
         })
-        
 
         dataLoaded = true;
     }
@@ -275,7 +273,7 @@ function renderMultPlotDot() {
                     }),
                 ]
             });
-        plotSmallMult[CB]?.append()
+        plotSmallMult[CB]?.append(plot)
     })
 }
 
@@ -293,7 +291,8 @@ function formatValue(value, unit) {
 
             renderDistPlot();
             renderDotPlot();
-            renderplotSmallMult();
+            // renderplotSmallMult();
+            renderMultPlotDot();
         }
     }
 
@@ -398,7 +397,7 @@ function formatValue(value, unit) {
                 {#if plotSmallMult[CB.id] === undefined}
                     {console.log("Missing key in plotSmallMult:", CB.id)}
                 {/if}
-                  <div class="plot" bind:this={plotSmallMult[CB]}></div>
+                  <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
             </div>
         {/each}
     </div>
