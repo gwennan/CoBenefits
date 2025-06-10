@@ -667,7 +667,7 @@
                 <div class="aggregation-icon-container2">
                 <div class="tooltip-wrapper">
                     <img class="aggregation-icon" src="{per_capita}" alt="icon" />
-                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LSOA.</span>
+                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
                 </div> 
             </div>
                 <br>

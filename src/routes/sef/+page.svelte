@@ -174,8 +174,8 @@
                     Plot.ruleX([average], {
                                 stroke: "#BD210E",
                                 strokeWidth: 4,
-                                channels: {average: {value:average, label: "Average"}},
-                                tip: {format: {average:true, x:false}},
+                                channels: {average: {value: average, label: "Average"}},
+                                tip: {format: {average:d => `${d.toFixed(2)}`, x:false}},
                             }),
                     Plot.dot(fullData, {
                         x: {value:average, thresholds: 20},
@@ -438,10 +438,10 @@ function formatValue(value, unit) {
     .header-vis {
     text-align: left;
     flex: 1;
-    margin-left: 0rem;        /* pushes it to the far right */
-    margin-top: 1rem;         /* moves it down slightly */
+    margin-left: 0rem;        
+    margin-top: 1rem;         
     padding-right: 0rem;  
-    padding-left: 0rem;    /* adds space from the right edge */
+    padding-left: 0rem;    
     flex-grow: 1;
     flex-shrink: 0;
     flex-basis: auto;
@@ -450,12 +450,14 @@ function formatValue(value, unit) {
 
     .header-stats {
     text-align: left;
+    background-color: #f0f0f0;
     flex: 1;
-    margin-left: 0rem;        /* pushes it to the far right */
-    margin-top: 2rem;         /* moves it down slightly */
-    padding-right: 0rem;  
-    padding-left: 0rem;    /* adds space from the right edge */
+    margin-left: 0rem;        
+    margin-top: 2rem;         
+    padding-right: 1rem;  
+    padding-left: 1rem;    
     line-height: 2;
+    border-radius: 8px;
     }
 
     .page-subtitle {
@@ -494,50 +496,6 @@ function formatValue(value, unit) {
         /*color: #90bcca;*/
         color: #777;
     }
-
-.aggregation-icon-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  width: 99%; 
-  margin-top: 20px;
-  margin-right: 10px;
-}
-
-.tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.aggregation-icon {
-  width: 40px;
-  height: 40px;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  background-color: #333;
-  color: #fff;
-  font-size: 12px;
-  padding: 5px 8px;
-  border-radius: 4px;
-  position: absolute;
-  top: 35px;
-  right: -60px;
-  left: -60px;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  max-width: 200px;          /* control width */
-  white-space: normal;       /* allow wrapping */
-  word-break: break-word;    /* instead of word-wrap */
-  display: inline-block;     /* important for width + wrapping */
-}
-
-.tooltip-wrapper:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
 
 .plot {
   margin-top: 0px; /* pull it upward */
