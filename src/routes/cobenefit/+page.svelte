@@ -81,7 +81,6 @@
         map.initMap();
 
 
-
         let legendSvg = map.legend();
         mapLegendDiv.append(legendSvg)
     });
@@ -125,11 +124,6 @@
 
 
     onMount(() => {
-        // map = new MapUK(LADAveragedData, "LAD", mapDiv, "total");
-        // map.initMap();
-        //
-        // let legendSvg = map.legend();
-        // mapLegendDiv.append(legendSvg)
         window.addEventListener('scroll', handleScroll); // header scroll listener
 
         handleScroll(); // initialize
