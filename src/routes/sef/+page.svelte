@@ -212,8 +212,8 @@
                         fillOpacity: 0.75,
                         channels: {
                             location: {value: "Lookup_Value", label: "Location"},
-                            sef: {value: "val", label: "SEF Value"},
-                            value: {value: d => d.total_per_capita * 1000, label: "Per Capita Co-Benefit Value"},
+                            sef: {value: "val", label: `${sefUnits}`},
+                            value: {value: d => d.total_per_capita * 1000, label: "Per Capita Co-Benefit Value (£, thousand)"},
                         },
                         tip: {format: {location: true, sef: true, value: true, x: false, y: false}},
                     }),
@@ -390,8 +390,8 @@
         </div>
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
-                <h3 class="component-title">Mapping the impact of across UK local authorities according to socio-economic factors</h3>
-                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p>
+                <h3 class="component-title">Plotting {sefLabel.toLowerCase()} against the gain/loss (£, thousand) per capita for each co-benefit</h3>
+                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given co-benefit.</p>
                 <div class="aggregation-icon-container2">
                 <div class="tooltip-wrapper">
                     <img class="aggregation-icon" src="{per_capita}" alt="icon" />
@@ -407,7 +407,8 @@
 
                 <!-- Legend -->
                 <div id="main-legend" class="legend-box">
-                    <p><strong>Co-benefits:</strong><br>Expand for detailed information<p>
+                    <strong>Co-benefits:</strong><br>Expand for detailed information
+                    <div style="height: 0.8em;"></div>
                         {#each CO_BEN as CB}
                         <div class="legend-item">
                             <div class="legend-header" on:click={() => toggle(CB.id)} style="cursor: pointer;">
@@ -416,8 +417,15 @@
                                 <span class="toggle-icon">{expanded.has(CB.id) ? "▲" : "▼"}</span>
                             </div>
                             {#if expanded.has(CB.id)}
+                            <div class="legend-description-box">
                             <div class="legend-description">
-                                {CB.def}
+                                <div style="height: 0.8em;"></div>
+                                {CB.def} <br>
+                                <div class="link-box">
+                                Click <a class="link" href="/cobenefit?cobenefit={CB.id}" target="_blank" rel="noopener noreferrer" style= "color:{COBENEFS_SCALE(CB.id)};">here</a> for the 
+                                <span style= "color:{COBENEFS_SCALE(CB.id)};">{CB.id} </span>report page.
+                                </div>
+                            </div>
                             </div>
                             {/if}
                         </div>
@@ -636,7 +644,7 @@
     }
 
     .legend-item {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.6em;
 }
 
 .legend-header {
@@ -664,8 +672,34 @@
 }
 
 .legend-description {
-    margin-left: 1.5em;
-    font-size: 0.9em;
+    margin-left: 0.1em;
+    margin-right: 0em;
+    padding: 1em;
+    padding-top: 0em;
+    font-size: 0.8em;
     color: #555;
 }
+.legend-description-box {
+    margin: 0.5em 0em;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.link-box {
+    margin: 0.5em 0em;
+    border-left: 0.5px solid #555;
+    padding-left: 0.4em;
+    padding-right: 0.1em;
+}
+
+.aggregation-icon-container2 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 99%; 
+    margin-top: -10px;
+    margin-bottom: -20px;
+    margin-right: 10px;
+    margin-left:0px;
+  }
 </style>
