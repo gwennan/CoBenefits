@@ -15,7 +15,8 @@
         type CoBenefit,
         CBS,
         CO_BEN,
-        SEF_UNITS2
+        SEF_UNITS2,
+        COBENEFS_SCALE,
     } from "../../globals";
 
 
@@ -190,7 +191,7 @@
     function renderDotPlot() {
         plotDot?.append(
             Plot.plot({
-                height: height * 2,
+                height: height * 1.5,
                 width: height * 2,
                 marginLeft: 60,
                 marginTop: 60,
@@ -270,7 +271,7 @@
                     Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
                         x: "val",
                         y: "total",
-                        fill: "black",
+                        fill: COBENEFS_SCALE(CB),
                         fillOpacity: 0.5,
                         tip: true,
                     }),
@@ -383,39 +384,67 @@
         </div>
     </div>
 
-    <div class="section">
-        <div id="compare">
-            <div class="section-header">
-                <p class="section-subtitle">Comparison</p>
+    <div id="compare">
+        <!-- <div class="section-header">
+        <p class="section-subtitle">Compare by socio-economic factor</p>
+        </div> -->
+
+        <div class="section-header">
+            <p class="section-subtitle">By Co-benefits</p>
+        </div>
+        <div id="se-block" class="component" style="margin-left: 1rem;">
+            <div id="se-title">
+                <h3 class="component-title">Mapping the impact of across UK local authorities according to socio-economic factors</h3>
+                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p>
+                <div class="aggregation-icon-container2">
+                <div class="tooltip-wrapper">
+                    <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                </div> 
             </div>
-            <div id="vis-block">
-                <div class="component column">
-                    <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
-                    <p class="description">By Co-Benefit. </p>
-                    <div class="plot" bind:this={plotMultDot}></div>
+                <br>
+
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> IF SEF=CAT:</p>
+
+                </div>
+
+                <!-- Legend -->
+                <div id="se-legend" class="legend-box">
+                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                    <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
+                    
+                    <div class="legend-buttons">
+
+                    </div>
+                    
+                </div>
+            </div>
+
+        
+
+            <div id="multiple-comp">
+                <div id="multiple-plots">
+                    {#each CO_BEN as CB}
+                        <div class="plot-container">
+                            <h3 class="component-chart-title">{CB.label}</h3>
+                            <p class="component-chart-caption"></p>
+                            {#if plotSmallMult[CB.id] === undefined}
+                                {console.log("Missing key in plotSmallMult:", CB.id)}
+                            {/if}
+                            <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
+                        </div>
+                    {/each}
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="multiple-comp">
-        <div id="multiple-plots">
-            {#each CO_BEN as CB}
-                <div class="plot-container">
-                    <h3 class="component-chart-title">{CB.label}</h3>
-                    <p class="component-chart-caption"></p>
-                    {#if plotSmallMult[CB.id] === undefined}
-                        {console.log("Missing key in plotSmallMult:", CB.id)}
-                    {/if}
-                    <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
-                </div>
-            {/each}
         </div>
-    </div>
-
 </div>
 
 <style>
+
     .section.header {
         padding: 2% 6%;
         background-color: #f9f9f9;
@@ -568,5 +597,54 @@
     #map {
         width: 100%;
         height: 83%;
+    }
+
+    #multiple-plots {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        justify-items: start;
+    }
+
+
+    .plot-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .component-chart-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .component-chart-caption {
+        font-size: 0.9rem;
+        line-height: 1.1rem;
+        color: #555;
+        margin: 0 0 15px 0;
+        text-align: left;
+    }
+
+    #se-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    #se-title {
+        /* min-width: 25vw; */
+        /* width: 30vw; */
+        width: 400px;
+        margin-left: 1rem;
+        /* margin-right: 2rem; */
+        margin-right: 50px;
+        position: sticky;
+        top: 120px;
+        align-self: flex-start;
+        height: fit-content;
     }
 </style>
