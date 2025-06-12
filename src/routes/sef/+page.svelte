@@ -2,6 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
+    import { base } from '$app/paths';
 
     import {MapUK} from "$lib/components/mapUK";
 
@@ -422,7 +423,7 @@
                                 <div style="height: 0.8em;"></div>
                                 {CB.def} <br>
                                 <div class="link-box">
-                                Click <a class="link" href="/cobenefit?cobenefit={CB.id}" target="_blank" rel="noopener noreferrer" style= "color:{COBENEFS_SCALE(CB.id)};">here</a> for the 
+                                Click <a class="link" href="{base}/cobenefit?cobenefit={CB.id}" target="_blank" rel="noopener noreferrer" style= "color:{COBENEFS_SCALE(CB.id)};">here</a> for the 
                                 <span style= "color:{COBENEFS_SCALE(CB.id)};">{CB.id} </span>report page.
                                 </div>
                             </div>
