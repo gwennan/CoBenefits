@@ -214,7 +214,7 @@
                         channels: {
                             location: {value: "Lookup_Value", label: "Location"},
                             sef: {value: "val", label: `${sefUnits}`},
-                            value: {value: d => d.total_per_capita * 1000, label: "Per Capita Co-Benefit Value (£, thousand)"},
+                            value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
                         },
                         tip: {format: {location: true, sef: true, value: true, x: false, y: false}},
                     }),
@@ -251,8 +251,18 @@
                         y: "total",
                         fill: COBENEFS_SCALE(CB),
                         fillOpacity: 0.5,
-                        tip: true,
                         r:0.5,
+                        channels: {
+                            location: {value: "Lookup_Value", label: "Location"},
+                            //sef: {value: "val", label: `${sefUnits}`},
+                            //value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
+                        },
+                        tip: {format: {
+                            location: true, 
+                            //sef: true, 
+                            //value: true, 
+                            x: false, 
+                            y: false}},
                     }),
                     Plot.axisY({
                         label: "Per capita co-benefit value (£, thousand)",
@@ -365,10 +375,17 @@
                         </div>
                     </div>
                     <div class="plot-dot" bind:this={plotDot}></div>
+                    
                 </div>
                 <div class="component column">
                     <h3 class="component-title">{sefLabel} </h3>
                     <p class="description">Scroll for zooming in and out.</p>
+                    <div class="aggregation-icon-container2">
+                        <div class="tooltip-wrapper">
+                            <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                            <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                        </div> 
+                    </div>
                     {#if map}
                         <div id="legend">
                             {@html map.legend(sefUnits).outerHTML}
@@ -393,19 +410,19 @@
             <div id="se-title">
                 <h3 class="component-title">Plotting {sefLabel.toLowerCase()} against the gain/loss (£, thousand) per capita for each co-benefit</h3>
                 <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given co-benefit.</p>
-                <div class="aggregation-icon-container2">
-                <div class="tooltip-wrapper">
-                    <img class="aggregation-icon" src="{per_capita}" alt="icon" />
-                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
-                </div> 
-            </div>
                 <br>
 
                 <!-- Disclaimer -->
                 <div id="se-disclaimer" class="disclaimer-box">
                     <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Varying y-axis scales:</strong> The scatter plots have different scales on the y-axis due to the nature of each co-benefit. </p>
                 </div>
-
+                <div class="aggregation-icon-container2">
+                    <div class="tooltip-wrapper">
+                        <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                        <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                    </div> 
+                </div>
                 <!-- Legend -->
                 <div id="main-legend" class="legend-box">
                     <strong>Co-benefits:</strong><br>Expand for detailed information
@@ -414,7 +431,7 @@
                         <div class="legend-item">
                             <div class="legend-header" on:click={() => toggle(CB.id)} style="cursor: pointer;">
                                 <span class="legend-color" style="background-color: {COBENEFS_SCALE(CB.id)};"></span>
-                                <span class="legend-text">{CB.label}</span>
+                                <span class="legend-text {expanded.has(CB.id) ? 'expanded' : ''}" >{CB.label}</span>
                                 <span class="toggle-icon">{expanded.has(CB.id) ? "▲" : "▼"}</span>
                             </div>
                             {#if expanded.has(CB.id)}
@@ -424,7 +441,7 @@
                                 {CB.def} <br>
                                 <div class="link-box">
                                 Click <a class="link" href="{base}/cobenefit?cobenefit={CB.id}" target="_blank" rel="noopener noreferrer" style= "color:{COBENEFS_SCALE(CB.id)};">here</a> for the 
-                                <span style= "color:{COBENEFS_SCALE(CB.id)};">{CB.id} </span>report page.
+                                <span style= "color:{COBENEFS_SCALE(CB.id)};">{CB.id.toLowerCase()} </span>report page.
                                 </div>
                             </div>
                             </div>
@@ -688,7 +705,7 @@
 
 .link-box {
     margin: 0.5em 0em;
-    border-left: 0.5px solid #555;
+    border-left: 2px solid #555;
     padding-left: 0.4em;
     padding-right: 0.1em;
 }
@@ -699,8 +716,21 @@
     align-items: flex-start;
     width: 99%; 
     margin-top: -10px;
-    margin-bottom: -20px;
+    margin-bottom: -30px;
     margin-right: 10px;
     margin-left:0px;
   }
+
+  .legend-text.expanded {
+  font-weight: 400;
+}
+
+.disclaimer-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
+}
 </style>

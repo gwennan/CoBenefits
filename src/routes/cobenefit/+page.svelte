@@ -624,7 +624,13 @@
                         <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
                         <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how much.</p>
                         {/if}
-                        <div class="plot" bind:this={plotDist}>
+                        <div class="aggregation-icon-container">
+                            <div class="tooltip-wrapper">
+                              <img class="aggregation-icon" src="{total}" alt="icon" />
+                              <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                            </div>
+                          </div>
+                        <div class="plot-bar" bind:this={plotDist}>
                             
                         </div>
                         <br>
@@ -635,6 +641,12 @@
                 <div class="component column">
                     <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
                     <p class="description">Scroll for zooming in and out.</p>
+                    <div class="aggregation-icon-container2">
+                        <div class="tooltip-wrapper">
+                          <img class="aggregation-icon" src="{total}" alt="icon" />
+                          <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                        </div>
+                      </div>
                     {#if map}
                     <div id="legend">
                         {@html map.legend().outerHTML}
@@ -658,12 +670,7 @@
             <div id="se-title">
                 <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
                 <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p>
-                <div class="aggregation-icon-container2">
-                <div class="tooltip-wrapper">
-                    <img class="aggregation-icon" src="{per_capita}" alt="icon" />
-                    <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
-                </div> 
-            </div>
+                
                 <br>
 
                 <!-- Disclaimer -->
@@ -672,7 +679,12 @@
                     <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where the x-axis is non-linear:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
 
                 </div>
-
+                <div class="aggregation-icon-container2">
+                    <div class="tooltip-wrapper">
+                        <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                        <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                    </div> 
+                </div>
                 <!-- Legend -->
                 <div id="se-legend" class="legend-box">
                     <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
@@ -1052,6 +1064,17 @@
     margin-top: -25px;
     margin-bottom: -25px;
     margin-right: 10px;
+  }
+
+  .aggregation-icon-container2 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 99%; 
+    margin-top: -10px;
+    margin-bottom: -30px;
+    margin-right: 0px;
+    margin-left:0px;
   }
 
 </style>

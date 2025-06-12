@@ -20,6 +20,9 @@
 
 <main>
     <h1>Browse socio-economic factors</h1>
+    <div class="disclaimer-box">
+        <p style="margin: 0 0 0rem 0;"><strong>What are socio-economic factors?:</strong> ...</p>
+    </div>
     <p>Click on a socio-economic factor for a detailed report.</p>
 </main>
 
@@ -27,7 +30,7 @@
     <div class="left-column">
         <div class="heading-container">
             <img src={PeopleIcon} alt="Icon" class="heading-icon" />
-            <h2>Demographic factors</h2>
+            <h2>Demographics</h2>
         </div>
         <div class="sef-link-wrapper">
         <a class="sef-link" href="{base}/sef?sef=Under_35">Age - under 35 </a>
@@ -44,7 +47,7 @@
 
         <div class="heading-container">
             <img src={CarIcon} alt="Icon" class="heading-icon" />
-            <h2>Transport factors</h2>
+            <h2>Transport</h2>
         </div>
         <div class="sef-link-wrapper">
         <a class="sef-link" href="{base}/sef?sef=Number_cars">Number of cars</a>
@@ -93,7 +96,7 @@
 
         <div class="heading-container">
             <img src={TreeIcon} alt="Icon" class="heading-icon" />
-            <h2>Geographic factors</h2>
+            <h2>Geography</h2>
         </div>
         <div class="sef-link-wrapper">
         <a class="sef-link" href="{base}/sef?sef=Rurality">Rurality</a>
@@ -103,7 +106,7 @@
 
 <style>
     main {
-        padding: 2rem 4rem 0rem 4rem; /* top right bottom left */
+        padding: 2rem 4rem 0rem 4rem; 
         font-family: Arial, sans-serif;
     }
 
@@ -111,7 +114,7 @@
         display: flex;
         gap: 1rem;
         align-items: flex-start;
-        padding: 0rem 4rem 0rem 4rem; /* top right bottom left */
+        padding: 0rem 4rem 0rem 4rem; 
     }
     .left-column,
     .right-column {
@@ -162,6 +165,13 @@
     }
     .sef-link-wrapper:hover {
         background: #404040;
+}
+.disclaimer-box {
+    margin-bottom: 0rem;
+    padding: 0.5rem;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
 }
 
 </style>
