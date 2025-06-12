@@ -229,52 +229,36 @@
         );
     }
 
-    function renderplotSmallMult() {
-        plotMultDot.append(
-            Plot.plot({
-                height: height * 1.5,
-                width: height * 2,
-                marginLeft: 60,
-                marginTop: 10,
-                marginRight: 10,
-                marginBottom: 40,
-                x: {label: null},
-                y: {label: null},
-                style: {fontSize: "16px"},
-                marks: [
-                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == "Noise"), {
-                        x: "val",
-                        y: "total",
-                        fill: "black",
-                        fillOpacity: 0.5,
-                        tip: true,
-                    }),
-                ]
-            })
-        );
-    }
-
     function renderMultPlotDot() {
         CBS.forEach(CB => {
             let plot;
             plot = Plot.plot({
-                height: height * 1.5,
-                width: height * 2,
+                height: height,
+                width: height,
                 marginLeft: 60,
                 marginTop: 10,
                 marginRight: 10,
-                marginBottom: 40,
+                marginBottom: 60,
                 x: {label: null},
                 y: {label: null},
                 style: {fontSize: "16px"},
                 marks: [
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 1.25}),
+                    Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
                     Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
                         x: "val",
                         y: "total",
                         fill: COBENEFS_SCALE(CB),
                         fillOpacity: 0.5,
                         tip: true,
+                        r:0.5,
                     }),
+                    Plot.axisY({
+                        label: "Per capita co-benefit value (£, thousand)",
+                        labelArrow: false,
+                        labelAnchor: "center"
+                    }),
+                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
                 ]
             });
             plotSmallMult[CB]?.append(plot)
@@ -283,6 +267,18 @@
 
     function formatValue(value, unit) {
         return unit === "£" ? `${unit}${value}` : `${value} ${unit}`;
+    }
+
+    let expanded = new Set();
+
+    function toggle(id) {
+        if (expanded.has(id)) {
+            expanded.delete(id);
+        } else {
+            expanded.add(id);
+        }
+        // Force reactivity
+        expanded = new Set(expanded);
     }
 
     $: {
@@ -407,21 +403,27 @@
                 <!-- Disclaimer -->
                 <div id="se-disclaimer" class="disclaimer-box">
                     <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
-                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> IF SEF=CAT:</p>
-
                 </div>
 
                 <!-- Legend -->
-                <div id="se-legend" class="legend-box">
-                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
-                    
-                    <div class="legend-buttons">
-
+                <div id="main-legend" class="legend-box">
+                    <p><strong>Co-benefits:</strong><br>Expand for detailed information<p>
+                        {#each CO_BEN as CB}
+                        <div class="legend-item">
+                            <div class="legend-header" on:click={() => toggle(CB.id)} style="cursor: pointer;">
+                                <span class="legend-color" style="background-color: {COBENEFS_SCALE(CB.id)};"></span>
+                                <span class="legend-text">{CB.label}</span>
+                                <span class="toggle-icon">{expanded.has(CB.id) ? "▲" : "▼"}</span>
+                            </div>
+                            {#if expanded.has(CB.id)}
+                            <div class="legend-description">
+                                {CB.def}
+                            </div>
+                            {/if}
+                        </div>
+                        {/each}
                     </div>
-                    
                 </div>
-            </div>
 
         
 
@@ -430,7 +432,6 @@
                     {#each CO_BEN as CB}
                         <div class="plot-container">
                             <h3 class="component-chart-title">{CB.label}</h3>
-                            <p class="component-chart-caption"></p>
                             {#if plotSmallMult[CB.id] === undefined}
                                 {console.log("Missing key in plotSmallMult:", CB.id)}
                             {/if}
@@ -534,50 +535,6 @@
         color: #777;
     }
 
-.aggregation-icon-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  width: 99%; 
-  margin-top: 20px;
-  margin-right: 10px;
-}
-
-.tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.aggregation-icon {
-  width: 40px;
-  height: 40px;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  background-color: #333;
-  color: #fff;
-  font-size: 12px;
-  padding: 5px 8px;
-  border-radius: 4px;
-  position: absolute;
-  top: 35px;
-  right: -60px;
-  left: -60px;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  max-width: 200px;          /* control width */
-  white-space: normal;       /* allow wrapping */
-  word-break: break-word;    /* instead of word-wrap */
-  display: inline-block;     /* important for width + wrapping */
-}
-
-.tooltip-wrapper:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
     .plot {
         margin-top: 0px; /* pull it upward */
     }
@@ -604,6 +561,12 @@
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
         justify-items: start;
+    }
+
+    #multiple-comp {
+        /* grid-column: span 2 / span 2; */
+        width: 100%;
+        padding: 1rem 0;
     }
 
 
@@ -647,4 +610,62 @@
         align-self: flex-start;
         height: fit-content;
     }
+
+    .legend-color {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        border-radius: 2px;
+    }
+
+    .legend-box {
+        margin-bottom: 2rem;
+        padding: 0.75rem;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        font-size: 1.1rem;
+    }
+    .horizontal-legend-list {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 2px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .legend-item {
+    margin-bottom: 0.5em;
+}
+
+.legend-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.legend-color {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.legend-text {
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+.toggle-icon {
+    margin-left: auto;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+.legend-description {
+    margin-left: 1.5em;
+    font-size: 0.9em;
+    color: #555;
+}
 </style>
