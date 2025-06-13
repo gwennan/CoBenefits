@@ -27,7 +27,8 @@
         getTableData,
         getSEFbyCobenData,
         getSefForOneCoBenefit,
-        getAggregationPerCapitaPerBenefit
+        getAggregationPerCapitaPerBenefit,
+        getAverageSEFbyCobenDataGroupedByLAD
     } from "$lib/duckdb";
 
     import per_capita from '$lib/icons/per_capita.png';
@@ -160,7 +161,7 @@
                 marginRight: 20,
                 marginBottom: 50,
                 x: {label: `${sefUnits}`},
-                y: {label: 'No. of datazones/LADs', labelArrow: false},
+                y: {label: 'No. of datazones', labelArrow: false},
                 style: {fontSize: "16px"},
                 marks: [
                     Plot.rectY(fullData, Plot.binX({y: "count"}, {
@@ -349,7 +350,7 @@
         </div>
     {/if}
 
-    <div class="section">
+    <!--<div class="section">
         <div class="radio-set">
             Select which level of data you'd like to view:<br/>
             <input type="radio" name="compare" value="LSOA" checked>
@@ -357,7 +358,7 @@
             <input type="radio" name="compare" value="LAD">
             <label class="nation-label" for="html">Local Authority (LAD)</label><br>
         </div>
-    </div>
+    </div>-->
 
     <div class="section">
         <div id="overview">
