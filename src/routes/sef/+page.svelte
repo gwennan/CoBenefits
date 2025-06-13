@@ -242,7 +242,7 @@
                 marginBottom: 60,
                 x: {label: null},
                 y: {label: null},
-                style: {fontSize: "16px"},
+                style: {fontSize: "12px"},
                 marks: [
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 1.25}),
                     Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
@@ -408,8 +408,8 @@
         </div>
         <div id="se-block" class="component" style="margin-left: 1rem;">
             <div id="se-title">
-                <h3 class="component-title">Plotting {sefLabel.toLowerCase()} against the gain/loss (£, thousand) per capita for each co-benefit</h3>
-                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given co-benefit.</p>
+                <h3 class="component-title">Plotting <span style="background-color: #555; padding: 0 1px; color:#f9f9f9">{sefLabel.toLowerCase()}</span> against the gain/loss (£, thousand) per capita for each co-benefit</h3>
+                <p class="explanation">Each plot shows the distribution of benefits or costs for each of the 11 co-benefits.</p>
                 <br>
 
                 <!-- Disclaimer -->
@@ -425,7 +425,7 @@
                 </div>
                 <!-- Legend -->
                 <div id="main-legend" class="legend-box">
-                    <strong>Co-benefits:</strong><br>Expand for detailed information
+                    <strong>Co-benefits:</strong><br>Expand for detailed explanation
                     <div style="height: 0.8em;"></div>
                         {#each CO_BEN as CB}
                         <div class="legend-item">
