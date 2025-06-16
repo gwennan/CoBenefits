@@ -2,7 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount} from 'svelte';
-    import { base } from '$app/paths';
+    import {base} from '$app/paths';
 
     import * as maplibregl from "maplibre-gl"
     import "maplibre-gl/dist/maplibre-gl.css";
@@ -141,8 +141,8 @@
                 const range = domain.map((d, i) => interpolateGray(i / (domain.length - 1)));
 
                 let colorScale = d3.scaleOrdinal()
-                .domain(domain)
-                .range(range)
+                    .domain(domain)
+                    .range(range)
 
                 map.setColorScale(colorScale);
             }
@@ -324,11 +324,16 @@
     <div class="component" id="heaser">
         <h2> Map </h2>
 
-        <p>This interactive map allows to explore both the co-benefit values (per capita) and the socio-economic factors at the local
-            authorities and datazones levels.  </p>
+        <p>This interactive map allows to explore both the co-benefit values (per capita) and the socio-economic factors
+            at the local
+            authorities and datazones levels. </p>
 
-        <p><strong>Co-Benefits:</strong> The total co-benefit per capita is initially shown. The values go from white (low) to black (high), and negative values are shown in red. Individual co-benefit can be selected with the radio buttons on the right.</p>
-        <p><strong>Socio-Economic Factors:</strong> The average values are shown for numerical factors while the mode is shown for categorical factors. Values go from white for low values to black for high values (when values can be ordered).</p>
+        <p><strong>Co-Benefits:</strong> The total co-benefit per capita is initially shown. The values go from white
+            (low) to black (high), and negative values are shown in red. Individual co-benefit can be selected with the
+            radio buttons on the right.</p>
+        <p><strong>Socio-Economic Factors:</strong> The average values are shown for numerical factors while the mode is
+            shown for categorical factors. Values go from white for low values to black for high values (when values can
+            be ordered).</p>
 
         <!--        <p>-->
         <!--            This interactive map shows the average co-benefit value (in million of £) for each Local Authority (or datazone) of the UK.-->
@@ -385,9 +390,9 @@
                                        checked>
                                 <!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
                                 <a class="link" href="{base}/cobenefit?cobenefit={coBenef.id}">
-<!--                                    <label>-->
-                                        {coBenef.label}
-<!--                                    </label>-->
+                                    <!--                                    <label>-->
+                                    {coBenef.label}
+                                    <!--                                    </label>-->
                                 </a>
                                 <br>
                             </div>
@@ -466,16 +471,29 @@
 
     #export-button {
         position: absolute;
-        /*width: 10%;*/
         top: 15%;
         right: 5%;
-        padding: 10px;
 
-        /*background-color: #0177CC;*/
-        background-color: black;
-        font-size: 10px;
+        background-color: #007bff;
+        /*background-color: black;*/
+        cursor: pointer;
+        padding: 0.5rem 0.8rem;
+        transition: background-color 0.2s ease;
+        border-radius: 6px;
+        font-size: 1rem;
         color: white;
     }
+
+    /*    .search-btn {*/
+    /*padding: 0.5rem 1rem;*/
+    /*font-size: 1rem;*/
+    /*border: none;*/
+    /*background-color: #007bff;*/
+    /*border-radius: 6px;*/
+    /*color: white;*/
+    /*cursor: pointer;*/
+    /*transition: background-color 0.2s ease;*/
+    /*}*/
 
     #control-panel {
         flex: 0 0 25%; /* Don't grow or shrink, fixed at 75% width */
