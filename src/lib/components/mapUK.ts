@@ -1,7 +1,8 @@
 // MapUK Component using Maplinre
 import * as d3 from 'd3';
 import * as Plot from "@observablehq/plot";
-import {onMount} from 'svelte';
+import {goto} from '$app/navigation';
+
 
 import * as maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -26,6 +27,14 @@ let LADZones = await d3.json(LADzonesPath)
 // LADZones = topojson.feature(LADZones, LADZones.objects["Local_Authority_Districts_December_2011_GB_BGC_2022_484504071141336946"]);
 LADZones = topojson.feature(LADZones, LADZones.objects["LAD_MAY_2022_UK_BFE_V3"]);
 
+// Add an id to each feature for mouse hover events later
+LADZones.features.forEach((f, i) => {
+    f.id = i;
+})
+datazones.features.forEach((f, i) => {
+    f.id = i;
+})
+
 
 export class MapUK {
     colorScale: d3.ScaleDiverging<any>;
@@ -45,7 +54,7 @@ export class MapUK {
     tooltipValueCb: () => string = (v) => `Value: <strong>${v}</strong>`;
 
 
-    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange=null, zoomLevel=4) {
+    constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange = null, zoomLevel = 4) {
         this.component = component;
         this.dataZoneToValue = {};
         this.granularity = granularity;
@@ -55,7 +64,6 @@ export class MapUK {
         this.border = border;
 
         this.colorRange = colorRange ?? ["red", "white", "black"]
-
 
         // UK centering
         this.center = [-3.54785, 54.79648] // Leeds
@@ -77,7 +85,7 @@ export class MapUK {
         this.tooltip.style.backgroundColor = "white";
         this.tooltip.style.padding = "5px";
         this.tooltip.style.border = "1px solid black";
-        // this.tooltip.style.pointerEvents = "none";
+        this.tooltip.style.pointerEvents = "none";
         this.tooltip.style.display = "none";
         this.component.append(this.tooltip);
     }
@@ -178,7 +186,6 @@ export class MapUK {
         }
         // console.log(" OK ", this.dataZoneToValue, Object.keys(this.dataZoneToValue).length)
 
-
         this.makeColorScale(justHighlightArea)
     }
 
@@ -202,25 +209,6 @@ export class MapUK {
             } else {
                 domain = d3.range(0, this.colorRange.length).map(i => domain[0] + (i / (this.colorRange.length - 1)) * (domain[1] - domain[0]))
             }
-
-            // if (type == "Cobenefit") {
-            //     // Remove outlier values from the scale otherwise we dont see anything
-            //     if (this.granularity == "LSOA") {
-            //         // domain[0] = 0;
-            //         domain[domain.length - 1] = d3.mean(data.map(d => d[this.dataKey])) + d3.variance(data.map(d => d[this.dataKey]));
-            //     }
-            //
-            //     this.colorScale = d3.scaleSequential()
-            //         .domain(domain)
-            //         .interpolator(d3.interpolateYlGnBu)
-            //     // .interpolator(d3.interpolateYlGnBu)
-            //     // .range(d3.interpolatePuBuGn)
-            //
-            // } else if (type == "SEF") {
-            //     this.colorScale = d3.scaleSequential()
-            //         .domain(domain)
-            //         .interpolator(d3.interpolateYlOrBr)
-            // }
 
             this.colorScale = d3.scaleLinear()
                 .domain(domain)
@@ -254,14 +242,28 @@ export class MapUK {
 
         // Optional: Add border
         if (this.border) {
-            // if (true) {
+            // this.map.addLayer({
+            //     id: 'state-borders',
+            //     type: 'line',
+            //     source: 'datazones',
+            //     paint: {
+            //         'line-color': '#000000',
+            //         'line-width': 0.2
+            //     }
+            // });
+
             this.map.addLayer({
                 id: 'state-borders',
                 type: 'line',
                 source: 'datazones',
                 paint: {
                     'line-color': '#000000',
-                    'line-width': 0.2
+                    'line-width': [
+                        "case",
+                        ["boolean", ['feature-state', "hover"], false],
+                        2, // when hovered
+                        0.2 // default
+                    ]
                 }
             });
         }
@@ -331,10 +333,8 @@ export class MapUK {
 
         // Find label layers (commonly of type 'symbol')
         const labelLayerIds = layers
-        .filter(l => l.type === 'symbol')
-        .map(l => l.id);
-
-        // console.log(222, labelLayerIds)
+            .filter(l => l.type === 'symbol')
+            .map(l => l.id);
 
         // Move each label layer to the top
         for (const id of labelLayerIds) {
@@ -365,11 +365,19 @@ export class MapUK {
                     let name = zone.properties.LAD22NM ?? zone.properties.LSOA21NM;
                     let cobenefValue = zone.properties.value;
 
+                 //    this.tooltip.innerHTML = `
+                 // <strong>Zone</strong>: <a href="/location?location=${this.zoneName(zone)}">${name}</a> (${this.zoneName(zone)})
+                 // <br>
+                 // <strong>${this.tooltipValueCb(cobenefValue)}</strong>
+                 // `;
+
                     this.tooltip.innerHTML = `
-                 <strong>Zone</strong>: <a href="/location?location=${this.zoneName(zone)}">${name}</a> (${this.zoneName(zone)})
+                 Zone: <strong>${name}</strong>
                  <br>
                  <strong>${this.tooltipValueCb(cobenefValue)}</strong>
                  `;
+
+
                     this.tooltip.style.left = event.point.x + 5 + 'px';
                     this.tooltip.style.top = event.point.y + 5 + 'px';
                     this.tooltip.style.display = 'block';
@@ -377,7 +385,41 @@ export class MapUK {
                     this.tooltip.style.display = 'none';
                 }
             });
+
+
+            let hoveredFeatureId = null;
+
+            this.map.on('mousemove', 'fill', (e) => {
+                if (hoveredFeatureId) {
+                    this.map.setFeatureState(
+                        {source: 'datazones', id: hoveredFeatureId},
+                        {hover: false}
+                    );
+                }
+                hoveredFeatureId = e.features[0].id
+                this.map.setFeatureState(
+                    {source: 'datazones', id: hoveredFeatureId},
+                    {hover: true}
+                );
+            });
+
+            this.map.on("mouseleave", "fill", (e) => {
+                if (hoveredFeatureId) {
+                    this.map.setFeatureState(
+                        {source: 'datazones', id: hoveredFeatureId},
+                        {hover: false}
+                    );
+                }
+            })
         }
+
+
+        this.map.on("click", "fill", (e) => {
+            let feature = e.features[0];
+            let lad = feature.properties.LAD22CD;
+            window.open(`/location?location=${lad}`, '_blank');
+        })
+
 
         // // Listen for zoom events
         // this.map.on('zoom',  () => {
