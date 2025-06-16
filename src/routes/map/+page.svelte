@@ -322,10 +322,13 @@
 <div class="page-container" bind:this={element}>
 
     <div class="component" id="heaser">
-        <h2> MapUK </h2>
+        <h2> Map </h2>
 
-        <p>This interactive map allows to explore both the co-benefit values and the socio-economic factors at the local
-            authorities and datazones levels.</p>
+        <p>This interactive map allows to explore both the co-benefit values (per capita) and the socio-economic factors at the local
+            authorities and datazones levels.  </p>
+
+        <p><strong>Co-Benefits:</strong> The total co-benefit per capita is initially shown. The values go from white (low) to black (high), and negative values are shown in red. Individual co-benefit can be selected with the radio buttons on the right.</p>
+        <p><strong>Socio-Economic Factors:</strong> The average values are shown for numerical factors while the mode is shown for categorical factors. Values go from white for low values to black for high values (when values can be ordered).</p>
 
         <!--        <p>-->
         <!--            This interactive map shows the average co-benefit value (in million of £) for each Local Authority (or datazone) of the UK.-->
