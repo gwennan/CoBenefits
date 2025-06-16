@@ -2,6 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
+    import { base } from '$app/paths';
 
     import {MapUK} from "$lib/components/mapUK";
 
@@ -15,7 +16,8 @@
         type CoBenefit,
         CBS,
         CO_BEN,
-        SEF_UNITS2
+        SEF_UNITS2,
+        COBENEFS_SCALE,
     } from "../../globals";
 
 
@@ -25,7 +27,8 @@
         getTableData,
         getSEFbyCobenData,
         getSefForOneCoBenefit,
-        getAggregationPerCapitaPerBenefit
+        getAggregationPerCapitaPerBenefit,
+        getAverageSEFbyCobenDataGroupedByLAD
     } from "$lib/duckdb";
 
     import per_capita from '$lib/icons/per_capita.png';
@@ -158,7 +161,7 @@
                 marginRight: 20,
                 marginBottom: 50,
                 x: {label: `${sefUnits}`},
-                y: {label: 'No. of datazones/LADs', labelArrow: false},
+                y: {label: 'No. of datazones', labelArrow: false},
                 style: {fontSize: "16px"},
                 marks: [
                     Plot.rectY(fullData, Plot.binX({y: "count"}, {
@@ -169,11 +172,11 @@
                         srokeWidth: 5,
                     })),
                     Plot.ruleX([average], {
-                        stroke: "#BD210E",
-                        strokeWidth: 4,
-                        channels: {average: {value: average, label: "Average"}},
-                        tip: {format: {average: true, x: false}},
-                    }),
+                                stroke: "#BD210E",
+                                strokeWidth: 4,
+                                channels: {average: {value: average, label: "Average"}},
+                                tip: {format: {average:d => `${d.toFixed(2)}`, x:false}},
+                            }),
                     Plot.dot(fullData, {
                         x: {value: average, thresholds: 20},
                         y: maxY + 0.1 * maxY,
@@ -190,7 +193,7 @@
     function renderDotPlot() {
         plotDot?.append(
             Plot.plot({
-                height: height * 2,
+                height: height * 1.5,
                 width: height * 2,
                 marginLeft: 60,
                 marginTop: 60,
@@ -211,8 +214,8 @@
                         fillOpacity: 0.75,
                         channels: {
                             location: {value: "Lookup_Value", label: "Location"},
-                            sef: {value: "val", label: "SEF Value"},
-                            value: {value: d => d.total_per_capita * 1000, label: "Per Capita Co-Benefit Value"},
+                            sef: {value: "val", label: `${sefUnits}`},
+                            value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
                         },
                         tip: {format: {location: true, sef: true, value: true, x: false, y: false}},
                     }),
@@ -228,52 +231,46 @@
         );
     }
 
-    function renderplotSmallMult() {
-        plotMultDot.append(
-            Plot.plot({
-                height: height * 1.5,
-                width: height * 2,
-                marginLeft: 60,
-                marginTop: 10,
-                marginRight: 10,
-                marginBottom: 40,
-                x: {label: null},
-                y: {label: null},
-                style: {fontSize: "16px"},
-                marks: [
-                    Plot.dot(SEFData.filter(d => d["co_benefit_type"] == "Noise"), {
-                        x: "val",
-                        y: "total",
-                        fill: "black",
-                        fillOpacity: 0.5,
-                        tip: true,
-                    }),
-                ]
-            })
-        );
-    }
-
     function renderMultPlotDot() {
         CBS.forEach(CB => {
             let plot;
             plot = Plot.plot({
-                height: height * 1.5,
-                width: height * 2,
+                height: height,
+                width: height,
                 marginLeft: 60,
                 marginTop: 10,
                 marginRight: 10,
-                marginBottom: 40,
+                marginBottom: 60,
                 x: {label: null},
                 y: {label: null},
-                style: {fontSize: "16px"},
+                style: {fontSize: "12px"},
                 marks: [
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 1.25}),
+                    Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
                     Plot.dot(SEFData.filter(d => d["co_benefit_type"] == CB), {
                         x: "val",
                         y: "total",
-                        fill: "black",
+                        fill: COBENEFS_SCALE(CB),
                         fillOpacity: 0.5,
-                        tip: true,
+                        r:0.5,
+                        channels: {
+                            location: {value: "Lookup_Value", label: "Location"},
+                            //sef: {value: "val", label: `${sefUnits}`},
+                            //value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
+                        },
+                        tip: {format: {
+                            location: true, 
+                            //sef: true, 
+                            //value: true, 
+                            x: false, 
+                            y: false}},
                     }),
+                    Plot.axisY({
+                        label: "Per capita co-benefit value (£, thousand)",
+                        labelArrow: false,
+                        labelAnchor: "center"
+                    }),
+                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
                 ]
             });
             plotSmallMult[CB]?.append(plot)
@@ -282,6 +279,18 @@
 
     function formatValue(value, unit) {
         return unit === "£" ? `${unit}${value}` : `${value} ${unit}`;
+    }
+
+    let expanded = new Set();
+
+    function toggle(id) {
+        if (expanded.has(id)) {
+            expanded.delete(id);
+        } else {
+            expanded.add(id);
+        }
+        // Force reactivity
+        expanded = new Set(expanded);
     }
 
     $: {
@@ -341,7 +350,7 @@
         </div>
     {/if}
 
-    <div class="section">
+    <!--<div class="section">
         <div class="radio-set">
             Select which level of data you'd like to view:<br/>
             <input type="radio" name="compare" value="LSOA" checked>
@@ -349,7 +358,7 @@
             <input type="radio" name="compare" value="LAD">
             <label class="nation-label" for="html">Local Authority (LAD)</label><br>
         </div>
-    </div>
+    </div>-->
 
     <div class="section">
         <div id="overview">
@@ -367,10 +376,17 @@
                         </div>
                     </div>
                     <div class="plot-dot" bind:this={plotDot}></div>
+                    
                 </div>
                 <div class="component column">
                     <h3 class="component-title">{sefLabel} </h3>
                     <p class="description">Scroll for zooming in and out.</p>
+                    <div class="aggregation-icon-container2">
+                        <div class="tooltip-wrapper">
+                            <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                            <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                        </div> 
+                    </div>
                     {#if map}
                         <div id="legend">
                             {@html map.legend(sefUnits).outerHTML}
@@ -383,39 +399,80 @@
         </div>
     </div>
 
-    <div class="section">
-        <div id="compare">
-            <div class="section-header">
-                <p class="section-subtitle">Comparison</p>
-            </div>
-            <div id="vis-block">
-                <div class="component column">
-                    <h3 class="component-title">{sefLabel} against per capita co-benefit values (£, thousand)</h3>
-                    <p class="description">By Co-Benefit. </p>
-                    <div class="plot" bind:this={plotMultDot}></div>
+    <div id="compare">
+        <!-- <div class="section-header">
+        <p class="section-subtitle">Compare by socio-economic factor</p>
+        </div> -->
+
+        <div class="section-header">
+            <p class="section-subtitle">By Co-benefits</p>
+        </div>
+        <div id="se-block" class="component" style="margin-left: 1rem;">
+            <div id="se-title">
+                <h3 class="component-title">Plotting <span style="background-color: #555; padding: 0 1px; color:#f9f9f9">{sefLabel.toLowerCase()}</span> against the gain/loss (£, thousand) per capita for each co-benefit</h3>
+                <p class="explanation">Each plot shows the distribution of benefits or costs for each of the 11 co-benefits.</p>
+                <br>
+
+                <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Varying y-axis scales:</strong> The scatter plots have different scales on the y-axis due to the nature of each co-benefit. </p>
+                </div>
+                <div class="aggregation-icon-container2">
+                    <div class="tooltip-wrapper">
+                        <img class="aggregation-icon" src="{per_capita}" alt="icon" />
+                        <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                    </div> 
+                </div>
+                <!-- Legend -->
+                <div id="main-legend" class="legend-box">
+                    <strong>Co-benefits:</strong><br>Expand for detailed explanation
+                    <div style="height: 0.8em;"></div>
+                        {#each CO_BEN as CB}
+                        <div class="legend-item">
+                            <div class="legend-header" on:click={() => toggle(CB.id)} style="cursor: pointer;">
+                                <span class="legend-color" style="background-color: {COBENEFS_SCALE(CB.id)};"></span>
+                                <span class="legend-text {expanded.has(CB.id) ? 'expanded' : ''}" >{CB.label}</span>
+                                <span class="toggle-icon">{expanded.has(CB.id) ? "▲" : "▼"}</span>
+                            </div>
+                            {#if expanded.has(CB.id)}
+                            <div class="legend-description-box">
+                            <div class="legend-description">
+                                <div style="height: 0.8em;"></div>
+                                {CB.def} <br>
+                                <div class="link-box">
+                                Click <a class="link" href="{base}/cobenefit?cobenefit={CB.id}" target="_blank" rel="noopener noreferrer" style= "color:{COBENEFS_SCALE(CB.id)};">here</a> for the 
+                                <span style= "color:{COBENEFS_SCALE(CB.id)};">{CB.id.toLowerCase()} </span>report page.
+                                </div>
+                            </div>
+                            </div>
+                            {/if}
+                        </div>
+                        {/each}
+                    </div>
+                </div>
+
+        
+
+            <div id="multiple-comp">
+                <div id="multiple-plots">
+                    {#each CO_BEN as CB}
+                        <div class="plot-container">
+                            <h3 class="component-chart-title">{CB.label}</h3>
+                            {#if plotSmallMult[CB.id] === undefined}
+                                {console.log("Missing key in plotSmallMult:", CB.id)}
+                            {/if}
+                            <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
+                        </div>
+                    {/each}
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="multiple-comp">
-        <div id="multiple-plots">
-            {#each CO_BEN as CB}
-                <div class="plot-container">
-                    <h3 class="component-chart-title">{CB.label}</h3>
-                    <p class="component-chart-caption"></p>
-                    {#if plotSmallMult[CB.id] === undefined}
-                        {console.log("Missing key in plotSmallMult:", CB.id)}
-                    {/if}
-                    <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
-                </div>
-            {/each}
         </div>
-    </div>
-
 </div>
 
 <style>
+
     .section.header {
         padding: 2% 6%;
         background-color: #f9f9f9;
@@ -446,26 +503,26 @@
     }
 
     .header-vis {
-        text-align: left;
-        flex: 1;
-        margin-left: 0rem; /* pushes it to the far right */
-        margin-top: 1rem; /* moves it down slightly */
-        padding-right: 0rem;
-        padding-left: 0rem; /* adds space from the right edge */
-        flex-grow: 1;
-        flex-shrink: 0;
-        flex-basis: auto;
-        max-width: 40%;
+    text-align: left;
+    flex: 1;
+    margin-left: 0rem;        /* pushes it to the far right */
+    margin-top: 1rem;         /* moves it down slightly */
+    padding-right: 0rem;  
+    padding-left: 0rem;    /* adds space from the right edge */
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
+    max-width: 40%;
     }
 
     .header-stats {
-        text-align: left;
-        flex: 1;
-        margin-left: 0rem; /* pushes it to the far right */
-        margin-top: 2rem; /* moves it down slightly */
-        padding-right: 0rem;
-        padding-left: 0rem; /* adds space from the right edge */
-        line-height: 2;
+    text-align: left;
+    flex: 1;
+    margin-left: 0rem;        /* pushes it to the far right */
+    margin-top: 2rem;         /* moves it down slightly */
+    padding-right: 0rem;  
+    padding-left: 0rem;    /* adds space from the right edge */
+    line-height: 2;
     }
 
     .page-subtitle {
@@ -505,50 +562,6 @@
         color: #777;
     }
 
-    .aggregation-icon-container {
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
-        width: 99%;
-        margin-top: 20px;
-        margin-right: 10px;
-    }
-
-    .tooltip-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-
-    .aggregation-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .tooltip-text {
-        visibility: hidden;
-        background-color: #333;
-        color: #fff;
-        font-size: 12px;
-        padding: 5px 8px;
-        border-radius: 4px;
-        position: absolute;
-        top: 35px;
-        right: -60px;
-        left: -60px;
-        z-index: 1;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        max-width: 200px; /* control width */
-        white-space: normal; /* allow wrapping */
-        word-break: break-word; /* instead of word-wrap */
-        display: inline-block; /* important for width + wrapping */
-    }
-
-    .tooltip-wrapper:hover .tooltip-text {
-        visibility: visible;
-        opacity: 1;
-    }
-
     .plot {
         margin-top: 0px; /* pull it upward */
     }
@@ -569,4 +582,156 @@
         width: 100%;
         height: 83%;
     }
+
+    #multiple-plots {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        justify-items: start;
+    }
+
+    #multiple-comp {
+        /* grid-column: span 2 / span 2; */
+        width: 100%;
+        padding: 1rem 0;
+    }
+
+
+    .plot-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .component-chart-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .component-chart-caption {
+        font-size: 0.9rem;
+        line-height: 1.1rem;
+        color: #555;
+        margin: 0 0 15px 0;
+        text-align: left;
+    }
+
+    #se-block {
+        display: flex;
+        /* width: 100%; */
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    #se-title {
+        /* min-width: 25vw; */
+        /* width: 30vw; */
+        width: 400px;
+        margin-left: 1rem;
+        /* margin-right: 2rem; */
+        margin-right: 50px;
+        position: sticky;
+        top: 120px;
+        align-self: flex-start;
+        height: fit-content;
+    }
+
+    .legend-color {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        border-radius: 2px;
+    }
+
+    .legend-box {
+        margin-bottom: 2rem;
+        padding: 0.75rem;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        font-size: 1.1rem;
+    }
+    .horizontal-legend-list {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 2px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .legend-item {
+    margin-bottom: 0.6em;
+}
+
+.legend-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.legend-color {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.legend-text {
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+.toggle-icon {
+    margin-left: auto;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+.legend-description {
+    margin-left: 0.1em;
+    margin-right: 0em;
+    padding: 1em;
+    padding-top: 0em;
+    font-size: 0.8em;
+    color: #555;
+}
+.legend-description-box {
+    margin: 0.5em 0em;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.link-box {
+    margin: 0.5em 0em;
+    border-left: 2px solid #555;
+    padding-left: 0.4em;
+    padding-right: 0.1em;
+}
+
+.aggregation-icon-container2 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 99%; 
+    margin-top: -10px;
+    margin-bottom: -30px;
+    margin-right: 10px;
+    margin-left:0px;
+  }
+
+  .legend-text.expanded {
+  font-weight: 400;
+}
+
+.disclaimer-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    font-size: 0.9rem;
+    color: #555;
+}
 </style>

@@ -134,9 +134,17 @@ export function getSEFData(sef: SEFactor) {
 
 export function getSEFbyCobenData(sef: SEFactor) {
     // Select total line because the value is repeated for one LSOA
-    let query = `SELECT ${sef} as val, total, total/Households as total_per_capita, Lookup_Value, co_benefit_type
+    let query = `SELECT ${sef} as val, total, total/population as total_per_capita, Lookup_Value, co_benefit_type
                  FROM ${DB_TABLE_NAME}
                  WHERE co_benefit_type != 'Total'`
+    return query
+}
+
+export function getAverageSEFbyCobenDataGroupedByLAD(sef: SEFactor) {
+    let query = `SELECT AVG(${sef}) as val, total, total/population as total_per_capita, LAD as Lookup_Value, co_benefit_type
+                 FROM ${DB_TABLE_NAME}
+                 WHERE co_benefit_type != 'Total'
+                 GROUP BY LAD, scenario`
     return query
 }
 

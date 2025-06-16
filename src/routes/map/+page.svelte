@@ -2,6 +2,7 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount} from 'svelte';
+    import { base } from '$app/paths';
 
     import * as maplibregl from "maplibre-gl"
     import "maplibre-gl/dist/maplibre-gl.css";
@@ -380,7 +381,7 @@
                                 <input type="radio" on:change={onChangeCobenef} name="cobenef" value={coBenef.id}
                                        checked>
                                 <!--                        <input type="checkbox" on:change={onChangeCobenef} name="cobenef" value={coBenef} checked>-->
-                                <a class="link" href="/cobenefit?cobenefit={coBenef.id}">
+                                <a class="link" href="{base}/cobenefit?cobenefit={coBenef.id}">
 <!--                                    <label>-->
                                         {coBenef.label}
 <!--                                    </label>-->
