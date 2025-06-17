@@ -370,8 +370,9 @@
     }
 
     function renderPerCobenefPlot() {
-        plotPerCb?.append(
-            Plot.plot({
+
+        if (plotPerCb) {
+            let plot = Plot.plot({
                 height: height / 1,
                 width: 811,
                 ...MARGINS,
@@ -418,7 +419,37 @@
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
                 ]
-            }))
+            })
+
+            // console.log(plot, plot.querySelectorAll(".tick text"))
+            console.log(d3.select(plot).select('g[aria-label="x-axis tick label"]'))
+
+            d3.select(plot)
+  .select('g[aria-label="x-axis tick label"]')
+                .selectAll("text")
+  .style("cursor", "pointer")
+  .on("click", (event, d, i) => {
+      console.log(2323232, event)
+      let cb = COBENEFS[i]
+
+      window.location.href = `${base}/cobenefit?cobenefit=${cb.id}`
+  })
+
+            // plot.querySelectorAll(".tick text").forEach(tick => {
+            //     console.log(1212, tick)
+                // const label = tick.textContent;
+                // const url = urlMap.get(label);
+                // if (url) {
+                //     tick.style.fill = "blue";
+                //     tick.style.textDecoration = "underline";
+                //     tick.style.cursor = "pointer";
+                //     tick.addEventListener("click", () => window.open(url, "_blank"));
+                // }
+            // });
+
+            plotPerCb.append(plot)
+        }
+
     }
 
     function renderSEFPlot() {

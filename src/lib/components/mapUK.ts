@@ -51,7 +51,7 @@ export class MapUK {
     zoneKey: string;
     border: boolean
     colorRange: Array<any>;
-    tooltipValueCb: () => string = (v) => `Value: <strong>${v}</strong>`;
+    tooltipValueCb: () => string = (v) => `Value: <strong>${v.toFixed(5)}</strong>`;
 
 
     constructor(data, granularity: "LSOA" | "LAD", component: HTMLElement, dataKey = "val", border = false, zoneKey = "Lookup_Value", tiles = false, colorRange = null, zoomLevel = 4) {
