@@ -484,17 +484,6 @@
         color: white;
     }
 
-    /*    .search-btn {*/
-    /*padding: 0.5rem 1rem;*/
-    /*font-size: 1rem;*/
-    /*border: none;*/
-    /*background-color: #007bff;*/
-    /*border-radius: 6px;*/
-    /*color: white;*/
-    /*cursor: pointer;*/
-    /*transition: background-color 0.2s ease;*/
-    /*}*/
-
     #control-panel {
         flex: 0 0 25%; /* Don't grow or shrink, fixed at 75% width */
         display: flex;
@@ -568,16 +557,5 @@
 
     .icon {
         height: 2em;
-    }
-
-    .link {
-        color: black;
-        /*cursor: pointer;*/
-    }
-
-    .link:hover {
-        color: #0077cc;
-        border-bottom: 3px solid #0077cc;
-        cursor: pointer;
     }
 </style>

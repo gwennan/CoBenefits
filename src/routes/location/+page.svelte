@@ -2,6 +2,9 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
+    import {base} from "$app/paths";
+    import {page} from '$app/stores';
+
 
     import {MapUK} from "$lib/components/mapUK";
     import {
@@ -17,7 +20,6 @@
         TIMES,
         COBENEFS_RANGE,
         COBENEFS,
-        NATION_TO_COLOR,
         COBENEFS_SCALE,
         removeSpinner,
         addSpinner,
@@ -25,11 +27,7 @@
         getIconFromCobenef, COBENEFS_SCALE2,
         SE_FACTORS, SEF_LEVEL_LABELS
     } from "../../globals";
-    import {legend} from "@observablehq/plot";
     import {getRandomSubarray} from "$lib/utils";
-
-    import StickyNav from "./StickyNav.svelte"
-
 
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {
@@ -39,7 +37,6 @@
         getTableData, getTopSelectedLADs,
         getTotalCBAllDatazones, getTotalCBForOneLAD
     } from "$lib/duckdb";
-
 
     let sectionRefs = {
         head: null,
@@ -213,20 +210,24 @@
             marginBottom: 40,
             marginTop: 40,
             style: {fontSize: "15px"},
-            y: {grid:true},
+            y: {grid: true},
             marks: [
-                    Plot.areaY(filtered, Plot.binX({y: (a, bin) => {
-                                    return a.length / filtered.length / (bin.x2 - bin.x1);
-                                }}, {
+                Plot.areaY(filtered, Plot.binX({
+                    y: (a, bin) => {
+                        return a.length / filtered.length / (bin.x2 - bin.x1);
+                    }
+                }, {
                     x: "total",
                     fill: AVERAGE_COLOR,
                     stroke: AVERAGE_COLOR,
                     fillOpacity: 0.3,
                     strokeWidth: 2
                 })),
-                Plot.areaY(oneLADData, Plot.binX({y: (a, bin) => {
-                                    return a.length / oneLADData.length / (bin.x2 - bin.x1);
-                                }}, {
+                Plot.areaY(oneLADData, Plot.binX({
+                    y: (a, bin) => {
+                        return a.length / oneLADData.length / (bin.x2 - bin.x1);
+                    }
+                }, {
                     x: "total",
                     tip: true,
                     fill: VIS_COLOR,
@@ -234,7 +235,7 @@
                     fillOpacity: 0.3,
                     strokeWidth: 2
                 })),
-                Plot.ruleX([0],{stroke: "#1E1E1E", strokeWidth: 1}),
+                Plot.ruleX([0], {stroke: "#1E1E1E", strokeWidth: 1}),
                 Plot.axisY({label: "Frequency of Datazones (Normalized)", labelAnchor: "top", labelArrow: false}),
                 Plot.axisX({label: "Cobenefit (millions £)", labelAnchor: "center", labelArrow: false}),
             ]
@@ -272,7 +273,6 @@
                     ]
                 }))
         } else if (chartType == "barchart") {
-            // plot?.append(
             let pl = Plot.plot({
                 height: height / 1.4,
                 ...MARGINS,
@@ -323,11 +323,6 @@
                 const rects1 = d3.select(rects.nodes()[0])
                 const rects2 = d3.select(rects.nodes()[1])
 
-                // console.log(2323232323, rects1.node())
-                // console.log(groupA._groups[0][1])
-
-                // const groupB = d3.select("#groupB");
-                //
                 // // Move all children of groupB into groupA
                 rects2.selectAll("rect").each(function () {
                     // console.log(2, this)
@@ -510,10 +505,14 @@
                         height: height / 1.2,
                         ...MARGINS,
                         marginLeft: 100,
-                        marginTop:40,
+                        marginTop: 40,
                         marginBottom: sef === "Typology" ? 100 : 60,
                         // x: {label: SEF_SCALE(sef)},
-                        x: {grid: true, padding: 0.6, label: SEF_SCALE(sef), tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d,
+                        x: {
+                            grid: true,
+                            padding: 0.6,
+                            label: SEF_SCALE(sef),
+                            tickFormat: d => SEF_LEVEL_LABELS[sef]?.[d] ?? d,
                             tickRotate: sef === "Typology" ? -20 : 0
                         },
                         style: {fontSize: "18px"},
@@ -550,7 +549,7 @@
                                 }
                             }, {
                                 //x: sef,
-                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
                                     ? d[sef] * 100
                                     : d[sef]),
                                 tip: true,
@@ -565,7 +564,7 @@
                                 }
                             }, {
                                 //x: sef,
-                                x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
                                     ? d[sef] * 100
                                     : d[sef]),
                                 tip: true,
@@ -602,9 +601,13 @@
                     height: height / 1.2,
                     ...MARGINS,
                     marginBottom: sef === "Typology" ? 100 : 60,
-                        marginLeft: 100,
+                    marginLeft: 100,
                     // x: {label: SEF_SCALE(sef), type: "ordinal", tickFormat: d => Math.floor(d)},
-                    x: {label: SEF_SCALE(sef), type: "point", tickFormat: d => {return SEF_LEVEL_LABELS[sef]?.[d] ?? d},  tickRotate: sef === "Typology" ? -20 : 0},
+                    x: {
+                        label: SEF_SCALE(sef), type: "point", tickFormat: d => {
+                            return SEF_LEVEL_LABELS[sef]?.[d] ?? d
+                        }, tickRotate: sef === "Typology" ? -20 : 0
+                    },
                     y: {domain: domain, grid: true, label: "Datazones Frequency"},
                     style: {fontSize: "18px"},
                     color: {range: ["#e6e6e6", AVERAGE_COLOR]},
@@ -662,9 +665,9 @@
                         Plot.density(getRandomSubarray(totalCBAllZones, 20000), {
                             // Plot.density(oneLADData, {
                             // x: sef,
-                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
-                                    ? d[sef] * 100
-                                    : d[sef]),
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                ? d[sef] * 100
+                                : d[sef]),
                             y: "total",
                             fill: "density",
                             // strokeWidth: 1.2,
@@ -672,9 +675,9 @@
                         }),
                         Plot.dot(oneLADData, {
                             //x: sef,
-                            x : d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
-                                    ? d[sef] * 100
-                                    : d[sef]),
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef)
+                                ? d[sef] * 100
+                                : d[sef]),
                             y: "total",
                             fill: "black",
                             r: 2
@@ -894,10 +897,16 @@
             marginBottom: 80,
             insetTop: 30,
             style: {fontSize: "20px"},
-            y: {tickFormat: ".2f", label: '£billion', ticks: 10, labelArrow: false, title: ([d]) => `Cobenefit ${d.cobenefit}`},
+            y: {
+                tickFormat: ".2f",
+                label: '£billion',
+                ticks: 10,
+                labelArrow: false,
+                title: ([d]) => `Cobenefit ${d.cobenefit}`
+            },
             x: {
                 label: 'Years',
-                tickFormat: d => d.replace(/^Y/, '').replace("_","-")
+                tickFormat: d => d.replace(/^Y/, '').replace("_", "-")
             },
             color: {legend: false, range: COBENEFS_RANGE, domain: COBENEFS.map(d => d.id)},
             marks: [
@@ -919,13 +928,13 @@
                             "Physical activity",
                             "Diet change",
                             "Hassle costs"],
-                            tip: {
-                                format: {
+                        tip: {
+                            format: {
                                 y: (d) => `${(+d).toFixed(3)}`,
                                 x: (d) => `${d.replace(/^Y/, '').replace("_", "-")}`,
                                 fill: (d) => `${d}`,
-                                }
                             }
+                        }
                     })),
                 Plot.ruleY([0], {strokeWidth: 2, stroke: '#333333', opacity: 0.5, strokeLinecap: 'round'}),
             ]
@@ -1115,7 +1124,8 @@
                                 <span class="waffle-caption">Per capita costs</span>
                             {/if}
                         </div>
-                        <span class="waffle-caption"><i>Grey bars indicate average value for <span class="nation-label">{compareTo}</span></i></span>
+                        <span class="waffle-caption"><i>Grey bars indicate average value for <span
+                                class="nation-label">{compareTo}</span></i></span>
 
                     </div>
                 </div>
@@ -1260,45 +1270,59 @@
                 <div>
                     <h3 class="component-title">Co-benefit gain/loss for {LADToName[LAD]} over 5 year intervals</h3>
                     <p class="description" style="margin-bottom:5px">Total gains and losses are shown at five-year
-                        intervals for each co-benefit. The curve between points is smoothed to show the general trends.</p>
+                        intervals for each co-benefit. The curve between points is smoothed to show the general
+                        trends.</p>
 
                     <!-- Legend -->
                     <div id="main-legend" class="legend-box" style="margin-bottom: 5px;">
                         <strong style="margin-bottom: 0.5rem;">Legend:</strong> <br/>
                         <ul class="horizontal-legend-list" style="margin-bottom:5px">
-                            <li><span class="legend-color" style="background-color: #D3A029"></span>
-                                Diet change
-                            </li>
-                            <li><span class="legend-color" style="background-color: #48773E"></span>
-                                Physical activity
-                            </li>
-                            <li><span class="legend-color" style="background-color: #183668"></span>
-                                Dampness
-                            </li>
-                            <li><span class="legend-color" style="background-color: #00AED9"></span>
-                                Excess cold
-                            </li>
-                            <li><span class="legend-color" style="background-color: #E11484"></span>
-                                Noise
-                            </li>
-                            <li><span class="legend-color" style="background-color: #71C35D"></span>
-                                Air quality
-                            </li>
-                            <li><span class="legend-color" style="background-color: #8F1838"></span>
-                                Congestion
-                            </li>
-                            <li><span class="legend-color" style="background-color: #EF402B"></span>
-                                Excess heat
-                            </li>
-                            <li><span class="legend-color" style="background-color: #F36D25"></span>
-                                Road safety
-                            </li>
-                            <li><span class="legend-color" style="background-color: #F99D26"></span>
-                                Road repairs
-                            </li>
-                            <li><span class="legend-color" style="background-color: #C31F33"></span>
-                                Hassle costs
-                            </li>
+                            <!--                            <li><span class="legend-color" style="background-color: #D3A029"></span>-->
+                            <!--                                Diet change-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #48773E"></span>-->
+                            <!--                                Physical activity-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #183668"></span>-->
+                            <!--                                Dampness-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #00AED9"></span>-->
+                            <!--                                Excess cold-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #E11484"></span>-->
+                            <!--                                Noise-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #71C35D"></span>-->
+                            <!--                                Air quality-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #8F1838"></span>-->
+                            <!--                                Congestion-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #EF402B"></span>-->
+                            <!--                                Excess heat-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #F36D25"></span>-->
+                            <!--                                Road safety-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #F99D26"></span>-->
+                            <!--                                Road repairs-->
+                            <!--                            </li>-->
+                            <!--                            <li><span class="legend-color" style="background-color: #C31F33"></span>-->
+                            <!--                                Hassle costs-->
+                            <!--                            </li>-->
+
+                            {#each COBENEFS as cobenef}
+                                <li><span class="legend-color"
+                                          style="background-color: {COBENEFS_SCALE(cobenef.id)}"></span>
+                                    <a href="{base}/cobenefit?cobenefit={cobenef.id}"
+                                       target="_blank"
+                                       class="link">
+                                        <!--{cobenef.label.split(" ").slice(0, 2).join(" ")}-->
+                                        {cobenef.label}
+                                    </a>
+                                </li>
+                            {/each}
+
                         </ul>
 
                     </div>
@@ -1365,7 +1389,9 @@
             <div id="multiple-comp">
                 {#each SE_FACTORS as sef}
                     <div class="household-column">
-                        <h2 class="column-chart-title">{sef.label}</h2>
+                        <h2 class="column-chart-title">
+                            <a class="link" target="_blank" href="{base}/sef?sef={sef.id}">{sef.label}</a>
+                        </h2>
                         <p class="column-chart-caption">{sef.def}</p>
                         <div class="row">
                             {#if isSEFAggregated}
@@ -1549,7 +1575,7 @@
 
     .horizontal-legend-list {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 0px;
         list-style: none;
         padding: 0;

@@ -31,19 +31,19 @@ a:hover {
 }
 
 .sticky-stack {
-  position: sticky;
-  top: 65px;
-  z-index: 200;
+    position: sticky;
+    top: 65px;
+    z-index: 200;
 }
 
 .sticky-bar {
-  height: 30px;
-  background-color: #f1f1f1;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  font-weight: bold;
+    height: 30px;
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    font-weight: bold;
 }
 
 
@@ -186,11 +186,11 @@ button:focus {
 }
 
 .definition {
-  font-size: 20px;
-  font-weight: semibold;
-  color: #555;
-  max-width: 800px;
-  margin: 0;
+    font-size: 20px;
+    font-weight: semibold;
+    color: #555;
+    max-width: 800px;
+    margin: 0;
 }
 
 .description {
@@ -236,131 +236,135 @@ button:focus {
 /* table */
 .data-table th,
 .data-table td {
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(224, 224, 224, 1);
-  text-align: left;
-  vertical-align: middle;
-  background-color: #fff;
-  white-space: nowrap;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    text-align: left;
+    vertical-align: middle;
+    background-color: #fff;
+    white-space: nowrap;
 }
 
 .coben-table-cell {
-  padding: 0; 
+    padding: 0;
 }
 
 .coben-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .in-table-icon {
-  height: 1.7rem;
-  width: auto;
-  flex-shrink: 0;
+    height: 1.7rem;
+    width: auto;
+    flex-shrink: 0;
 }
 
 .data-table {
-  table-layout: fixed;
-  width: 100%;
+    table-layout: fixed;
+    width: 100%;
 }
 
 .data-table th:first-child,
 .data-table td:first-child {
-  width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .data-table a {
-  background-color: #fff;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  cursor: default;
-  line-height: 1;
+    background-color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    cursor: default;
+    line-height: 1;
 }
 
 .data-table a:hover {
-  color: #0077cc;
-  cursor: pointer;
+    color: #0077cc;
+    cursor: pointer;
 }
 
 
-  /* table controls */
-  .controls {
+/* table controls */
+.controls {
     display: flex;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
     margin-bottom: 1rem;
-  }
+}
 
-  .controls label {
+.controls label {
     margin-right: 0.25rem;
     font-weight: 500;
-  }
+}
 
-  .controls select {
+.controls select {
     padding: 0.4rem 0.6rem;
     font-size: 1rem;
-  }
+}
 
-  .button-group {
+.button-group {
     display: flex;
     width: 220px;
     font-size: 0.75rem;
-  }
+}
 
-  .button-group button {
+.button-group button {
     flex: 1;
     padding: 0.5rem 0.2rem;
     border: 1px solid #ccc;
     background-color: #f5f5f5;
     cursor: pointer;
     transition: background-color 0.2s;
-  }
+}
 
-  .button-group button:first-child {
+.button-group button:first-child {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
-  }
+}
 
-  .button-group button:last-child {
+.button-group button:last-child {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
-  }
+}
 
-  .button-group button.selected {
+.button-group button.selected {
     background-color: #007acc;
     color: white;
     font-weight: bold;
-  }
+}
 
-  .button-group button:not(.selected):hover {
+.button-group button:not(.selected):hover {
     background-color: #e0e0e0;
-  }
+}
 
-  /* .navbar {
-    position: sticky;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
-    height: 60px;
-    background-color: #fff;
-    z-index: 1000;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #ddd;
-  } */
+/* .navbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  background-color: #fff;
+  z-index: 1000;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+} */
 
 
-  @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
     }
-  
-  
-  .mini-header {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+.mini-header {
     position: fixed;
     top: 65px;
     left: 0;
@@ -375,59 +379,59 @@ button:focus {
     height: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
-  }
+}
 
 
-  .mini-header-content {
+.mini-header-content {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-  }
+}
 
-  .mini-heading-icon {
+.mini-heading-icon {
     width: 24px;
     height: 24px;
-  }
+}
 
-  .mini-header-text {
+.mini-header-text {
     font-weight: 600;
     font-size: 1.1rem;
-  }
+}
 
 
-  .mini-header-value {
+.mini-header-value {
     font-weight: 500;
     font-size: 0.9rem;
     margin-left: auto;
     color: #555;
-  }
+}
 
 
-  .explanation{
+.explanation {
     font-style: italic;
     font-size: 1em;
-  }
+}
 
-  .aggregation-icon-container {
+.aggregation-icon-container {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
-    width: 99%; 
+    width: 99%;
     margin-top: 20px;
     margin-right: 10px;
-  }
-  
-  .tooltip-wrapper {
+}
+
+.tooltip-wrapper {
     position: relative;
     display: inline-block;
-  }
-  
-  .aggregation-icon {
+}
+
+.aggregation-icon {
     width: 40px;
     height: 40px;
-  }
-  
-  .tooltip-text {
+}
+
+.tooltip-text {
     visibility: hidden;
     background-color: #5E5E5E;
     color: #fff;
@@ -441,13 +445,24 @@ button:focus {
     z-index: 1;
     opacity: 0;
     transition: opacity 0.2s ease;
-    max-width: 200px;          
-    white-space: normal;       
-    word-break: break-word;    
-    display: inline-block;     
-  }
-  
-  .tooltip-wrapper:hover .tooltip-text {
+    max-width: 200px;
+    white-space: normal;
+    word-break: break-word;
+    display: inline-block;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
-  }
+}
+
+.link {
+    color: black;
+    /*cursor: pointer;*/
+}
+
+.link:hover {
+    color: #0077cc;
+    border-bottom: 3px solid #0077cc;
+    cursor: pointer;
+}
