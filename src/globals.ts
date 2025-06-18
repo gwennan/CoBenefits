@@ -17,82 +17,14 @@ import physicalActivityIcon from '$lib/icons/PhysicalActivity.png';
 import coBenefits from '$lib/definitions/cobenf.json'
 import seFactors from '$lib/definitions/se-factor.json'
 
-// export const COBENEFS = ["Air quality", "Noise", "Excess cold", "Excess heat", "Dampness", "Congestion", "Hassle costs", "Road repairs", "Road safety", "Physical activity", "Diet change"]
 
 export let CBS = coBenefits.map(f => f.id);
 export const COBENEFS = coBenefits.map(d => ({ id: d.id, label: d.label }));
 export let CO_BEN = coBenefits.map(d => ({ id: d.id, label: d.label, def: d.def  }));
 export const DEFINITIONS = coBenefits.map(d => ({ id: d.id, def: d.def }));
 
-// export const COBENEFS = [
-//     {id: "Air quality", label: "Air quality improvements"},
-//     {id: "Noise", label: "Noise reduction"},
-//     {id: "Excess cold", label: "Excess cold reduction"},
-//     {id: "Excess heat", label: "Excess heat reduction"},
-//     {id: "Dampness", label: "Dampness reduction"},
-//     {id: "Congestion", label: "Congestion reduction"},
-//     {id: "Hassle costs", label: "Hassle cost"},
-//     {id: "Road repairs", label: "Road repairs reduction"},
-//     {id: "Road safety", label: "Road safety increase"},
-//     {id: "Physical activity", label: "Physical activity increase"},
-//     {id: "Diet change", label: "Dietary improvements"},
-// ];
 
-// export const DEFINITIONS = [
-//     {id: "Air quality", def: "The value of public health benefits from reduced air pollution from transport and buildings."},
-//     {id: "Noise", def: "The value to public health and worker productivity from reduced noise."},
-//     {id: "Excess cold", def: "The value of reducing visits to hospital attributable to insufficient heating."},
-//     {id: "Excess heat", def: "The value of..."},
-//     {id: "Dampness", def: "The value of..."},
-//     {id: "Congestion", def: "The value of reduced time spent traveling and road repairs from reduced numbers of vehicles on roads."},
-//     {id: "Hassle costs", def: "The value of..."},
-//     {id: "Road repairs", def: "The value of repairs avoided when infrastructure (in this case solely roads) are used less frequently."},
-//     {id: "Road safety", def: "The value of reduced vehicle repairs and lives lost from vehicle accidents."},
-//     {id: "Physical activity", def: "The value of health benefits from increased walking and cycling."},
-//     {id: "Diet change", def: "The value of..."},
-// ];
-
-
-
-// export const SCENARIOS = ["BNZ", "test"]
 export const SCENARIOS = ["BNZ", "Engagement", "Tailwinds", "Headwinds", "Innovation"]
-
-
-// export const SCENARIOS = ["BNZ", "test", "all"]
-// export let SEF = ['Under_35',
-//     'Over_65', 'EPC', 'Median_Income', 'Tenure', 'Typology', 'Unemployment',
-//     'Rurality', 'House_value', 'Fuel_Type', 'Fuel_consumption_total',
-//     'Floor_area', 'Gas_flag', 'Number_cars', 'Urban_trips', 'Total_vkm',
-//     'Urban_vkm']
-
-// Categorical are first and then numerical
-// export let SEF = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars",
-//     'Under_35', 'Over_65', 'Median_Income', 'Unemployment',
-//     'Rurality', 'House_value', 'Fuel_consumption_total',
-//     'Floor_area', 'Urban_trips', 'Total_vkm', 'Urban_vkm']
-
-// export const SEF_CATEGORICAL = ["EPC", "Tenure", "Typology", "Fuel_Type", "Gas_flag", "Number_cars"]
-
-// export const SEF_UNITS = ['?',
-//                           '?',
-//                           '?',
-//                           '?',
-//                           '?',
-//                           'Number of cars',
-//                           'Proportion of people',
-//                           'Proportion of people',
-//                           '£',
-//                           'Proportion of people',
-//                           '?',
-//                           "£²",
-//                           '?',
-//                           'm²',
-//                           'Number of trips',
-//                           'Km',
-//                           'Km'];
-
-
-// export const SEF_META: SEFactor[] = seFactors;
 
 export let SE_FACTORS = seFactors.map(f => ({ id: f.id, label: f.label, def: f.def })); 
 
@@ -201,8 +133,6 @@ export const COBENEFS_RANGE3 = [['#719634','#9FC035','#84DB82','#3FD24C'],
     ['#F77C1C', '#F7A240', '#E5BD1B', '#B48F00']];
 export const COBENEFS_SCALE3 = d3.scaleOrdinal(COBENEFS.map(d => d.id), COBENEFS_RANGE3);
 
-
-  
 
 // export const HEROSLIDES = [
 //     {
