@@ -26,7 +26,7 @@
  },
  {
    "id": "Congestion",
-   "label": "Congestion reduction",
+   "label": "Congestion impact",
    "def": "The value of reduced congestion from lower road usage due to decreased vehicle travel. The benefits are modelled based on time saved plus projected travel patterns. Negative values represent increased travel time due to factors like greater road usage via rebound effects."
  },
  {
@@ -36,12 +36,12 @@
  },
  {
    "id": "Road repairs",
-   "label": "Road repairs reduction",
+   "label": "Road repairs impact",
    "def": "The value of avoided road maintenance requirements through reduced ‘wear and tear.’ Negative values represent increased need for repairs due to factors like greater road usage via rebound effects."
  },
  {
    "id": "Road safety",
-   "label": "Road safety increase",
+   "label": "Road safety impact",
    "def": "The value of avoided road collisions and improved safety through reduced road traffic. Negative values represent decreases in road safety due to factors like increased road usage via rebound effects."
  },
  {
