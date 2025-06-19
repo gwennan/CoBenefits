@@ -370,8 +370,9 @@
     }
 
     function renderPerCobenefPlot() {
-        plotPerCb?.append(
-            Plot.plot({
+
+        if (plotPerCb) {
+            let plot = Plot.plot({
                 height: height / 1,
                 width: 811,
                 ...MARGINS,
@@ -418,7 +419,20 @@
                     Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
 
                 ]
-            }))
+            })
+
+            d3.select(plot)
+                .select('g[aria-label="x-axis tick label"]')
+                .selectAll("text")
+                .style("cursor", "pointer")
+                .on("click", (event, i, d) => {
+                    let text = event.target.textContent;
+                    let cb = COBENEFS.find((d) => d.id == text)
+                    window.open(`${base}/cobenefit?cobenefit=${cb.id}`, '_blank').focus();
+                })
+
+            plotPerCb.append(plot)
+        }
     }
 
     function renderSEFPlot() {

@@ -2,7 +2,9 @@
     import * as d3 from 'd3';
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
-    import { writable } from 'svelte/store';
+    import {writable} from 'svelte/store';
+    import {base} from "$app/paths";
+
 
     import {MapUK} from "$lib/components/mapUK";
     import {
@@ -16,7 +18,7 @@
         getIconFromCobenef,
         COBENEFS_SCALE,
         type CoBenefit,
-		COBENEFS_SCALE2,
+        COBENEFS_SCALE2,
         COBENEFS_SCALE3,
         SEF_UNITS,
         SEF_SCALE,
@@ -77,15 +79,12 @@
         colorRange = colorRange.reverse()
 
         // TODO: show sum and not avergade
-        map = new MapUK(LADAveragedData, "LAD", mapDiv, "total", false, "LAD", false, colorRange);
+        map = new MapUK(LADAveragedData, "LAD", mapDiv, "total", true, "LAD", false, colorRange);
         map.initMap();
 
-
-        let legendSvg = map.legend();
+        let legendSvg = map.legend("Cobenefits (Billions of £)");
         mapLegendDiv.append(legendSvg)
     });
-
-
 
     let icon = getIconFromCobenef(coBenefit)
 
@@ -111,7 +110,7 @@
                 // console.log("currentSection", currentSection);
                 break;
             }
-            }
+        }
     }
 
     function formatLabel(id: string): string {
@@ -159,7 +158,10 @@
             SEFData[SE] = +SEFData[SE];
         })
 
-        totalValue = (d3.sum(fullData, d => d.total / 1000)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        totalValue = (d3.sum(fullData, d => d.total / 1000)).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 
         dataLoaded = true;
     }
@@ -180,69 +182,70 @@
         const squares = [];
 
         for (const item of aggregationPerBenefit) {
-        const absCount = Math.round((Math.abs(item.total) / total) * gridSize);
-        const isNegative = item.total < 0;
-        for (let i = 0; i < absCount; i++) {
-            squares.push({
-            type: item.co_benefit_type,
-            negative: isNegative
-            });
-        }
+            const absCount = Math.round((Math.abs(item.total) / total) * gridSize);
+            const isNegative = item.total < 0;
+            for (let i = 0; i < absCount; i++) {
+                squares.push({
+                    type: item.co_benefit_type,
+                    negative: isNegative
+                });
+            }
         }
 
         while (squares.length < gridSize) {
-        squares.push({ type: "empty" });
+            squares.push({type: "empty"});
         }
 
         squares.sort((a, b) => {
-        if (a.type === "empty") return 1;
-        if (b.type === "empty") return -1;
-        if (a.negative && !b.negative) return 1;
-        if (!a.negative && b.negative) return -1;
-        return 0;
+            if (a.type === "empty") return 1;
+            if (b.type === "empty") return -1;
+            if (a.negative && !b.negative) return 1;
+            if (!a.negative && b.negative) return -1;
+            return 0;
         });
 
         const waffleData = squares.map((d, i) => ({
-        x: i % gridWidth,
-        y: Math.floor(i / gridWidth),
-        ...d
+            x: i % gridWidth,
+            y: Math.floor(i / gridWidth),
+            ...d
         }));
 
         const plot = Plot.plot({
-        width: unitSize * gridWidth,
-        height: unitSize * gridHeight,
-        margin: 0,
-        x: { axis: null },
-        y: { axis: null },
-        color: {
-            type: "ordinal",
-            domain: COBENEFS.map(d => d.id),
-            range: COBENEFS_RANGE,
-            unknown: "#eee",
-            legend: false
-        },
-        marks: [
-            Plot.rect(waffleData.filter(d => !d.negative), {
-            x: d => d.x * unitSize,
-            y: d => d.y * unitSize,
-            fill: "type",
-            fillOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1)
-            }),
-            Plot.rect(waffleData.filter(d => d.negative), {
-            x: d => d.x * unitSize,
-            y: d => d.y * unitSize,
-            stroke: "type",
-            strokeOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1),
-            strokeWidth: 1,
-            fill: "none"
-            })
-        ]
+            width: unitSize * gridWidth,
+            height: unitSize * gridHeight,
+            margin: 0,
+            x: {axis: null},
+            y: {axis: null},
+            color: {
+                type: "ordinal",
+                domain: COBENEFS.map(d => d.id),
+                range: COBENEFS_RANGE,
+                unknown: "#eee",
+                legend: false
+            },
+            marks: [
+                Plot.rect(waffleData.filter(d => !d.negative), {
+                    x: d => d.x * unitSize,
+                    y: d => d.y * unitSize,
+                    fill: "type",
+                    fillOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1)
+                }),
+                Plot.rect(waffleData.filter(d => d.negative), {
+                    x: d => d.x * unitSize,
+                    y: d => d.y * unitSize,
+                    stroke: "type",
+                    strokeOpacity: d => (highlightType && d.type !== highlightType ? 0.15 : 1),
+                    strokeWidth: 1,
+                    fill: "none"
+                })
+            ]
         });
 
         if (waffleBgEl) {
-        waffleBgEl.style.width = `${unitSize * gridWidth}px`;
-        waffleBgEl.style.height = `${height-100}px`;
-        };
+            waffleBgEl.style.width = `${unitSize * gridWidth}px`;
+            waffleBgEl.style.height = `${height - 100}px`;
+        }
+        ;
 
         waffleEl.innerHTML = "";
         waffleEl.append(plot);
@@ -257,7 +260,7 @@
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Number of Datazones", grid: true},
-                x: {label: 'Total (£, meillion)',  labelArrow:'none', labelAnchor: "center"},
+                x: {label: 'Total (£, billion)', labelArrow: 'none', labelAnchor: "center"},
                 style: {fontSize: "15px"},
                 marks: [
                     Plot.rectY(LADAveragedData, Plot.binX({y: "count"}, {
@@ -268,8 +271,13 @@
                         stroke: COBENEFS_SCALE2(coBenefit)[0],
                         strokeWidth: 2
                     })),
-                    Plot.axisY({anchor: "left", label: 'Number of datazones',  labelArrow:'none', labelAnchor: "center"}),
-                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75}),
+                    Plot.axisY({
+                        anchor: "left",
+                        label: 'Number of datazones',
+                        labelArrow: 'none',
+                        labelAnchor: "center"
+                    }),
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
                 ]
             })
         );
@@ -296,20 +304,26 @@
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
                     label: "Year Intervals",
                 },
-                y: {grid:true, label: 'Total (£, billion)'},
+                y: {grid: true, label: 'Total (£, billion)'},
                 marks: [
                     Plot.barY(pivotedData, Plot.groupX({y: "sum"}, {
                         x: "time",
                         y: d => d.value / 1000,
                         fill: COBENEFS_SCALE2(coBenefit)[0],
-                        tip:{ format: {y:d => `${d.toFixed(2)}`, x: false}},
+                        tip: {format: {y: d => `${d.toFixed(2)}`, x: false}},
                         fillOpacity: 0.8,
                         //ry1: 5,
                         insetLeft: 15,
                         insetRight: 15,
                     })),
-                    Plot.axisY({anchor: "left", grid: true, label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"}),
-                    Plot.ruleY([0],{stroke: "#333", strokeWidth: 0.75})
+                    Plot.axisY({
+                        anchor: "left",
+                        grid: true,
+                        label: 'Total (£, billion)',
+                        labelArrow: 'none',
+                        labelAnchor: "center"
+                    }),
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                 ]
             })
         );
@@ -317,8 +331,8 @@
 
     function renderSEFPlot() {
         const nationCode = d => d.LAD.startsWith("S") ? "S"
-                    : d.LAD.startsWith("N") ? "N"
-                    : d.LAD.startsWith("E") ? "E"
+            : d.LAD.startsWith("N") ? "N"
+                : d.LAD.startsWith("E") ? "E"
                     : "W";
         // FACETED CHART
         // SEFPlotLAD?.append(
@@ -337,10 +351,10 @@
         //         ]
         //     })
         // )
-        SEF.forEach(sef => {
+        SEF.forEach((sef, i) => {
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
-                const labelLookup = SEF_LEVEL_LABELS[sef]; 
+                const labelLookup = SEF_LEVEL_LABELS[sef];
 
                 const fullLevels = labelLookup
                     ? Object.keys(labelLookup).map(Number)
@@ -349,24 +363,25 @@
                 plot = Plot.plot({
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
-                    height: height/1.4 ,
-                    width: height*1.2,
+                    height: height / 1.4,
+                    width: height * 1.2,
                     marginLeft: 70,
                     marginBottom: sef === "Typology" ? 80 : 60,
                     marginRight: 20,
                     marginTop: 30,
-                    x: {  domain: fullLevels,
-                            label: SEF_SCALE(sef),
-                            tickFormat: d => labelLookup?.[d] ?? d,
-                            tickRotate: sef === "Typology" ? -20 : 0
-                        },
-                    y: {label: '£, thousand',  labelArrow:'none'},
+                    x: {
+                        domain: fullLevels,
+                        label: SEF_SCALE(sef),
+                        tickFormat: d => labelLookup?.[d] ?? d,
+                        tickRotate: sef === "Typology" ? -20 : 0
+                    },
+                    y: {label: '£, thousand', labelArrow: 'none'},
                     color: {legend: true},
                     marks: [
                         //Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
                         //Plot.dodgeX("middle",{
                         //    fx: "SE",
-                            //x: "SE",
+                        //x: "SE",
                         //    y: "total",
                         //    r: 1,
                         //    padding: -2,
@@ -374,88 +389,133 @@
                         //        : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
                         //        : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
                         //        : COBENEFS_SCALE2(coBenefit)[4],})),
-                        
+
                         Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
                             //fx: "SE",
                             x: "SE",
-                            y: d => d.total*1000,
+                            y: d => d.total * 1000,
                             stroke: COBENEFS_SCALE2(coBenefit)[0],
                             fill: COBENEFS_SCALE2(coBenefit)[0],
                             r: 2,
                             //strokeOpacity: 0.5,
-                            fillOpacity:0.3
+                            fillOpacity: 0.3
                         }),
                         //Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
                 })
             } else {
+
+                let dataToPlot = LADAveragedData.filter(d =>
+                    d["SEFMAME"] === sef &&
+                    (selectedNation === null || nationCode(d) !== selectedNation)
+                )
+
+                let pointToAnnotate = dataToPlot.reduce(function (prev, curr) {
+                    return prev.SE < curr.SE ? prev : curr;
+                });
+
                 plot = Plot.plot({
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
-                    width: height*1.2,
+                    width: height * 1.2,
                     marginLeft: 70,
                     marginBottom: 60,
                     marginRight: 20,
                     marginTop: 30,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
-                    // x: {grid: true, label: sef},
-                    x: {label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"},
-                    y: {label: '£, thousand', labelArrow:false},
+                    x: {label: SEF_SCALE(sef), labelArrow: false, labelAnchor: "center"},
+                    y: {label: '£, thousand', labelArrow: false},
                     color: {legend: true},
                     marks: [
-                        Plot.dot(LADAveragedData.filter(d =>
-                            d["SEFMAME"] === sef &&
-                            (selectedNation === null || nationCode(d) !== selectedNation)
-                        ), {
+
+                        // annotation
+                        (i == 6) ? Plot.tip(
+                            // [`A dot is a Local Authority District (LAD)`],
+                            [`Each dot represents a Local Authority District (LAD).`],
+                            {
+                                x: (["Under_35", "Over_65", "Unemployment"].includes(sef) ? pointToAnnotate.SE * 100 : pointToAnnotate.SE),
+                                y: pointToAnnotate.total * 1000,
+                                textPadding: 6,
+                                opacity: 0.5,
+                                // textOverflow: "",
+                                lineWidth: 12
+                            }
+                        ) : [],
+
+                        Plot.dot(dataToPlot, {
                             x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
                             y: d => d.total * 1000,
                             fill: d => {
-                            const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
-                            return COBENEFS_SCALE3(coBenefit)[index];
+                                const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
+                                return COBENEFS_SCALE3(coBenefit)[index];
                             },
                             r: 2,
-                            fillOpacity: 0.1
+                            fillOpacity: 0.1,
+                            channels: {LAD: "LAD"},
+                            tip: {format: {
+                                LAD: true,
+                                // sport: true,
+                                // nationality: true,
+                                y: false,
+                                x: false,
+                                // stroke: false
+                            }}
                         }),
 
                         // Second: selected points (drawn second, appear on top)
-                        Plot.dot(LADAveragedData.filter(d =>
-                            d["SEFMAME"] === sef &&
-                            (selectedNation === null || nationCode(d) === selectedNation)
-                        ), {
+                        Plot.dot(dataToPlot, {
                             x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
                             y: d => d.total * 1000,
                             fill: d => {
-                            const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
-                            return COBENEFS_SCALE3(coBenefit)[index];
+                                const index = ["S", "N", "E", "W"].indexOf(nationCode(d));
+                                return COBENEFS_SCALE3(coBenefit)[index];
                             },
                             r: 3.5,
                             fillOpacity: 1
                         }),
-                        Plot.axisX({label: SEF_SCALE(sef),  labelArrow:false, labelAnchor: "center"}),
+                        Plot.axisX({label: SEF_SCALE(sef), labelArrow: false, labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
-                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
+                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
+
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
-                          //  x: "SE",
-                          //  y: "total",
-                          //  stroke: '#F0F0F0',
-                          //  strokeWidth: 4,
-                          //  strokeOpacity: 0.75,
-                          //  strokeDasharray: "5,5",
+                        //  x: "SE",
+                        //  y: "total",
+                        //  stroke: '#F0F0F0',
+                        //  strokeWidth: 4,
+                        //  strokeOpacity: 0.75,
+                        //  strokeDasharray: "5,5",
                         // clip: true
                         //}),
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
-                          //  x: "SE",
-                          //  y: "total",
-                          //  stroke: '#222',
-                          //  strokeWidth: 2,
-                          //  strokeOpacity: 0.75,
-                          //  strokeDasharray: "5,5",
-                          //  clip: true
+                        //  x: "SE",
+                        //  y: "total",
+                        //  stroke: '#222',
+                        //  strokeWidth: 2,
+                        //  strokeOpacity: 0.75,
+                        //  strokeDasharray: "5,5",
+                        //  clip: true
                         //})
-                        ]
+                    ]
                 })
+
+                console.log(d3.select(plot)
+                    .select('g[aria-label="dot"]')
+                    .selectAll("circle"))
+
+                d3.select(plot)
+                    .selectAll('g[aria-label="dot"]')
+                    .selectAll("circle")
+                    .style("cursor", "pointer")
+                    .on("click", (e, i, d) => {
+                        let lad = dataToPlot[i].LAD;
+
+                        // let text = event.target.textContent;
+                        // let cb = COBENEFS.find((d) => d.id == text)
+                        window.open(`${base}/location?location=${lad}`, '_blank').focus();
+                    })
+
             }
 
             SEFPlot[sef]?.append(plot)
@@ -463,9 +523,9 @@
     }
 
     $: if (height && dataLoaded) {
-        plot?.firstChild?.remove();       
+        plot?.firstChild?.remove();
         renderDistPlot();
-        renderPlot();                     
+        renderPlot();
         renderWaffle(300, coBenefit);
     }
 
@@ -473,13 +533,13 @@
         Object.values(SEFPlot).forEach(sefPlot => {
             sefPlot.firstChild?.remove();
         });
-        renderSEFPlot(); 
+        renderSEFPlot();
     }
 
     $: textColor = COBENEFS_SCALE2(coBenefit)[0];
     $: cobensStyle = `color: ${textColor}; font-weight: bold; font-size: 22px;`;
-    // $: cobensNavStyle = `color: ${textColor}; font-weight: bold; font-size: 14px;`;
 
+    // $: cobensNavStyle = `color: ${textColor}; font-weight: bold; font-size: 14px;`;
 
 
     function onChange(event) {
@@ -495,7 +555,7 @@
         document.querySelectorAll(".nation-button").forEach(button => {
             button.addEventListener("click", () => {
                 const nation = button.getAttribute("data-nation");
-                
+
                 if (selectedNation === nation) {
                     selectedNation = null;
                     button.classList.remove("active");
@@ -516,78 +576,81 @@
 
     <div class="section header">
         <div class="header-content">
-          <div class="header-text">
-            <p class="page-subtitle">Co-Benefit Report</p>
-            <div class="title-container">
-              <h1 class="page-title">
-                <img src={icon} alt="Icon" class="heading-icon" />
-                <div style="margin-top: 10px;"></div>
-                {coBenefitLabel}
-              </h1>
-              <div style="margin-top: 14px;"></div>
-              <p class='definition'> {coBenefitDef} </p>
-            </div>
+            <div class="header-text">
+                <p class="page-subtitle">Co-Benefit Report</p>
+                <div class="title-container">
+                    <h1 class="page-title">
+                        <img src={icon} alt="Icon" class="heading-icon"/>
+                        <div style="margin-top: 10px;"></div>
+                        {coBenefitLabel}
+                    </h1>
+                    <div style="margin-top: 14px;"></div>
+                    <p class='definition'> {coBenefitDef} </p>
+                </div>
 
-          </div>
-          <div class="header-waffle-wrapper">
-            <div class="waffle-label">
-              <div class="waffle-stats">
-              <div class="waffle-stat">
-                <div class="waffle-value">
-                    {#if totalValue}
-                  <span class="waffle-big">£{totalValue.toLocaleString()}</span>
-                  {/if}
-                  <span class="small">billion</span>
-                </div>
-                {#if totalValue > 0}
-                  <div class="waffle-caption">National benefits</div>
-                {:else}
-                  <div class="waffle-caption">National costs</div>
-                {/if}
-              </div>
-              <div class="waffle-stat">
-                <div class="waffle-value">
-                    {#if totalValue}
-                  <span class="waffle-big">£{coBenefit_percapita.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  {/if}
-                </div>
-                {#if totalValue > 0}
-                  <div class="waffle-caption">Per capita benefits</div>
-                {:else}
-                  <div class="waffle-caption">Per capita costs</div>
-                {/if}
-              </div>
-              <div class="waffle-stat">
-                {#if totalValue}
-                <div class="waffle-value">
-                  <span class="waffle-big">{((totalValue / totalBenefitsValue) * 100).toFixed(2)}</span>
-                  <span class="small">%</span>
-                </div>
-                {/if}
-                  <div class="waffle-caption">Contribution to national benefits</div>
-              </div>
             </div>
-            </div>
+            <div class="header-waffle-wrapper">
+                <div class="waffle-label">
+                    <div class="waffle-stats">
+                        <div class="waffle-stat">
+                            <div class="waffle-value">
+                                {#if totalValue}
+                                    <span class="waffle-big">£{totalValue.toLocaleString()}</span>
+                                {/if}
+                                <span class="small">billion</span>
+                            </div>
+                            {#if totalValue > 0}
+                                <div class="waffle-caption">National benefits</div>
+                            {:else}
+                                <div class="waffle-caption">National costs</div>
+                            {/if}
+                        </div>
+                        <div class="waffle-stat">
+                            <div class="waffle-value">
+                                {#if totalValue}
+                                    <span class="waffle-big">£{coBenefit_percapita.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })}</span>
+                                {/if}
+                            </div>
+                            {#if totalValue > 0}
+                                <div class="waffle-caption">Per capita benefits</div>
+                            {:else}
+                                <div class="waffle-caption">Per capita costs</div>
+                            {/if}
+                        </div>
+                        <div class="waffle-stat">
+                            {#if totalValue}
+                                <div class="waffle-value">
+                                    <span class="waffle-big">{((totalValue / totalBenefitsValue) * 100).toFixed(2)}</span>
+                                    <span class="small">%</span>
+                                </div>
+                            {/if}
+                            <div class="waffle-caption">Contribution to national benefits</div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="waffle-el" bind:this={waffleEl}></div>
-            <div class="waffle-bg" bind:this={waffleBgEl}></div>
-          </div>
+                <div class="waffle-el" bind:this={waffleEl}></div>
+                <div class="waffle-bg" bind:this={waffleBgEl}></div>
+            </div>
         </div>
-      </div>
-    
+    </div>
+
     {#if scrolledPastHeader}
-      <div class="mini-header">
-        <div class="mini-header-content">
-          <img src={icon} alt="Icon" class="mini-heading-icon" />
-          <span class="mini-header-text">
-            {coBenefitLabel} 
-            {#if totalValue}
+        <div class="mini-header">
+            <div class="mini-header-content">
+                <img src={icon} alt="Icon" class="mini-heading-icon"/>
+                <span class="mini-header-text">
+            {coBenefitLabel}
+                    {#if totalValue}
             <span class="mini-header-value">(UK total: £{totalValue} billion)</span>
             {/if}
-            >> {formatLabel(currentSection)}</span>
-          
+                    >> {formatLabel(currentSection)}</span>
+
+            </div>
         </div>
-      </div>
     {/if}
 
 
@@ -598,60 +661,65 @@
             </div>
             <div id="vis-block">
                 <div class="component singlevis">
-                    <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
+                    <h3 class="component-title">Total values (£, billion) for <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
                     </h3>
-                    {#if totalValue>0}
+                    {#if totalValue > 0}
                         <!-- <p class="description">The total benefit for each 5 year interval towards 2050. </p> -->
                         <p class="description">Each bar shows the total values obtained in that period. </p>
-                        {:else}
+                    {:else}
                         <!-- <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p> -->
                         <p class="description">Each bar shows the total benefits or costs obtained in that period. </p>
                     {/if}
                     <div class="aggregation-icon-container">
                         <div class="tooltip-wrapper">
-                          <img class="aggregation-icon" src="{total}" alt="icon" />
-                          <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                            <img class="aggregation-icon" src="{total}" alt="icon"/>
+                            <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
                         </div>
-                      </div>
-                        <div class="plot-bar" bind:this={plot}></div>
+                    </div>
+                    <div class="plot-bar" bind:this={plot}></div>
                     <!-- <p class="explanation">Each bar shows the total benefits obtain within the given period.</p> -->
 
                     <br>
-                    <h3 class="component-title"> Distribution of values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
-                    {#if totalValue>0}
-                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit by how much.</p>
+                    <h3 class="component-title"> Distribution of values (£, billion) for <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
+                    {#if totalValue > 0}
+                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit by how
+                            much.</p>
                     {:else}
                         <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
-                        <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how much.</p>
-                        {/if}
-                        <div class="aggregation-icon-container">
-                            <div class="tooltip-wrapper">
-                              <img class="aggregation-icon" src="{total}" alt="icon" />
-                              <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
-                            </div>
-                          </div>
-                        <div class="plot-bar" bind:this={plotDist}>
-                            
+                        <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how
+                            much.</p>
+                    {/if}
+                    <div class="aggregation-icon-container">
+                        <div class="tooltip-wrapper">
+                            <img class="aggregation-icon" src="{total}" alt="icon"/>
+                            <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
                         </div>
-                        <br>
+                    </div>
+                    <div class="plot-bar" bind:this={plotDist}>
+
+                    </div>
+                    <br>
                     <!-- <p class="explanation">``Bumps'' in the chart indicate </p> -->
                 </div>
 
 
                 <div class="component column">
-                    <h3 class="component-title">Total values (£, billion) for <span style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
+                    <h3 class="component-title">Total values (£, billion) for <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
                     <p class="description">Scroll for zooming in and out.</p>
                     <div class="aggregation-icon-container2">
                         <div class="tooltip-wrapper">
-                          <img class="aggregation-icon" src="{total}" alt="icon" />
-                          <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                            <img class="aggregation-icon" src="{total}" alt="icon"/>
+                            <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
                         </div>
-                      </div>
-                    {#if map}
-                    <div id="legend">
-                        {@html map.legend().outerHTML}
                     </div>
-                        {/if}
+                    {#if map}
+                        <div id="legend">
+                            {@html map.legend().outerHTML}
+                        </div>
+                    {/if}
                     <div id="map" bind:this={mapDiv}>
                     </div>
                 </div>
@@ -659,66 +727,80 @@
         </div>
 
         <div id="compare">
-        <!-- <div class="section-header">
-        <p class="section-subtitle">Compare by socio-economic factor</p>
-        </div> -->
+            <!-- <div class="section-header">
+            <p class="section-subtitle">Compare by socio-economic factor</p>
+            </div> -->
 
-        <div class="section-header">
-            <p class="section-subtitle">Socio-economic factors</p>
-        </div>
-        <div id="se-block" class="component" style="margin-left: 1rem;">
-            <div id="se-title">
-                <h3 class="component-title">Mapping the impact of <span style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities according to socio-economic factors</h3>
-                <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given socio-economic factor.</p>
-                
-                <br>
+            <div class="section-header">
+                <p class="section-subtitle">Socio-economic factors</p>
+            </div>
+            <div id="se-block" class="component" style="margin-left: 1rem;">
+                <div id="se-title">
+                    <h3 class="component-title">Mapping the impact of <span
+                            style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities
+                        according to socio-economic factors</h3>
+                    <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given
+                        socio-economic factor.</p>
 
-                <!-- Disclaimer -->
-                <div id="se-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
-                    <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where the x-axis is non-linear:  EPC, Tenure, Typology, Fuel type, Gas flag, Number of cars.</p>
+                    <br>
 
-                </div>
-                <div class="aggregation-icon-container2">
-                    <div class="tooltip-wrapper">
-                        <img class="aggregation-icon" src="{per_capita}" alt="icon" />
-                        <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
-                    </div> 
-                </div>
-                <!-- Legend -->
-                <div id="se-legend" class="legend-box">
-                    <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
-                    <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
-                    
-                    <div class="legend-buttons">
-                        <br>
-                        <button class="nation-button" data-nation="S" style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}">Scotland</button>
-                        <button class="nation-button" data-nation="N" style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}">Northern Ireland</button>
-                        <button class="nation-button" data-nation="E" style="background-color: {COBENEFS_SCALE3(coBenefit)[2]}">England</button>
-                        <button class="nation-button" data-nation="W" style="background-color: {COBENEFS_SCALE3(coBenefit)[3]}">Wales</button>
-                        <br>
-                        <button class="reset-button" on:click={resetSelection}>Reset</button>
+                    <!-- Disclaimer -->
+                    <div id="se-disclaimer" class="disclaimer-box">
+                        <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots
+                            represent modelled associations and should not be interpreted as direct causal
+                            relationships. </p>
+                        <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic
+                            factors are using categorical values where the x-axis is non-linear: EPC, Tenure, Typology,
+                            Fuel type, Gas flag, Number of cars.</p>
+
                     </div>
-                    
-                </div>
-            </div>
-
-        
-
-            <div id="multiple-comp">
-                <div id="multiple-plots">
-                    {#each SE_FACTORS as sef}
-                        <div class="plot-container">                         
-                            <h3 class="component-chart-title">{sef.label}</h3>
-                            <p class="component-chart-caption">{sef.def}</p>
-                              <div class="plot" bind:this={SEFPlot[sef.id]}></div>
+                    <div class="aggregation-icon-container2">
+                        <div class="tooltip-wrapper">
+                            <img class="aggregation-icon" src="{per_capita}" alt="icon"/>
+                            <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
                         </div>
-                    {/each}
+                    </div>
+                    <!-- Legend -->
+                    <div id="se-legend" class="legend-box">
+                        <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                        <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
+
+                        <div class="legend-buttons">
+                            <br>
+                            <button class="nation-button" data-nation="S"
+                                    style="background-color: {COBENEFS_SCALE3(coBenefit)[0]}">Scotland
+                            </button>
+                            <button class="nation-button" data-nation="N"
+                                    style="background-color: {COBENEFS_SCALE3(coBenefit)[1]}">Northern Ireland
+                            </button>
+                            <button class="nation-button" data-nation="E"
+                                    style="background-color: {COBENEFS_SCALE3(coBenefit)[2]}">England
+                            </button>
+                            <button class="nation-button" data-nation="W"
+                                    style="background-color: {COBENEFS_SCALE3(coBenefit)[3]}">Wales
+                            </button>
+                            <br>
+                            <button class="reset-button" on:click={resetSelection}>Reset</button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div id="multiple-comp">
+                    <div id="multiple-plots">
+                        {#each SE_FACTORS as sef}
+                            <div class="plot-container">
+                                <h3 class="component-chart-title">{sef.label}</h3>
+                                <p class="component-chart-caption">{sef.def}</p>
+                                <div class="plot" bind:this={SEFPlot[sef.id]}></div>
+                            </div>
+                        {/each}
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
-</div>
+    </div>
 </div>
 
 <style>
@@ -787,7 +869,7 @@
         width: 100%;
         margin-bottom: 20px;
     }
-    
+
     .component-chart-title {
         font-size: 1.2rem;
         font-weight: bold;
@@ -840,241 +922,241 @@
     } */
 
     .heading-icon {
-    width: 4rem;
-    height: 4rem;
+        width: 4rem;
+        height: 4rem;
     }
 
 
     .section.header {
-    padding: 2% 6%;
-    background-color: #f9f9f9;
+        padding: 2% 6%;
+        background-color: #f9f9f9;
     }
 
     .header-content {
-    display: flex;
-    align-items: top;
-    justify-content: space-between;
-    flex-wrap: wrap;
+        display: flex;
+        align-items: top;
+        justify-content: space-between;
+        flex-wrap: wrap;
     }
 
     .header-text {
-    max-width: 60%;
-    height :100%;
+        max-width: 60%;
+        height: 100%;
     }
 
     .page-subtitle {
-    font-size: 1.2rem;
-    color: #777;
-    margin-bottom: 2rcap;
+        font-size: 1.2rem;
+        color: #777;
+        margin-bottom: 2rcap;
     }
 
     .page-title {
-    font-size: 1.7rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
+        font-size: 1.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
     }
 
-  
+
     .total-value {
-    font-weight: bold;
-    margin-top: 0.5rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
     }
 
     .description {
-    margin-top: .9rem;
-    font-size: .9rem;
-    color: #333;
+        margin-top: .9rem;
+        font-size: .9rem;
+        color: #333;
     }
 
     .header-waffle {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1rem;
-    min-width: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1rem;
+        min-width: 120px;
     }
 
     .header-waffle-wrapper {
-    position: relative;
-    min-width: 120px;
-    height: 2%;
+        position: relative;
+        min-width: 120px;
+        height: 2%;
     }
 
     .waffle-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: white;
-    z-index: -1;
-}
-
-
-.waffle-label {
-    position: absolute;
-    top: 50%;
-    right: 105%;
-    transform: translateY(-50%);
-    width: 150px;
-
-    /* background-color: #fff; */
-    /* border: 1px solid #ddd; */
-    border-radius: 0.5rem;
-    padding: 1rem;
-    font-size: 0.9rem;
-    line-height: 1.1;
-    color: #333;
-    text-align: left;
-    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: white;
+        z-index: -1;
     }
 
-.disclaimer-box {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background-color: #f9f9f9;
-    border-left: 4px solid #ccc;
-    font-size: 0.9rem;
-    color: #555;
-}
 
-.legend-box {
-    margin-bottom: 2rem;
-    padding: 0.75rem;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    font-size: 0.9rem;
-}
+    .waffle-label {
+        position: absolute;
+        top: 50%;
+        right: 105%;
+        transform: translateY(-50%);
+        width: 150px;
 
-.legend-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
+        /* background-color: #fff; */
+        /* border: 1px solid #ddd; */
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.1;
+        color: #333;
+        text-align: left;
+        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
+    }
 
-.legend-list li {
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-}
+    .disclaimer-box {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background-color: #f9f9f9;
+        border-left: 4px solid #ccc;
+        font-size: 0.9rem;
+        color: #555;
+    }
 
-.legend-color {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border-radius: 2px;
-}
+    .legend-box {
+        margin-bottom: 2rem;
+        padding: 0.75rem;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
 
-.waffle-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
+    .legend-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
 
-.waffle-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+    .legend-list li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+    }
 
-.waffle-value {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-}
+    .legend-color {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        border-radius: 2px;
+    }
 
-.waffle-big {
-  font-size: 1.3rem;
-  font-weight: 500;
-}
+    .waffle-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 
-.small {
-  font-size: 0.9rem;
-  color: black;
-}
+    .waffle-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-.waffle-caption {
-  margin-top: 0.2rem;
-  font-size: 0.85rem;
-  color: black;
-}
+    .waffle-value {
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
+    }
 
-.definition {
-    max-width: 550px;
-    font-size: 1rem;
-    line-height: 1.25rem;
-}
+    .waffle-big {
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
 
-.plot-bar {
-  margin-top: -60px; /* pull it upward */
-}
+    .small {
+        font-size: 0.9rem;
+        color: black;
+    }
 
-.legend-buttons {
-  /*display: flex;*/
-  gap: 0px; 
-  /*flex-wrap: wrap;*/
-  margin-bottom: 0px;
-  margin-top: -20px;
-}
+    .waffle-caption {
+        margin-top: 0.2rem;
+        font-size: 0.85rem;
+        color: black;
+    }
 
-.nation-button {
-    gap: 0px; 
-    margin-top: 0.5rem;
-    margin-bottom: 0rem;
-    margin-right: 0.2rem;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    color: #F8F8F8;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 1;
-}
+    .definition {
+        max-width: 550px;
+        font-size: 1rem;
+        line-height: 1.25rem;
+    }
 
-.nation-button:hover {
-  transform: scale(1.05);
-  opacity: 0.8;
-}
+    .plot-bar {
+        margin-top: -60px; /* pull it upward */
+    }
 
-.reset-button {
-  margin-top: 1rem;
-  margin-left: 0rem;
-  padding: 0.5rem 1rem;
-  background-color: #eee;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
+    .legend-buttons {
+        /*display: flex;*/
+        gap: 0px;
+        /*flex-wrap: wrap;*/
+        margin-bottom: 0px;
+        margin-top: -20px;
+    }
 
-.reset-button:hover {
-  background-color: #ddd;
-}
+    .nation-button {
+        gap: 0px;
+        margin-top: 0.5rem;
+        margin-bottom: 0rem;
+        margin-right: 0.2rem;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: #F8F8F8;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 1;
+    }
 
-.aggregation-icon-container2 {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    width: 92%; 
-    margin-top: -25px;
-    margin-bottom: -25px;
-    margin-right: 10px;
-  }
+    .nation-button:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
 
-  .aggregation-icon-container2 {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    width: 99%; 
-    margin-top: -10px;
-    margin-bottom: -30px;
-    margin-right: 0px;
-    margin-left:0px;
-  }
+    .reset-button {
+        margin-top: 1rem;
+        margin-left: 0rem;
+        padding: 0.5rem 1rem;
+        background-color: #eee;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .reset-button:hover {
+        background-color: #ddd;
+    }
+
+    .aggregation-icon-container2 {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        width: 92%;
+        margin-top: -25px;
+        margin-bottom: -25px;
+        margin-right: 10px;
+    }
+
+    .aggregation-icon-container2 {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        width: 99%;
+        margin-top: -10px;
+        margin-bottom: -30px;
+        margin-right: 0px;
+        margin-left: 0px;
+    }
 
 </style>
