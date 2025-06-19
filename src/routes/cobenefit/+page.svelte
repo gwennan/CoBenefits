@@ -411,7 +411,7 @@
                     (selectedNation === null || nationCode(d) !== selectedNation)
                 )
 
-                let pointToAnnotate = dataToPlot.reduce(function(prev, curr) {
+                let pointToAnnotate = dataToPlot.reduce(function (prev, curr) {
                     return prev.SE < curr.SE ? prev : curr;
                 });
 
@@ -452,7 +452,16 @@
                                 return COBENEFS_SCALE3(coBenefit)[index];
                             },
                             r: 2,
-                            fillOpacity: 0.1
+                            fillOpacity: 0.1,
+                            channels: {LAD: "LAD"},
+                            tip: {format: {
+                                LAD: true,
+                                // sport: true,
+                                // nationality: true,
+                                y: false,
+                                x: false,
+                                // stroke: false
+                            }}
                         }),
 
                         // Second: selected points (drawn second, appear on top)
@@ -492,20 +501,20 @@
                 })
 
                 console.log(d3.select(plot)
-                .select('g[aria-label="dot"]')
-                .selectAll("circle"))
+                    .select('g[aria-label="dot"]')
+                    .selectAll("circle"))
 
-                 d3.select(plot)
-                .selectAll('g[aria-label="dot"]')
-                .selectAll("circle")
-                .style("cursor", "pointer")
-                .on("click", (e, i, d) => {
-                    let lad = dataToPlot[i].LAD;
+                d3.select(plot)
+                    .selectAll('g[aria-label="dot"]')
+                    .selectAll("circle")
+                    .style("cursor", "pointer")
+                    .on("click", (e, i, d) => {
+                        let lad = dataToPlot[i].LAD;
 
-                    // let text = event.target.textContent;
-                    // let cb = COBENEFS.find((d) => d.id == text)
-                    window.open(`${base}/location?location=${lad}`, '_blank').focus();
-                })
+                        // let text = event.target.textContent;
+                        // let cb = COBENEFS.find((d) => d.id == text)
+                        window.open(`${base}/location?location=${lad}`, '_blank').focus();
+                    })
 
             }
 
