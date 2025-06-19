@@ -257,11 +257,11 @@
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Number of Datazones", grid: true},
-                x: {label: 'Total (£, billion)',  labelArrow:'none', labelAnchor: "center"},
+                x: {label: 'Total (£, meillion)',  labelArrow:'none', labelAnchor: "center"},
                 style: {fontSize: "15px"},
                 marks: [
-                    Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
-                        x: "total",
+                    Plot.rectY(LADAveragedData, Plot.binX({y: "count"}, {
+                        x: d => d.total * 1000,
                         fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
                         fillOpacity: 0.5,
@@ -294,7 +294,7 @@
                 x: {
                     type: "band",
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
-                    label: "Year Intervals"
+                    label: "Year Intervals",
                 },
                 y: {grid:true, label: 'Total (£, billion)'},
                 marks: [
