@@ -195,7 +195,7 @@ export class MapUK {
             domain = [0, 1]
             this.colorScale = d3.scaleLinear()
                 .domain(domain)
-                .range(["white", "red"])
+                .range(["white", "dimgray"])
 
         } else {
             domain = d3.extent(this.data.map(d => d[this.dataKey]));

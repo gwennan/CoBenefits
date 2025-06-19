@@ -236,7 +236,7 @@
                     strokeWidth: 2
                 })),
                 Plot.ruleX([0], {stroke: "#1E1E1E", strokeWidth: 1}),
-                Plot.axisY({label: "Frequency of Datazones (Normalized)", labelAnchor: "top", labelArrow: false}),
+                Plot.axisY({label: "Distribution of data zones (Normalized)", labelAnchor: "top", labelArrow: false}),
                 Plot.axisX({label: "Cobenefit (millions £)", labelAnchor: "center", labelArrow: false}),
             ]
         });
@@ -1182,7 +1182,14 @@
 
             <div class="component column">
 
-                <h3 class="component-title">Distribution of the cobenefit per datazones compared to <span
+                <h3 class="component-title">Distribution of the cobenefit per
+                        <span class="tooltip-term">
+                                data zone
+                                <span class="tooltip-txt">
+                                Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.
+                                </span>
+                        </span>
+                        compared to <span
                         class="nation-label">{compareTo}</span> Average)</h3>
                 <p class="description">Co-benefit values for {LADToName[LAD]} compared to average value of benefits
                     received across all local
@@ -1201,7 +1208,7 @@
 
             <div class="component column">
                 <h3 class="component-title">Where is {LADToName[LAD]}?</h3>
-                <p class="description">{LADToName[LAD]} has been highlighted in red on this UK map.</p>
+                <p class="description">{LADToName[LAD]} has been highlighted in dark grey on this UK map.</p>
                 <p class="description">*Scroll for zooming in and out</p>
                 <div id="map" bind:this={mapDiv}>
                     <!--                    <div class="badge-container">-->
@@ -1415,7 +1422,14 @@
                                 </div>
                             {:else}
                                 <div class="component column">
-                                    <h3 class="component-title">Data Zones Distribution (vs. <span
+                                    <h3 class="component-title">
+                                            <span class="tooltip-term">
+                                                Data zones
+                                                <span class="tooltip-txt">
+                                                Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.
+                                                </span>
+                                            </span>
+                                            distribution (vs. <span
                                             class="nation-label">{compareTo}</span> average)</h3>
                                     <p class="description short">The histogram shows the number of data zones
                                         distributed
@@ -1428,9 +1442,9 @@
 
                                 <div class="component column">
                                     <div>
-                                        <h3 class="component-title">Co-benefits Received by Data Zones
+                                        <h3 class="component-title">Co-benefits received by data zones
                                             across {sef.label}
-                                            Values</h3>
+                                            values</h3>
                                         <p class="description short">Density plot refers to UK distribution while the
                                             scattered points refer to data zones in {LADToName[LAD]}.</p>
                                         <!--                                    <div class="plot" bind:this={SEFPlotFullDistrib[sef]}>-->
