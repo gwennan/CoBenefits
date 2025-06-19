@@ -433,7 +433,6 @@
 
             plotPerCb.append(plot)
         }
-
     }
 
     function renderSEFPlot() {

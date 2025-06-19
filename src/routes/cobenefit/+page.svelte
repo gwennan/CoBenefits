@@ -3,6 +3,8 @@
     import * as Plot from "@observablehq/plot";
     import {onMount, onDestroy} from 'svelte';
     import {writable} from 'svelte/store';
+    import {base} from "$app/paths";
+
 
     import {MapUK} from "$lib/components/mapUK";
     import {
@@ -83,7 +85,6 @@
         let legendSvg = map.legend("Cobenefits (Billions of £)");
         mapLegendDiv.append(legendSvg)
     });
-
 
     let icon = getIconFromCobenef(coBenefit)
 
@@ -350,7 +351,7 @@
         //         ]
         //     })
         // )
-        SEF.forEach(sef => {
+        SEF.forEach((sef, i) => {
             let plot;
             if (SEF_CATEGORICAL.includes(sef)) {
                 const labelLookup = SEF_LEVEL_LABELS[sef];
@@ -404,6 +405,16 @@
                     ]
                 })
             } else {
+
+                let dataToPlot = LADAveragedData.filter(d =>
+                    d["SEFMAME"] === sef &&
+                    (selectedNation === null || nationCode(d) !== selectedNation)
+                )
+
+                let pointToAnnotate = dataToPlot.reduce(function(prev, curr) {
+                    return prev.SE < curr.SE ? prev : curr;
+                });
+
                 plot = Plot.plot({
                     //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
@@ -414,15 +425,26 @@
                     marginRight: 20,
                     marginTop: 30,
                     // y: {grid: true, label: "Average Cost Benefit (£)"},
-                    // x: {grid: true, label: sef},
                     x: {label: SEF_SCALE(sef), labelArrow: false, labelAnchor: "center"},
                     y: {label: '£, thousand', labelArrow: false},
                     color: {legend: true},
                     marks: [
-                        Plot.dot(LADAveragedData.filter(d =>
-                            d["SEFMAME"] === sef &&
-                            (selectedNation === null || nationCode(d) !== selectedNation)
-                        ), {
+
+                        // annotation
+                        (i == 6) ? Plot.tip(
+                            // [`A dot is a Local Authority District (LAD)`],
+                            [`Each dot represents a Local Authority District (LAD).`],
+                            {
+                                x: (["Under_35", "Over_65", "Unemployment"].includes(sef) ? pointToAnnotate.SE * 100 : pointToAnnotate.SE),
+                                y: pointToAnnotate.total * 1000,
+                                textPadding: 6,
+                                opacity: 0.5,
+                                // textOverflow: "",
+                                lineWidth: 12
+                            }
+                        ) : [],
+
+                        Plot.dot(dataToPlot, {
                             x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
                             y: d => d.total * 1000,
                             fill: d => {
@@ -434,10 +456,7 @@
                         }),
 
                         // Second: selected points (drawn second, appear on top)
-                        Plot.dot(LADAveragedData.filter(d =>
-                            d["SEFMAME"] === sef &&
-                            (selectedNation === null || nationCode(d) === selectedNation)
-                        ), {
+                        Plot.dot(dataToPlot, {
                             x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
                             y: d => d.total * 1000,
                             fill: d => {
@@ -449,7 +468,8 @@
                         }),
                         Plot.axisX({label: SEF_SCALE(sef), labelArrow: false, labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
-                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75})
+                        Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
+
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                         //  x: "SE",
                         //  y: "total",
@@ -470,6 +490,23 @@
                         //})
                     ]
                 })
+
+                console.log(d3.select(plot)
+                .select('g[aria-label="dot"]')
+                .selectAll("circle"))
+
+                 d3.select(plot)
+                .selectAll('g[aria-label="dot"]')
+                .selectAll("circle")
+                .style("cursor", "pointer")
+                .on("click", (e, i, d) => {
+                    let lad = dataToPlot[i].LAD;
+
+                    // let text = event.target.textContent;
+                    // let cb = COBENEFS.find((d) => d.id == text)
+                    window.open(`${base}/location?location=${lad}`, '_blank').focus();
+                })
+
             }
 
             SEFPlot[sef]?.append(plot)
