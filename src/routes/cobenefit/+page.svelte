@@ -454,14 +454,17 @@
                             r: 2,
                             fillOpacity: 0.1,
                             channels: {LAD: "LAD"},
-                            tip: {format: {
-                                LAD: true,
-                                // sport: true,
-                                // nationality: true,
-                                y: false,
-                                x: false,
-                                // stroke: false
-                            }}
+                            // tip: {
+                            //     format: {
+                            //         LAD: true,
+                            //         test: "yes",
+                            //         // sport: true,
+                            //         // nationality: true,
+                            //         y: false,
+                            //         x: false,
+                            //         // stroke: false
+                            //     }
+                            // }
                         }),
 
                         // Second: selected points (drawn second, appear on top)
@@ -478,6 +481,12 @@
                         Plot.axisX({label: SEF_SCALE(sef), labelArrow: false, labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75}),
                         Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
+
+                        Plot.tip(dataToPlot, Plot.pointer({
+                            x: d => (["Under_35", "Over_65", "Unemployment"].includes(sef) ? d.SE * 100 : d.SE),
+                            y: d => d.total * 1000,
+                            title: (d) => [`LAD: ${d.LAD}`, "Click to navigate to page."].join("\n")
+                        })),
 
                         //Plot.linearRegressionY(SEFData.filter(d => d["SEFMAME"] == sef), {
                         //  x: "SE",
