@@ -78,12 +78,8 @@
         colorRange.shift()
         colorRange = colorRange.reverse()
 
-        // TODO: show sum and not avergade
         map = new MapUK(LADAveragedData, "LAD", mapDiv, "total", true, "LAD", false, colorRange);
         map.initMap();
-
-        let legendSvg = map.legend("Cobenefits (Billions of £)");
-        mapLegendDiv.append(legendSvg)
     });
 
     let icon = getIconFromCobenef(coBenefit)
@@ -675,10 +671,12 @@
                     </h3>
                     {#if totalValue > 0}
                         <!-- <p class="description">The total benefit for each 5 year interval towards 2050. </p> -->
-                        <p class="description">Each bar shows the predicted total benefits in billion pounds for each five-year periods for all of UK.</p>
+                        <p class="description">Each bar shows the predicted total benefits in billion pounds for each
+                            five-year periods for all of UK.</p>
                     {:else}
                         <!-- <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p> -->
-                        <p class="description">Each bar shows the predicted total costs in billion pounds for each five-year periods for all of UK.</p>
+                        <p class="description">Each bar shows the predicted total costs in billion pounds for each
+                            five-year periods for all of UK.</p>
                     {/if}
                     <div class="aggregation-icon-container">
                         <div class="tooltip-wrapper">
@@ -691,12 +689,12 @@
 
                     <br>
                     <h3 class="component-title"> Distribution of <span
-                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK 
-                            <!-- <span style={{ textDecoration: "underline dotted", cursor: "help" }} title="Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.">
-                            data zones
-                            </span> -->
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK
+                        <!-- <span style={{ textDecoration: "underline dotted", cursor: "help" }} title="Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.">
+                        data zones
+                        </span> -->
 
-                            <span class="tooltip-term">
+                        <span class="tooltip-term">
                                 data zones
                                 <span class="tooltip-txt">
                                 Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.
@@ -704,10 +702,13 @@
                             </span>
                     </h3>
                     {#if totalValue > 0}
-                        <p class="description">The x-axis represents the predicted value of benefits, measured in billion pounds, while the y-axis shows the number of data zones falling within each benefit range.</p>
+                        <p class="description">The x-axis represents the predicted value of benefits, measured in
+                            billion pounds, while the y-axis shows the number of data zones falling within each benefit
+                            range.</p>
                     {:else}
                         <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
-                        <p class="description">The x-axis represents the value of costs, while the y-axis shows the number of data zones falling within each benefit range.</p>
+                        <p class="description">The x-axis represents the value of costs, while the y-axis shows the
+                            number of data zones falling within each benefit range.</p>
                     {/if}
                     <div class="aggregation-icon-container">
                         <div class="tooltip-wrapper">
@@ -724,15 +725,24 @@
 
 
                 <div class="component column">
-                    <h3 class="component-title">Total <span
+                    <h3 class="component-title">Per Capita <span
                             style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK local authorities</h3>
-                    <p class="description">Each local authority is coloured by the predicted total benefits/cost, showing regional variation in how benefits/cost are distributed. Scroll for zooming in and out.</p>
+                    <p class="description">Each local authority is coloured by the predicted per capita benefits/cost,
+                        showing regional variation in how benefits/cost are distributed. Scroll for zooming in and
+                        out.</p>
+                    <!--                    <div class="aggregation-icon-container2">-->
+                    <!--                        <div class="tooltip-wrapper">-->
+                    <!--                            <img class="aggregation-icon" src="{total}" alt="icon"/>-->
+                    <!--                            <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                     <div class="aggregation-icon-container2">
                         <div class="tooltip-wrapper">
-                            <img class="aggregation-icon" src="{total}" alt="icon"/>
-                            <span class="tooltip-text">This chart uses total values. i.e. shows the total benefit/cost for all of the UK.</span>
+                            <img class="aggregation-icon" src="{per_capita}" alt="icon"/>
+                            <span class="tooltip-text">This chart uses per capita values. i.e. show the cost/benefit per person in each LAD.</span>
                         </div>
                     </div>
+
                     {#if map}
                         <div id="legend">
                             {@html map.legend().outerHTML}
@@ -755,10 +765,12 @@
             <div id="se-block" class="component" style="margin-left: 1rem;">
                 <div id="se-title">
                     <h3 class="component-title">How <span
-                            style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> vary by household social-economic factors</h3>
-                    <p class="explanation">Each chart shows how benefits or costs are distributed across UK local authorities in correlation with a specific household social-economic factor.</p>
+                            style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> vary by household social-economic
+                        factors</h3>
+                    <p class="explanation">Each chart shows how benefits or costs are distributed across UK local
+                        authorities in correlation with a specific household social-economic factor.</p>
 
-                    
+
                     <!-- Legend -->
                     <div id="se-legend" class="legend-box">
                         <div class="aggregation-icon-container2">
@@ -788,21 +800,20 @@
                             <br>
                             <button class="reset-button" on:click={resetSelection}>Reset</button>
                         </div>
-                    
-                    
-
                     </div>
-                    
+
 
                     <!-- Disclaimer -->
                     <div id="se-disclaimer" class="disclaimer-box">
-                        <p style="margin: 0 0 0.5rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where the x-axis is non-linear.</p>
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Discrete scales:</strong> The first set of
+                            socio-economic factors are using categorical values where the x-axis is non-linear.</p>
                         <p style="margin: 0 0 0.5rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots
                             represent modelled associations and should not be interpreted as direct causal
                             relationships. </p>
-                        <p style="margin: 0 0 0.5rem 0;"><strong>Aggregated data:</strong> Each socio-economic factor for a given local authority is aggregated from the data zones within its boundary.  </p>
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Aggregated data:</strong> Each socio-economic factor
+                            for a given local authority is aggregated from the data zones within its boundary. </p>
                     </div>
-                    
+
                 </div>
 
 
