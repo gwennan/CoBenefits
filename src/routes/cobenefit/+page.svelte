@@ -260,11 +260,11 @@
                 marginTop: 40,
                 marginRight: 40,
                 y: {label: "Number of Datazones", grid: true},
-                x: {label: 'Total (£, billion)', labelArrow: 'none', labelAnchor: "center"},
+                x: {label: 'Total co-benefit value (£, billion)', labelArrow: 'none', labelAnchor: "center"},
                 style: {fontSize: "15px"},
                 marks: [
-                    Plot.areaY(LADAveragedData, Plot.binX({y: "count"}, {
-                        x: "total",
+                    Plot.rectY(LADAveragedData, Plot.binX({y: "count"}, {
+                        x: d => d.total * 1000,
                         fill: COBENEFS_SCALE2(coBenefit)[0],
                         tip: true,
                         fillOpacity: 0.5,
@@ -302,7 +302,7 @@
                 x: {
                     type: "band",
                     tickFormat: d => d.replace(/^Y/, '').replace('_', '-'),
-                    label: "Year Intervals"
+                    label: "Year Intervals",
                 },
                 y: {grid: true, label: 'Total (£, billion)'},
                 marks: [
@@ -319,7 +319,7 @@
                     Plot.axisY({
                         anchor: "left",
                         grid: true,
-                        label: 'Total (£, billion)',
+                        label: 'Total co-benefit value (£, billion)',
                         labelArrow: 'none',
                         labelAnchor: "center"
                     }),
@@ -670,15 +670,15 @@
             </div>
             <div id="vis-block">
                 <div class="component singlevis">
-                    <h3 class="component-title">Total values (£, billion) for <span
-                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time
+                    <h3 class="component-title">Total <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> over time 2025-2050
                     </h3>
                     {#if totalValue > 0}
                         <!-- <p class="description">The total benefit for each 5 year interval towards 2050. </p> -->
-                        <p class="description">Each bar shows the total values obtained in that period. </p>
+                        <p class="description">Each bar shows the predicted total benefits in billion pounds for each five-year periods for all of UK.</p>
                     {:else}
                         <!-- <p class="description">The total cost/benefit for each 5 year interval towards 2050. </p> -->
-                        <p class="description">Each bar shows the total benefits or costs obtained in that period. </p>
+                        <p class="description">Each bar shows the predicted total costs in billion pounds for each five-year periods for all of UK.</p>
                     {/if}
                     <div class="aggregation-icon-container">
                         <div class="tooltip-wrapper">
@@ -690,15 +690,24 @@
                     <!-- <p class="explanation">Each bar shows the total benefits obtain within the given period.</p> -->
 
                     <br>
-                    <h3 class="component-title"> Distribution of values (£, billion) for <span
-                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK data zones</h3>
+                    <h3 class="component-title"> Distribution of <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across UK 
+                            <!-- <span style={{ textDecoration: "underline dotted", cursor: "help" }} title="Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.">
+                            data zones
+                            </span> -->
+
+                            <span class="tooltip-term">
+                                data zones
+                                <span class="tooltip-txt">
+                                Data zones are standard statitical geographies in UK that  comprise between 400 and 1200 households.
+                                </span>
+                            </span>
+                    </h3>
                     {#if totalValue > 0}
-                        <p class="description"> Along the x-axis, see how many data zones (y-axis) benefit by how
-                            much.</p>
+                        <p class="description">The x-axis represents the predicted value of benefits, measured in billion pounds, while the y-axis shows the number of data zones falling within each benefit range.</p>
                     {:else}
                         <!-- <p class="description"> The total cost/benefit for each data zone across the UK. </p> -->
-                        <p class="description"> Along the x-axis, see how many data zones (y-axis) lose/benefit how
-                            much.</p>
+                        <p class="description">The x-axis represents the value of costs, while the y-axis shows the number of data zones falling within each benefit range.</p>
                     {/if}
                     <div class="aggregation-icon-container">
                         <div class="tooltip-wrapper">
@@ -715,9 +724,9 @@
 
 
                 <div class="component column">
-                    <h3 class="component-title">Total values (£, billion) for <span
-                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> across the UK</h3>
-                    <p class="description">Scroll for zooming in and out.</p>
+                    <h3 class="component-title">Total <span
+                            style={cobensStyle}>{coBenefitLabel.toLowerCase()}</span> by UK local authorities</h3>
+                    <p class="description">Each local authority is coloured by the predicted total benefits/cost, showing regional variation in how benefits/cost are distributed. Scroll for zooming in and out.</p>
                     <div class="aggregation-icon-container2">
                         <div class="tooltip-wrapper">
                             <img class="aggregation-icon" src="{total}" alt="icon"/>
@@ -745,33 +754,21 @@
             </div>
             <div id="se-block" class="component" style="margin-left: 1rem;">
                 <div id="se-title">
-                    <h3 class="component-title">Mapping the impact of <span
-                            style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> across UK local authorities
-                        according to socio-economic factors</h3>
-                    <p class="explanation">Each plot shows the distribution of benefits or costs depending on a given
-                        socio-economic factor.</p>
+                    <h3 class="component-title">How <span
+                            style={cobensStyle}>{coBenefitLabel?.toLowerCase()}</span> vary by household social-economic factors</h3>
+                    <p class="explanation">Each chart shows how benefits or costs are distributed across UK local authorities in correlation with a specific household social-economic factor.</p>
 
-                    <br>
-
-                    <!-- Disclaimer -->
-                    <div id="se-disclaimer" class="disclaimer-box">
-                        <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots
-                            represent modelled associations and should not be interpreted as direct causal
-                            relationships. </p>
-                        <p style="margin: 0 0 1rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic
-                            factors are using categorical values where the x-axis is non-linear: EPC, Tenure, Typology,
-                            Fuel type, Gas flag, Number of cars.</p>
-
-                    </div>
-                    <div class="aggregation-icon-container2">
-                        <div class="tooltip-wrapper">
-                            <img class="aggregation-icon" src="{per_capita}" alt="icon"/>
-                            <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
-                        </div>
-                    </div>
+                    
                     <!-- Legend -->
                     <div id="se-legend" class="legend-box">
-                        <strong style="margin-bottom: 1rem;">Legend:</strong> <br/>
+                        <div class="aggregation-icon-container2">
+                            <div class="tooltip-wrapper">
+                                <img class="aggregation-icon" src="{per_capita}" alt="icon"/>
+                                <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
+                            </div>
+                        </div>
+
+                        <strong style="margin-bottom: 0.8rem;">Legend:</strong> <br/>
                         <span>The scatter points are coloured by nation. Click the buttons below to filter.</span>
 
                         <div class="legend-buttons">
@@ -791,8 +788,21 @@
                             <br>
                             <button class="reset-button" on:click={resetSelection}>Reset</button>
                         </div>
+                    
+                    
 
                     </div>
+                    
+
+                    <!-- Disclaimer -->
+                    <div id="se-disclaimer" class="disclaimer-box">
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Discrete scales:</strong> The first set of socio-economic factors are using categorical values where the x-axis is non-linear.</p>
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots
+                            represent modelled associations and should not be interpreted as direct causal
+                            relationships. </p>
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Aggregated data:</strong> Each socio-economic factor for a given local authority is aggregated from the data zones within its boundary.  </p>
+                    </div>
+                    
                 </div>
 
 
