@@ -66,7 +66,8 @@ async function goToSection(id: string) {
       </div>
 
       <div class="nav-item">
-        <div class="nav-count">317</div>
+        <div class="nav-count">382</div>
+        
         <a href="{base}/lad" class:active={$page.url.pathname === `${base}/lad`}>Local Authorities</a>
       </div>
 
