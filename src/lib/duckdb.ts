@@ -472,6 +472,14 @@ export function getLADRegion(){
     `;
 }
 
+export function getNbOfLAD(){
+    return `
+        SELECT DISTINCT LAD
+        FROM ${DB_TABLE_NAME}
+        WHERE "LAD" IS NOT NULL AND "Region" IS NOT NULL
+    `;
+}
+
 
 export function getTotalPerHouseholdByLAD() {
     return `

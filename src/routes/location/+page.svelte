@@ -5,7 +5,6 @@
     import {base} from "$app/paths";
     import {page} from '$app/stores';
 
-
     import {MapUK} from "$lib/components/mapUK";
     import {
         SEF,

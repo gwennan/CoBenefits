@@ -7,7 +7,7 @@ import * as topojson from "topojson-client";
 
 // import {rewind} from "@turf/turf";
 // import {joinArrays} from "$lib/utils.ts";
-import {initDB} from "$lib/duckdb";
+import {getNbOfLAD, initDB} from "$lib/duckdb";
 
 // import data for landing page
 import {
@@ -81,6 +81,8 @@ export async function load() {
 
     // let aggregationPerCapitaPerBenefit = await getTableData(getAggregationPerCapitaPerBenefit());
     // let totalAggregation = await getTableData(getTotalAggregation());
+
+    console.log("NB OF LAD: ", await getTableData(getNbOfLAD()))
 
     return {
         // datazones: UKZones,

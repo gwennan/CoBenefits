@@ -515,12 +515,6 @@
 </div>
 
 
-<!--<main>-->
-
-
-<!--</main>-->
-
-
 <style>
     main {
         display: flex;
@@ -759,5 +753,4 @@
         margin-bottom: 1rem;
         font-weight: bold;
     }
-
 </style>
