@@ -6,11 +6,13 @@
 
 <NavigationBar />
 
+
 <div class="about-page">
     <section class="about-header">
       <h1 class="title-about">About the UK Co-Benefit Atlas</h1>
+      <h3> Read the short paper: <a href="/src/routes/about/The_UK_Co_Benefits_Atlas___Poster_Summary.pdf" target="_blank">here</a> </h3>
     </section>
-  
+  <hr/>
     <section class="about-intro">
       <!-- <p class="intro-paragraph">
         Climate actions are designed to lower greenhouse gas (GHG) emissions but the gains for society reach further. For example, electric cars reduce air pollution, retrofitting homes minimises cold, damp and mould growth, and our health outcomes in turn improve.
@@ -55,8 +57,9 @@ Explore this data atlas to further understand connections between a wide range o
 </p>
 
 <h3>Atlas citation</h3>  
-<p class="citation-text">
-    <i>Wang, J; Pister, A; Phillips, S, Hinrichs, U; Field, S; Sudmant, A; Bissett, S; Wharmby, C; Higgins-Lavery, R.; Bach, B (2025). “The UK Co-Benefits Atlas”. Published May 6, 2025.</i>
+<p class="intro-paragraph">
+    <i><a href="/src/routes/about/The_UK_Co_Benefits_Atlas___Poster_Summary.pdf" target="_blank">Phillips, S; Wang, J; Pister, A; Higgins-Lavery, R; Bissett, S; Wharmby, C; Field, S; Hinrichs, U; Sudmant, A; Bach, B (2025). “The UK Co-Benefits Atlas: An Interactive Visualisation Atlas to
+      Understand the Impacts of Achieving Climate Action Targets”. Published June 25, 2025.</a></i>
 </p>
 
 
