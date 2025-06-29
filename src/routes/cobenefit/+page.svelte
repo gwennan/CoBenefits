@@ -404,7 +404,7 @@
 
                 let dataToPlot = LADAveragedData.filter(d =>
                     d["SEFMAME"] === sef &&
-                    (selectedNation === null || nationCode(d) !== selectedNation)
+                    (selectedNation === null || nationCode(d) == selectedNation)
                 )
 
                 let pointToAnnotate = dataToPlot.reduce(function (prev, curr) {

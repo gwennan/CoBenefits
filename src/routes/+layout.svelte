@@ -21,4 +21,6 @@
 
 <svelte:head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GGZ403XD90"></script>
+    <title>UK Co-Benefits Atlas</title>
+    <link rel="icon" href="/atlas-logos/logo_new_mini.png" type="image/png" />
 </svelte:head>

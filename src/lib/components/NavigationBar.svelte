@@ -32,7 +32,7 @@ async function goToSection(id: string) {
       <!-- <img src="{base}/atlas-logos/logo-colored-waffle.png" alt="Logo" class="logo" /> -->
       <!-- <img src="{base}/atlas-logos/logo-beta.png" alt="Logo" class="logo" /> -->
       <a href="{base}/" class="nav-item" class:active={$page.url.pathname === `${base}`}>
-        <img src="{base}/atlas-logos/logo-grid-black-beta.png" alt="Logo" class="logo" />
+        <img src="{base}/atlas-logos/logo_new.png" alt="Logo" class="logo" />
       </a>           
     </div>
 
@@ -152,10 +152,11 @@ async function goToSection(id: string) {
   }
 
   .logo {
-    height: 100%;
-    max-height: 100%;
+    height: 60px;
+    max-height: auto;
     padding-top: 10px;
     padding-bottom: 10px;
+    padding-left: 10px;
   }
 
   /* .nav-right {
@@ -270,11 +271,6 @@ async function goToSection(id: string) {
   .dropdown-menu li a:hover {
     color: #0077cc;
   }
-
-  .logo {
-  height: 60px;
-  width: auto;
-}
 
 
   @media (max-width: 768px) {
