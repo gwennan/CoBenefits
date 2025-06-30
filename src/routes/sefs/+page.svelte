@@ -23,7 +23,7 @@
     <!--<div class="disclaimer-box">
     <p style="margin: 0 0 0rem 0;"><strong>What are socio-economic factors?:</strong> ...</p>
     </div>-->
-    <p>Click on a socio-economic factor for a detailed report.</p>
+    <p class="description">Click on a socio-economic factor for a detailed report.</p>
 </main>
 
 <main class="main-container">

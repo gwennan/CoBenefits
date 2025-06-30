@@ -39,8 +39,10 @@
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
     let plotBar: HTMLElement;
+    let plotJitter: HTMLElement;
     let plotMultDot: HTMLElement;
     let plotSmallMult: Record<string, HTMLElement> = {};
+    let plotSmallJitter: Record<string, HTMLElement> = {};
     let plot: HTMLElement;
     let height = 400;
     let fullData;
@@ -234,7 +236,7 @@
         );
     }
 
-    function renderDotPlot() {
+    function renderDotPlot() {        
         plotDot?.append(
             Plot.plot({
                 height: height * 1.5,
@@ -257,11 +259,57 @@
                         r: 0.9,
                         fillOpacity: 0.75,
                         channels: {
-                            location: {value: "Lookup_Value", label: "Location"},
-                            sef: {value: "val", label: `${sefUnits}`},
-                            value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
+                            location: { value: "Lookup_Value", label: "Location" },
+                            sef: { value: "val", label: `${sefUnits}` },
+                            value: { value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)" },
                         },
-                        tip: {format: {location: true, sef: true, value: true, x: false, y: false}},
+                        tip: { format: { location: true, sef: true, value: true, x: false, y: false } },
+                        }),
+                        
+                    Plot.axisY({
+                        label: "Per capita co-benefit value (£, thousand)",
+                        labelArrow: false,
+                        labelAnchor: "center"
+                    }),
+                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
+                ]
+            })
+        );
+    }
+
+    function renderJitterPlot() {
+        const jitterAmount = 0.2; // tune as needed
+        const jitteredData = fullData.map(d => ({
+                ...d,
+                jittered_val: d.val + (Math.random() - 0.5) * jitterAmount
+            }));
+        
+        plotJitter?.append(
+            Plot.plot({
+                height: height * 1.5,
+                width: height * 2,
+                marginLeft: 60,
+                marginTop: 60,
+                marginRight: 10,
+                marginBottom: 60,
+                x: {grid: false},
+                y: {grid: true},
+                style: {fontSize: "16px"},
+                marks: [
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 1.25}),
+                    Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
+                    Plot.dot(jitteredData, {
+                        x: "jittered_val",
+                        y: d => d.total_per_capita * 1000,
+                        fill: d => d.total_per_capita < 0 ? '#BD210E' : '#242424',
+                        r: 0.9,
+                        fillOpacity: 0.75,
+                        channels: {
+                            location: { value: "Lookup_Value", label: "Location" },
+                            sef: { value: "val", label: `${sefUnits}` },
+                            value: { value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)" },
+                        },
+                        tip: { format: { location: true, sef: true, value: true, x: false, y: false } },
                     }),
 
                     Plot.axisY({
@@ -321,6 +369,58 @@
         })
     }
 
+    function renderMultPlotJitter() {
+        const jitterAmount = 0.2; // tune as needed
+        const jitteredData = SEFData.map(d => ({
+                ...d,
+                jittered_val: d.val + (Math.random() - 0.5) * jitterAmount
+            }));
+        
+        CBS.forEach(CB => {
+            let plot;
+            plot = Plot.plot({
+                height: height,
+                width: height,
+                marginLeft: 60,
+                marginTop: 10,
+                marginRight: 10,
+                marginBottom: 60,
+                x: {label: null},
+                y: {label: null},
+                style: {fontSize: "12px"},
+                marks: [
+                    Plot.ruleY([0], {stroke: "#333", strokeWidth: 1.25}),
+                    Plot.ruleX([0], {stroke: "#333", strokeWidth: 0.75}),
+                    Plot.dot(jitteredData.filter(d => d["co_benefit_type"] == CB), {
+                        x: "jittered_val",
+                        y: "total",
+                        fill: COBENEFS_SCALE(CB),
+                        fillOpacity: 0.5,
+                        r:0.5,
+                        channels: {
+                            location: {value: "Lookup_Value", label: "Location"},
+                            //sef: {value: "val", label: `${sefUnits}`},
+                            //value: {value: d => d.total_per_capita * 1000, label: "Co-Benefit Value (£, thousand)"},
+                        },
+                        tip: {format: {
+                            location: true, 
+                            //sef: true, 
+                            //value: true, 
+                            x: false, 
+                            y: false}},
+                    }),
+                    Plot.axisY({
+                        label: "Per capita co-benefit value (£, thousand)",
+                        labelArrow: false,
+                        labelAnchor: "center"
+                    }),
+                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
+                ]
+            });
+            plotSmallJitter[CB]?.append(plot)
+        })
+    }
+
     function formatValue(value, unit) {
         return unit === "£" ? `${unit}${value}` : `${value} ${unit}`;
     }
@@ -346,10 +446,12 @@
         if (height && dataLoaded) {
 
             renderDistPlot();
+            renderJitterPlot();
             renderBarPlot();
             renderDotPlot();
             // renderplotSmallMult();
             renderMultPlotDot();
+            renderMultPlotJitter();
         }
     }
 
@@ -429,7 +531,11 @@
                             <span class="tooltip-text">This chart uses per capita values. i.e. shows the cost/benefit per person in each AREA.</span>
                         </div>
                     </div>
-                    <div class="plot-dot" bind:this={plotDot}></div>
+                    {#if SEF_CATEGORICAL.includes(sefId)}
+                    <div class="plot" bind:this={plotJitter}></div>
+                    {:else}
+                    <div class="plot" bind:this={plotDot}></div>
+                    {/if}
                     
                 </div>
                 <div class="component column">
@@ -513,10 +619,11 @@
                     {#each CO_BEN as CB}
                         <div class="plot-container">
                             <h3 class="component-chart-title">{CB.label}</h3>
-                            {#if plotSmallMult[CB.id] === undefined}
-                                {console.log("Missing key in plotSmallMult:", CB.id)}
-                            {/if}
+                            {#if SEF_CATEGORICAL.includes(sefId)}
+                            <div class="plot" bind:this={plotSmallJitter[CB.id]}></div>
+                            {:else}
                             <div class="plot" bind:this={plotSmallMult[CB.id]}></div>
+                            {/if}
                         </div>
                     {/each}
                 </div>
