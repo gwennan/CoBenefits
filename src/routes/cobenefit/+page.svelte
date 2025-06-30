@@ -42,6 +42,7 @@
 
     import total from '$lib/icons/total.png';
     import per_capita from '$lib/icons/per_capita.png';
+    import percentage from '$lib/icons/percentage.png';
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -355,9 +356,9 @@
                 const fullLevels = labelLookup
                     ? Object.keys(labelLookup).map(Number)
                     : LADAveragedData.filter(d => d["SEFMAME"] == sef).map(d => d.SE);
+                    
 
                 plot = Plot.plot({
-                    //title: sef,
                     style: {fontSize: "14px", textAnchor: "middle", fill: '#333'},
                     height: height / 1.4,
                     width: height * 1.2,
@@ -374,29 +375,17 @@
                     y: {label: '£, thousand', labelArrow: 'none'},
                     color: {legend: true},
                     marks: [
-                        //Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), 
-                        //Plot.dodgeX("middle",{
-                        //    fx: "SE",
-                        //x: "SE",
-                        //    y: "total",
-                        //    r: 1,
-                        //    padding: -2,
-                        //    fill: d => d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1]
-                        //        : d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2]
-                        //        : d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3]
-                        //        : COBENEFS_SCALE2(coBenefit)[4],})),
-
-                        Plot.boxY(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
-                            //fx: "SE",
+                        Plot.dot(LADAveragedData.filter(d => d["SEFMAME"] == sef), {
                             x: "SE",
                             y: d => d.total * 1000,
-                            stroke: COBENEFS_SCALE2(coBenefit)[0],
-                            fill: COBENEFS_SCALE2(coBenefit)[0],
-                            r: 2,
-                            //strokeOpacity: 0.5,
-                            fillOpacity: 0.3
+                            r: 1.8,
+                            fillOpacity: 0.7,
+                            fill: d =>
+                                d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1] :
+                                d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2] :
+                                d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3] :
+                                COBENEFS_SCALE2(coBenefit)[4]
                         }),
-                        //Plot.axisY({anchor: "left", grid: true, label: '£/capita',  labelArrow:'none', labelAnchor: "center"}),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
                 })
@@ -598,19 +587,25 @@
                 <div class="waffle-label">
                     <div class="waffle-stats">
                         <div class="waffle-stat">
+                            <div class="waffle-value-container">
+                            <img class="aggregation-icon-small" src="{total}" alt="icon"/>
                             <div class="waffle-value">
                                 {#if totalValue}
                                     <span class="waffle-big">£{totalValue.toLocaleString()}</span>
                                 {/if}
                                 <span class="small">billion</span>
                             </div>
+                        </div>
                             {#if totalValue > 0}
                                 <div class="waffle-caption">National benefits</div>
                             {:else}
                                 <div class="waffle-caption">National costs</div>
                             {/if}
+                        
                         </div>
                         <div class="waffle-stat">
+                            <div class="waffle-value-container">
+                                <img class="aggregation-icon-small" src="{per_capita}" alt="icon"/>
                             <div class="waffle-value">
                                 {#if totalValue}
                                     <span class="waffle-big">£{coBenefit_percapita.toLocaleString('en-US', {
@@ -619,19 +614,24 @@
                                     })}</span>
                                 {/if}
                             </div>
+                        </div>
                             {#if totalValue > 0}
                                 <div class="waffle-caption">Per capita benefits</div>
                             {:else}
                                 <div class="waffle-caption">Per capita costs</div>
                             {/if}
                         </div>
+                        
                         <div class="waffle-stat">
+                            <div class="waffle-value-container">
+                                <img class="aggregation-icon-small" src="{percentage}" alt="icon"/>
                             {#if totalValue}
                                 <div class="waffle-value">
                                     <span class="waffle-big">{((totalValue / totalBenefitsValue) * 100).toFixed(2)}</span>
                                     <span class="small">%</span>
                                 </div>
                             {/if}
+                        </div>
                             <div class="waffle-caption">Contribution to national benefits</div>
                         </div>
                     </div>
@@ -1090,6 +1090,11 @@
         flex-direction: column;
         align-items: flex-start;
     }
+    .waffle-value-container {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* space between icon and number */
+    }
 
     .waffle-value {
         display: flex;
@@ -1188,5 +1193,10 @@
         margin-right: 0px;
         margin-left: 0px;
     }
+
+    .aggregation-icon-small {
+    width: 25px;
+    height: 25px;
+}
 
 </style>
