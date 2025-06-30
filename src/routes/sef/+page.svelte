@@ -18,7 +18,9 @@
         CO_BEN,
         SEF_UNITS2,
         COBENEFS_SCALE,
-        SEF_ID
+        SEF_ID,
+        SEF_LEVEL_LABELS,
+        SEF_SCALE
     } from "../../globals";
 
 
@@ -57,6 +59,8 @@
     let maxIndex;
     let minLookupValue;
     let minIndex;
+    let modeNumeric;
+    let labelLookup;
 
     // Data from load function
     export let data;
@@ -120,7 +124,10 @@
         averageValue = (
             d3.mean(fullData, d => d.val) ?? 0).toLocaleString('en-US',
             {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        modeValue = d3.mode(fullData, d => d.val) ?? "N/A";
+        modeNumeric = d3.mode(fullData, d => d.val);
+        labelLookup = SEF_LEVEL_LABELS[sefId];
+        modeValue = labelLookup?.[modeNumeric] ?? modeNumeric ?? "N/A";
+        
         console.log("Average Value: ", averageValue);
 
         maxIndex = d3.maxIndex(fullData, d => d.val);
@@ -204,6 +211,12 @@
             bin => bin.length
         );
 
+        const labelLookup = SEF_LEVEL_LABELS[sefId];
+
+        const fullLevels = labelLookup
+            ? Object.keys(labelLookup).map(Number)
+            : fullData.filter(d => d["SEFMAME"] == sefId).map(d => d.SE);
+
         plotBar?.append(
             Plot.plot({
                 height: height / 1.9,
@@ -211,8 +224,13 @@
                 marginLeft: 60,
                 marginTop: 30,
                 marginRight: 20,
-                marginBottom: 50,
-                x: {label: `${sefUnits}`},
+                marginBottom: sefId === "Typology" ? 80 : 50,
+                x: {
+                        domain: fullLevels,
+                        label: SEF_SCALE(sefId),
+                        tickFormat: d => labelLookup?.[d] ?? d,
+                        tickRotate: sefId === "Typology" ? -10 : 0
+                    },
                 y: {label: 'No. of datazones', labelArrow: false},
                 style: {fontSize: "16px"},
                 marks: [
@@ -230,7 +248,7 @@
                         fill: "#BD210E"
 
                     }),
-                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
+                    // Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
                 ]
             })
         );
@@ -283,6 +301,7 @@
                 ...d,
                 jittered_val: d.val + (Math.random() - 0.5) * jitterAmount
             }));
+            
         
         plotJitter?.append(
             Plot.plot({
@@ -481,17 +500,27 @@
             </div>
 
             <div class="header-stats">
-                <p class="definition-stat">Max value: <strong>{formatValue(maxValue, sefShortUnits)}</strong>
-                    ({maxLookupValue})</p>
-                    <p class="definition-stat">
-                        {#if SEF_CATEGORICAL.includes(sefId)}
-                          Most common value: <strong style="color: #BD210E;">{formatValue(modeValue, sefShortUnits)}</strong>
-                        {:else}
-                          Average value: <strong style="color: #BD210E;">{formatValue(averageValue, sefShortUnits)}</strong>
-                        {/if}
-                      </p>
-                <p class="definition-stat">Min value: <strong>{formatValue(minValue, sefShortUnits)}</strong>
-                    ({minLookupValue})</p>
+                <p class="definition-stat">
+                    {#if SEF_CATEGORICAL.includes(sefId)}
+                    -
+                    {:else}
+                    Max value: <strong>{formatValue(maxValue, sefShortUnits)}</strong>({maxLookupValue})
+                    {/if}
+                </p>
+                <p class="definition-stat">
+                    {#if SEF_CATEGORICAL.includes(sefId)}
+                        Most common category: <strong style="color: #BD210E;">{formatValue(modeValue, sefShortUnits)}</strong>
+                    {:else}
+                        Average value: <strong style="color: #BD210E;">{formatValue(averageValue, sefShortUnits)}</strong>
+                    {/if}
+                </p>
+                <p class="definition-stat">
+                    {#if SEF_CATEGORICAL.includes(sefId)}
+                    -
+                    {:else}
+                    Min value: <strong>{formatValue(minValue, sefShortUnits)}</strong>({minLookupValue})
+                    {/if}
+                </p>
             </div>
         </div>
     </div>

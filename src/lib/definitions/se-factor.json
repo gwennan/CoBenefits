@@ -49,7 +49,7 @@
     "label": "Number of cars",
     "description": "Car ownership",
     "units": "No. cars",
-    "short_units": "cars",
+    "short_units": "car(s)",
     "type": "categorical",
     "def": "Mean number of cars per household in the area."
   },
