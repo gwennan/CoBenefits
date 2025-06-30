@@ -18,6 +18,7 @@
         CO_BEN,
         SEF_UNITS2,
         COBENEFS_SCALE,
+        SEF_ID
     } from "../../globals";
 
 
@@ -37,6 +38,7 @@
     let element: HTMLElement;
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
+    let plotBar: HTMLElement;
     let plotMultDot: HTMLElement;
     let plotSmallMult: Record<string, HTMLElement> = {};
     let plot: HTMLElement;
@@ -46,6 +48,7 @@
     let PCData;
     let dataLoaded = false;
     let averageValue;
+    let modeValue;
     let maxValue;
     let minValue;
     let maxLookupValue;
@@ -58,6 +61,7 @@
 
     const SEF = data.SEF;
     console.log("SEF ", SEF)
+    const sefId = SEF_ID.find(d => d.id === SEF)?.id ?? SEF;
     const sefLabel = SEF_LABEL.find(d => d.id === SEF)?.label ?? SEF;
     const sefDef = SEF_DEF.find(d => d.id === SEF)?.def ?? SEF;
     const sefdescr = SEF_DESCR.find(d => d.id === SEF)?.description ?? SEF;
@@ -114,6 +118,7 @@
         averageValue = (
             d3.mean(fullData, d => d.val) ?? 0).toLocaleString('en-US',
             {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        modeValue = d3.mode(fullData, d => d.val) ?? "N/A";
         console.log("Average Value: ", averageValue);
 
         maxIndex = d3.maxIndex(fullData, d => d.val);
@@ -171,6 +176,45 @@
                         stroke: "black",
                         srokeWidth: 5,
                     })),
+                    Plot.ruleX([average], {
+                                stroke: "#BD210E",
+                                strokeWidth: 4,
+                                channels: {average: {value: average, label: "Average"}},
+                                tip: {format: {average:d => `${d.toFixed(2)}`, x:false}},
+                            }),
+                    Plot.dot(fullData, {
+                        x: {value: average, thresholds: 20},
+                        y: maxY + 0.1 * maxY,
+                        r: 5,
+                        fill: "#BD210E"
+
+                    }),
+                    Plot.axisX({label: `${sefUnits}`, labelArrow: false, labelAnchor: "center"}),
+                ]
+            })
+        );
+    }
+
+    function renderBarPlot() {
+        const average = d3.mode(fullData, d => d.val) ?? 0;
+        const maxY = d3.max(
+            d3.bin().thresholds(20).value(d => d.val)(fullData),
+            bin => bin.length
+        );
+
+        plotBar?.append(
+            Plot.plot({
+                height: height / 1.9,
+                width: height * 1.7,
+                marginLeft: 60,
+                marginTop: 30,
+                marginRight: 20,
+                marginBottom: 50,
+                x: {label: `${sefUnits}`},
+                y: {label: 'No. of datazones', labelArrow: false},
+                style: {fontSize: "16px"},
+                marks: [
+                    Plot.barY(fullData, Plot.groupX({ y: "count" }, { x: "val", fill: "black", opacity: 0.5})),
                     Plot.ruleX([average], {
                                 stroke: "#BD210E",
                                 strokeWidth: 4,
@@ -302,6 +346,7 @@
         if (height && dataLoaded) {
 
             renderDistPlot();
+            renderBarPlot();
             renderDotPlot();
             // renderplotSmallMult();
             renderMultPlotDot();
@@ -326,14 +371,23 @@
             </div>
 
             <div class="header-vis">
+                {#if SEF_CATEGORICAL.includes(sefId)}
+                <div class="plot" bind:this={plotBar}></div>
+                {:else}
                 <div class="plot" bind:this={plotDist}></div>
+                {/if}
             </div>
 
             <div class="header-stats">
                 <p class="definition-stat">Max value: <strong>{formatValue(maxValue, sefShortUnits)}</strong>
                     ({maxLookupValue})</p>
-                <p class="definition-stat">Average value: <strong
-                        style="color: #BD210E;">{formatValue(averageValue, sefShortUnits)}</strong></p>
+                    <p class="definition-stat">
+                        {#if SEF_CATEGORICAL.includes(sefId)}
+                          Most common value: <strong style="color: #BD210E;">{formatValue(modeValue, sefShortUnits)}</strong>
+                        {:else}
+                          Average value: <strong style="color: #BD210E;">{formatValue(averageValue, sefShortUnits)}</strong>
+                        {/if}
+                      </p>
                 <p class="definition-stat">Min value: <strong>{formatValue(minValue, sefShortUnits)}</strong>
                     ({minLookupValue})</p>
             </div>
@@ -413,11 +467,6 @@
                 <p class="explanation">Each plot shows the distribution of benefits or costs for each of the 11 co-benefits.</p>
                 <br>
 
-                <!-- Disclaimer -->
-                <div id="se-disclaimer" class="disclaimer-box">
-                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
-                    <p style="margin: 0 0 1rem 0;"><strong>Varying y-axis scales:</strong> The scatter plots have different scales on the y-axis due to the nature of each co-benefit. </p>
-                </div>
                 <div class="aggregation-icon-container2">
                     <div class="tooltip-wrapper">
                         <img class="aggregation-icon" src="{per_capita}" alt="icon" />
@@ -450,6 +499,11 @@
                         </div>
                         {/each}
                     </div>
+                    <!-- Disclaimer -->
+                <div id="se-disclaimer" class="disclaimer-box">
+                    <p style="margin: 0 0 1rem 0;"><strong>Correlation ≠ Causation:</strong> The scatter plots represent modelled associations and should not be interpreted as direct causal relationships. </p>
+                    <p style="margin: 0 0 1rem 0;"><strong>Varying y-axis scales:</strong> The scatter plots have different scales on the y-axis due to the nature of each co-benefit. </p>
+                </div>
                 </div>
 
         

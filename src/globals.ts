@@ -30,6 +30,7 @@ export let SE_FACTORS = seFactors.map(f => ({ id: f.id, label: f.label, def: f.d
 
 export let SEF = seFactors.map(f => f.id);
 
+export const SEF_ID = seFactors.map(f => f.id);
 export const SEF_LABEL = seFactors.map(d => ({ id: d.id, label: d.label }));
 export const SEF_DEF = seFactors.map(d => ({ id: d.id, def: d.def }));
 export const SEF_DESCR = seFactors.map(d => ({ id: d.id, description: d.description }));

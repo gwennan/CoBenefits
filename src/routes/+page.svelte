@@ -533,6 +533,7 @@
         font-size: 2.75rem;
         font-weight: bold;
         margin-bottom: 3rem;
+        margin-top: -1rem;
         line-height: 3rem;
     }
 
