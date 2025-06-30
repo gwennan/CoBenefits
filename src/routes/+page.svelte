@@ -18,6 +18,10 @@
     import CoBenefitTable from './CoBenTable.svelte';
     import LADTable from './LADTable.svelte';
 
+    import total from '$lib/icons/total.png';
+    import per_capita from '$lib/icons/per_capita.png';
+    import percentage from '$lib/icons/percentage.png';
+
     // explore by lad: reactive queries
     import {
         getAggregationPerBenefit,
@@ -424,9 +428,12 @@
 
                     <div class="waffle-stats">
                         <div class="waffle-stat">
+                            <div class="waffle-value-container">
+                                <img class="aggregation-icon-small" src="{total}" alt="icon"/>
                             <div class="waffle-value">
                                 <span class="waffle-big">£{activeValueLabel}</span>
                                 <span class="small">billion</span>
+                            </div>
                             </div>
                             {#if activeValueLabel > 0}
                                 <div class="waffle-caption">National benefits</div>
@@ -435,9 +442,12 @@
                             {/if}
                         </div>
                         <div class="waffle-stat">
+                            <div class="waffle-value-container">
+                                <img class="aggregation-icon-small" src="{per_capita}" alt="icon"/>
                             <div class="waffle-value">
                                 <span class="waffle-big">£{activePerCapitaLabel}</span>
                                 <!-- <span class="small">thousand</span> -->
+                            </div>
                             </div>
                             {#if activePerCapitaLabel > 0}
                                 <div class="waffle-caption">Per capita benefits</div>
@@ -447,13 +457,17 @@
                         </div>
                         {#if activeType !== null}
                             <div class="waffle-stat">
+                                <div class="waffle-value-container">
+                                    <img class="aggregation-icon-small" src="{percentage}" alt="icon"/>
                                 <div class="waffle-value">
                                     <span class="waffle-big">{activePercentLabel}</span>
                                     <span class="small">%</span>
                                 </div>
+                            </div>
                                 <div class="waffle-caption">Contribution</div>
                             </div>
                         {/if}
+                        
                     </div>
 
 
@@ -753,5 +767,16 @@
         font-size: 1.5rem;
         margin-bottom: 1rem;
         font-weight: bold;
+    }
+
+    .aggregation-icon-small {
+    width: 30px;
+    height: 30px;
+}
+
+.waffle-value-container {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* space between icon and number */
     }
 </style>

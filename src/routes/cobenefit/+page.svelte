@@ -635,8 +635,9 @@
                             <div class="waffle-caption">Contribution to national benefits</div>
                         </div>
                     </div>
+                    
                 </div>
-
+                <h3 class="component-title"> Share of total benefits </h3>
                 <div class="waffle-el" bind:this={waffleEl}></div>
                 <div class="waffle-bg" bind:this={waffleBgEl}></div>
             </div>
@@ -1195,8 +1196,8 @@
     }
 
     .aggregation-icon-small {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
 }
 
 </style>
