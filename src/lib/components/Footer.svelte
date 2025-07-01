@@ -20,7 +20,7 @@
 
     <div>
         <ul id="footer-list">
-            <li><a href="https://github.com/Edinburgh-Futures-Institute/CoBenefits">Feedback</a></li>
+            <li><a href="https://docs.google.com/forms/d/1w-8Lt9bESZ56PdklTIT38plec7dPgDbJtORkatoXFVY/edit">Feedback</a></li>
             <li><a href="https://github.com/Edinburgh-Futures-Institute/CoBenefits">Code</a></li>
         </ul>
     </div>
