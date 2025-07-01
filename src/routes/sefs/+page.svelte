@@ -9,6 +9,7 @@
     import CarIcon from '$lib/icons/Car.png';
     import HouseIcon from '$lib/icons/Exterior.png';
     import TreeIcon from '$lib/icons/Forest.png';
+    import Footer from "$lib/components/Footer.svelte";
 
     onMount(async () => {
         await loadData();
@@ -103,6 +104,7 @@
         </div>
     </div>
 </main>
+
 
 <style>
     main {

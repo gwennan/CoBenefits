@@ -36,6 +36,7 @@
         getTableData, getTopSelectedLADs,
         getTotalCBAllDatazones, getTotalCBForOneLAD
     } from "$lib/duckdb";
+    import Footer from "$lib/components/Footer.svelte";
 
     let sectionRefs = {
         head: null,
@@ -1466,7 +1467,7 @@
     </div>
 
 </div>
-
+<Footer></Footer>
 
 <style>
     .header-row {

@@ -31,6 +31,7 @@
     } from '$lib/duckdb';
     import {getTableData} from '$lib/duckdb';
     import {csv} from "d3";
+    import Footer from "$lib/components/Footer.svelte";
 
     // const LADEngPath = `${base}/LAD/Eng_Wales_LSOA_LADs.csv`
     // const LADNIPath = `${base}/LAD/NI_DZ_LAD.csv`
@@ -526,6 +527,9 @@
         </div>
 
     </section>
+
+    <Footer></Footer>
+
 </div>
 
 

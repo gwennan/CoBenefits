@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { onMount, tick } from 'svelte';
     import NavigationBar from '$lib/components/NavigationBar.svelte';
+    import Footer from "$lib/components/Footer.svelte";
   
     let htmlContent: string = '';
 
@@ -98,6 +99,8 @@
   <div class="pandoc-html" bind:this={container}>
     {@html htmlContent}
   </div>
+
+<Footer></Footer>
   
 <style>
 

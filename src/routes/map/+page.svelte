@@ -26,6 +26,7 @@
     import {MapUK} from "$lib/components/mapUK";
     import NavigationBar from "$lib/components/NavigationBar.svelte";
     import {COBENEFS_RANGE2} from "../../globals.js";
+    import Footer from "$lib/components/Footer.svelte";
 
 
     export let data;
@@ -437,7 +438,11 @@
             {/if}
         </div>
     </div>
+
+<Footer></Footer>
+
 </div>
+
 
 <style>
 

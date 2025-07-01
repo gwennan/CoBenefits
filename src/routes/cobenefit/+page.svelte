@@ -43,6 +43,7 @@
     import total from '$lib/icons/total.png';
     import per_capita from '$lib/icons/per_capita.png';
     import percentage from '$lib/icons/percentage.png';
+    import Footer from "$lib/components/Footer.svelte";
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -833,6 +834,8 @@
         </div>
     </div>
 </div>
+
+<Footer></Footer>
 
 <style>
     #vis-block {
