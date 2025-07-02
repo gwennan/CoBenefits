@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { onMount, tick } from 'svelte';
     import NavigationBar from '$lib/components/NavigationBar.svelte';
+    import posthog from 'posthog-js';
   
     let htmlContent: string = '';
 
@@ -61,6 +62,27 @@
 
         await tick();
 
+        // Tracking opening of Method boxes
+        container.addEventListener('click', function(e) {
+        const summary = e.target.closest('summary');
+        if (summary && summary.parentElement.tagName === 'DETAILS') {
+            const details = summary.parentElement;
+            const sectionTitle = summary.textContent?.trim() || '';
+            
+            const willBeOpen = !details.open;
+            
+            if (willBeOpen) {
+                posthog.capture('section opened', {
+                    section_name: sectionTitle
+                });
+            } else {
+              posthog.capture('section closed', {
+                  section_name: sectionTitle
+              });    
+            }
+            }
+        });
+          
         if (window.MathJax && typeof window.MathJax.startup?.promise?.then === 'function') {
                 await window.MathJax.startup.promise;
                 await window.MathJax.typesetPromise([container]);

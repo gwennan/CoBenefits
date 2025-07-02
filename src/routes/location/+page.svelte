@@ -4,6 +4,7 @@
     import {onMount, onDestroy} from 'svelte';
     import {base} from "$app/paths";
     import {page} from '$app/stores';
+    import posthog from 'posthog-js';
 
     import {MapUK} from "$lib/components/mapUK";
     import {
@@ -144,6 +145,12 @@
             const isInView = rect.top <= 150 && rect.bottom >= 150;
 
             if (isInView) {
+
+                if (currentSection !== id) {
+                posthog.capture('section entered (lad)', {
+                    section_name: id,
+                })};
+
                 currentSection = id;
                 // console.log("currentSection", currentSection);
                 break;
@@ -1042,6 +1049,10 @@
         totalCBAllLAD = await getTableData(getSUMCBGroupedByLAD([], compareTo));
 
         totalCBAllZones = await getTableData(getTotalCBAllDatazones(compareTo));
+
+        posthog.capture('clicked nation filter', {
+        nation: event.currentTarget.value
+        })   
     }
 
 </script>
@@ -1077,7 +1088,7 @@
             <div class="radio-set">
                 Compare this Local Authority District (LAD) against:<br/>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="UK" checked>
-                <label class="nation-label" for="html">UK</label><br>
+                <label class="nation-label" for="html" >UK</label><br>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="England">
                 <label class="nation-label" for="html">England</label><br>
                 <input type="radio" on:change={onChangeComparison} name="compare" value="Wales">
