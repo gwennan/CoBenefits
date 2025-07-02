@@ -44,6 +44,7 @@
     import total from '$lib/icons/total.png';
     import per_capita from '$lib/icons/per_capita.png';
     import percentage from '$lib/icons/percentage.png';
+    import Footer from "$lib/components/Footer.svelte";
 
     let element: HTMLElement
     let plotDist: HTMLElement
@@ -388,10 +389,10 @@
                             r: 1.8,
                             fillOpacity: 0.7,
                             fill: d =>
-                                d.LAD.startsWith("S") ? COBENEFS_SCALE2(coBenefit)[1] :
-                                d.LAD.startsWith("N") ? COBENEFS_SCALE2(coBenefit)[2] :
-                                d.LAD.startsWith("E") ? COBENEFS_SCALE2(coBenefit)[3] :
-                                COBENEFS_SCALE2(coBenefit)[4]
+                                d.LAD.startsWith("S") ? COBENEFS_SCALE3(coBenefit)[1] :
+                                d.LAD.startsWith("N") ? COBENEFS_SCALE3(coBenefit)[2] :
+                                d.LAD.startsWith("E") ? COBENEFS_SCALE3(coBenefit)[3] :
+                                COBENEFS_SCALE3(coBenefit)[4]
                         }),
                         Plot.ruleY([0], {stroke: "#333", strokeWidth: 0.75})
                     ]
@@ -841,6 +842,8 @@
     </div>
 </div>
 
+<Footer></Footer>
+
 <style>
     #vis-block {
         display: flex;
@@ -1205,6 +1208,7 @@
     .aggregation-icon-small {
     width: 30px;
     height: 30px;
+    opacity: 1;
 }
 
 </style>

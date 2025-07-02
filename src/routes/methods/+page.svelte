@@ -3,6 +3,9 @@
     import { onMount, tick } from 'svelte';
     import NavigationBar from '$lib/components/NavigationBar.svelte';
     import posthog from 'posthog-js';
+
+    import Footer from "$lib/components/Footer.svelte";
+
   
     let htmlContent: string = '';
 
@@ -120,6 +123,8 @@
   <div class="pandoc-html" bind:this={container}>
     {@html htmlContent}
   </div>
+
+<Footer></Footer>
   
 <style>
 

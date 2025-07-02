@@ -39,6 +39,10 @@
     import total from '$lib/icons/total.png';
 	import posthog from 'posthog-js';
 
+    import negative from '$lib/icons/negative.png';
+    import Footer from "$lib/components/Footer.svelte";
+
+
     let element: HTMLElement;
     let plotDist: HTMLElement;
     let plotDot: HTMLElement;
@@ -612,7 +616,6 @@
 
                 <div class="aggregation-icon-container2">
                     <div class="tooltip-wrapper">
-                        <img class="aggregation-icon" src="{per_capita}" alt="icon" />
                         <span class="tooltip-text">These charts use per capita values. i.e. show the cost/benefit per person in each LAD.</span>
                     </div> 
                 </div>
@@ -668,7 +671,15 @@
                 <div id="multiple-plots">
                     {#each CO_BEN as CB}
                         <div class="plot-container">
+                            <div class="component-chart-title-container">
                             <h3 class="component-chart-title">{CB.label}</h3>
+                            {#if CB.id == "Hassle costs"  || CB.id == "Road repairs" || CB.id == "Road safety" || CB.id == "Congestion" || CB.id == "Excess heat"}
+                            <img class="sm-icon" src="{per_capita}" alt="icon" />
+                            <img class="sm-icon" src="{negative}" alt="icon" />
+                            {:else}
+                            <img class="sm-icon" src="{per_capita}" alt="icon" />
+                            {/if}
+                        </div>
                             {#if SEF_CATEGORICAL.includes(sefId)}
                             <div class="plot" bind:this={plotSmallJitter[CB.id]}></div>
                             {:else}
@@ -681,6 +692,8 @@
         </div>
         </div>
 </div>
+
+<Footer></Footer>
 
 <style>
 
@@ -944,5 +957,19 @@
     border-left: 4px solid #ccc;
     font-size: 0.9rem;
     color: #555;
+}
+
+.sm-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.75;
+    margin-top: -5px;
+    margin-left: 3px;
+}
+
+.component-chart-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
