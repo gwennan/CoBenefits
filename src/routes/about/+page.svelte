@@ -368,4 +368,73 @@ Visualization atlases are online platforms making large and complex data sets ac
   line-height: 1.4;
 }
 
+.privacy-button,
+  .submit-button,
+  .remove-button,
+  .delete-data-button,
+  .keep-data-button {
+    background-color: #f3f4f6;
+    color: #333;
+    border: 1px solid #333;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .privacy-button:hover,
+  .submit-button:hover,
+  .remove-button:hover,
+  .delete-data-button:hover,
+  .keep-data-button:hover {
+    background-color: #e5e7eb;
+  }
+  
+  /* Contact section styling */
+  .contact-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  
+  .email-input {
+    width: 280px;
+    height: 32px;
+    padding: 0 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+  }
+  
+  .email-input:focus {
+    outline: none;
+    border-color: #333;
+  }
+  
+  
+  /* Modal button styling */
+  :global(.modal) button {
+    background-color: #f3f4f6 !important;
+    color: #333 !important;
+    border: 1px solid #333 !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 4px !important;
+    font-size: 0.875rem !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  
+  :global(.modal) button:hover {
+    background-color: #e5e7eb !important;
+  }
+
   </style>

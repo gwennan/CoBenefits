@@ -37,7 +37,6 @@
 
     import per_capita from '$lib/icons/per_capita.png';
     import total from '$lib/icons/total.png';
-	import posthog from 'posthog-js';
 
     import negative from '$lib/icons/negative.png';
     import Footer from "$lib/components/Footer.svelte";

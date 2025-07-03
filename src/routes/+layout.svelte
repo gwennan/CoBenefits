@@ -48,7 +48,7 @@
 
     function initPosthog() {
       posthog.init(
-        'phc_5El1OotgrsS7hUFInEEWFvaZnhoiQboqFfzBuYXCfwa',
+        'phc_mKgPtFSI9BNxlCsEYhhte5fu07Pp99BhWEtBMvU8pzV',
         {
           api_host: 'https://eu.i.posthog.com',
           person_profiles: 'identified_only',
